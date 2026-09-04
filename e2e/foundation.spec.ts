@@ -103,9 +103,11 @@ test("unknown routes render the custom 404", async ({ page }) => {
 test.describe("mobile navigation", () => {
   // QA #3: the mobile menu must actually work — open, navigate, close,
   // and be operable from the keyboard.
+  // The desktop nav appears at xl (1280). Below that the hamburger and the
+  // full-screen panel are what a visitor gets — including on a 1024 laptop.
   test.skip(
-    ({ viewport }) => (viewport?.width ?? 0) >= 1024,
-    "Mobile menu is only rendered below the lg breakpoint.",
+    ({ viewport }) => (viewport?.width ?? 0) >= 1280,
+    "Mobile menu is only rendered below the xl breakpoint.",
   );
 
   test("opens, lists every page, and closes", async ({ page }) => {

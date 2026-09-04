@@ -58,6 +58,16 @@ export default function RootLayout({
   return (
     <html lang="en-GB" className={`${archivo.variable} ${barlow.variable}`}>
       <body className="flex min-h-dvh flex-col">
+        {/*
+          Motion server-renders its entrance states as inline opacity:0, so
+          with scripting disabled the page would ship visually blank even
+          though the markup is complete. Every animated element carries
+          data-reveal; this restores them when JS never runs.
+        */}
+        <noscript>
+          <style>{`[data-reveal]{opacity:1!important;transform:none!important}`}</style>
+        </noscript>
+
         <a href="#main" className="sr-only-focusable z-100 m-3 bg-ink px-4 py-3 text-bone">
           Skip to main content
         </a>

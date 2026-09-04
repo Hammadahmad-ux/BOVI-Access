@@ -35,7 +35,7 @@ export default function ContactPage() {
               <dd className="mt-3">
                 <a
                   href={business.phoneHref}
-                  className="font-display text-h3 font-700 tracking-[-0.022em] transition-colors hover:text-green"
+                  className="font-display text-h3 font-bold tracking-[-0.022em] transition-colors hover:text-green"
                 >
                   {business.phoneDisplay}
                 </a>
@@ -47,7 +47,7 @@ export default function ContactPage() {
               <dd className="mt-3">
                 <a
                   href={business.emailHref}
-                  className="font-display text-h4 font-600 break-words transition-colors hover:text-green"
+                  className="font-display text-h4 font-semibold break-words transition-colors hover:text-green"
                 >
                   {business.emailDisplay}
                 </a>

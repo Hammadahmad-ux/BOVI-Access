@@ -20,6 +20,12 @@ type LogoProps = {
    * nest inside another link.
    */
   asImageOnly?: boolean;
+  /**
+   * Eager-load and preload. TRUE ONLY for the header logo. The footer logo
+   * is below the fold, and preloading it queues a request ahead of the hero
+   * still, which is the LCP element.
+   */
+  priority?: boolean;
 };
 
 /**
@@ -34,6 +40,7 @@ export function Logo({
   ground = "dark",
   className = "h-9 w-auto",
   asImageOnly = false,
+  priority = false,
 }: LogoProps) {
   const src =
     ground === "dark"
@@ -46,7 +53,8 @@ export function Logo({
       alt={`${business.name} — ${business.slogan}`}
       width={INTRINSIC_WIDTH}
       height={INTRINSIC_HEIGHT}
-      priority
+      priority={priority}
+      loading={priority ? undefined : "lazy"}
       sizes="200px"
       className={cn("object-contain", className)}
     />

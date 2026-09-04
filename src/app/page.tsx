@@ -1,7 +1,16 @@
 import type { Metadata } from "next";
 import { business } from "@/lib/config/site";
 import { buildMetadata } from "@/lib/seo/metadata";
+
 import { Hero } from "@/components/sections/Hero";
+import { Introduction } from "@/components/sections/Introduction";
+import { ServiceIndex } from "@/components/sections/ServiceIndex";
+import { FeaturedProject } from "@/components/sections/FeaturedProject";
+import { WhyBovi } from "@/components/sections/WhyBovi";
+import { AudienceSection } from "@/components/sections/AudienceSection";
+import { ProjectGrid } from "@/components/sections/ProjectGrid";
+import { Coverage } from "@/components/sections/Coverage";
+import { FinalCta } from "@/components/sections/FinalCta";
 
 export const metadata: Metadata = buildMetadata({
   title: business.descriptor,
@@ -13,11 +22,37 @@ export const metadata: Metadata = buildMetadata({
 /**
  * Homepage.
  *
- * PHASE 1: Hero only — enough to prove the foundation renders end to end.
- * PHASE 2 adds, in this locked order: Introduction, Services, Featured
- * Project, Why BOVI, Who We Work With, Projects, Service Area, Final CTA.
- * See CLAUDE.md § Homepage architecture.
+ * Section order is LOCKED — see CLAUDE.md §9. Do not reorder without a
+ * significant, stated UX reason.
+ *
+ * The dark/light rhythm is deliberate and is what gives the page its
+ * structure: the two dark runs (services + featured project, then
+ * audiences) are broken by light sections so neither reads as one long
+ * slab. Grounds are declared here for reference; each section owns its
+ * own background so it stays portable to other pages.
+ *
+ *   Hero            dark
+ *   Introduction    light
+ *   ServiceIndex    dark
+ *   FeaturedProject dark (raised)
+ *   WhyBovi         light
+ *   AudienceSection dark (raised)
+ *   ProjectGrid     light
+ *   Coverage        dark
+ *   FinalCta        dark
  */
 export default function HomePage() {
-  return <Hero />;
+  return (
+    <>
+      <Hero />
+      <Introduction />
+      <ServiceIndex />
+      <FeaturedProject />
+      <WhyBovi />
+      <AudienceSection />
+      <ProjectGrid />
+      <Coverage />
+      <FinalCta />
+    </>
+  );
 }

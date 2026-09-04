@@ -176,21 +176,51 @@ playable, and is suppressed below 768px and for reduced-motion users.
 
 ---
 
-## 9. Phase 1 result
+## 9. Phase results
+
+### Phase 1 (foundation)
 
 ```
-Lint         PASS   (0 errors, 0 warnings)
-Typecheck    PASS   (tsc --noEmit)
-Build        PASS   (21 static pages)
-E2E          PASS   (271 passed, 9 skipped — mobile-only tests on desktop)
-Dev render   PASS   (verified 1440 and 375 in-browser)
+Lint PASS · Typecheck PASS · Build PASS (21 pages) · E2E 271 passed
 ```
 
-Two real defects were found and fixed by these gates during Phase 1:
+Two defects were caught by these gates: the homepage shipped without the
+brand in its `<title>` (Next's `title.template` does not apply to the root
+`page.tsx`), and the stacked logo was clipped by the 64px mobile header.
 
-1. The homepage shipped without the brand in its `<title>` — Next's
-   `title.template` does not apply to the root `page.tsx`, which shares the
-   root layout's segment.
-2. The stacked logo overflowed the 64px mobile header and was clipped —
-   sizing was width-driven on a ~2:1 stacked lockup. Now height-driven, with
-   a regression test.
+### Phase 2 (homepage)
+
+```
+Lint PASS · Typecheck PASS · Build PASS (21 pages)
+E2E 327 passed, 0 failed, 16 skipped (viewport-gated by design)
+Visual review at 1440 / 1280 / 1024 / 768 / 390
+```
+
+A six-dimension review (design, accessibility, responsive, content, code,
+performance) produced 71 findings; each was independently re-verified by an
+adversarial pass that rejected roughly half. **35 were confirmed.** Fixed in
+this phase:
+
+| Severity | Defect | Fix |
+| --- | --- | --- |
+| High | `font-600` / `font-700` / `font-800` are not real Tailwind v4 utilities — they emit **no CSS**, so 7 display headings silently rendered at weight 400 | Replaced with `font-semibold` / `font-bold` / `font-extrabold` |
+| High | Motion server-renders entrance states as inline `opacity:0`, so with JS disabled the page shipped visually blank | Every animated element carries `data-reveal`; a `<noscript>` rule restores it |
+| High | Hero eyebrow and body text failed AA over the photograph (4.08:1) — the measured 8.5:1 assumed flat ink, not a scrimmed image | Hero now uses the `strong` scrim |
+| High | Desktop header broke between 1024–1077px: nav labels split mid-word and the CTA wrapped | Desktop nav moved to `xl`; the full-screen menu now serves up to 1280 |
+| High | Mobile menu's scroll lock outlived the panel if the viewport crossed the breakpoint while open, leaving the page unscrollable | Panel closes on the media-query change; lock lifetime tied to the panel |
+| Medium | Project card link names were polluted by image alt text | Card images are `alt=""`; the link's category label carries the name |
+| Medium | "Photos can be attached to your enquiry" promised a capability the site does not yet have | Replaced until the Phase 4 form accepts uploads |
+| Medium | `Logo` hardcoded `priority`, so the footer logo preloaded ahead of the hero LCP image | `priority` is now opt-in; only the header sets it |
+| Medium | Section eyebrows announced as "01 BOVI Access" | Numeral group is `aria-hidden` |
+| Medium | Footer links were 18px tap targets | `min-h-11` |
+| Medium | `quality={72}` was silently discarded — Next 16 validates against `images.qualities` | Declared in `next.config.ts` |
+| Medium | Introduction left a ~500px void between heading and link | Link moved under the heading |
+
+**Deferred, tracked, not lost** (low severity or Phase 3+ scope): heading-case
+consistency across sections; `AudienceSection` column dead space and baseline
+drift below 1440; footer single-column range at 640–1023; mobile-menu gutter
+at 768–1023; skip-link focus-ring clipping and `<main>` not being focusable;
+hero CTA widths at 390; "EAST" orphaning onto its own line at 390; the unused
+`gsap` / `lenis` dependencies.
+
+

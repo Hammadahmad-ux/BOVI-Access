@@ -27,7 +27,8 @@ export function SectionLabel({
       )}
     >
       {index ? (
-        <>
+        // Decorative: "01 - Services" must be announced as "Services".
+        <span aria-hidden="true" className="contents">
           <span
             className={
               ground === "dark" ? "text-green-bright" : "text-green"
@@ -35,8 +36,8 @@ export function SectionLabel({
           >
             {index}
           </span>
-          <span aria-hidden="true">—</span>
-        </>
+          <span>—</span>
+        </span>
       ) : null}
       <span>{children}</span>
     </p>

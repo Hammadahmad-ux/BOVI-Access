@@ -26,7 +26,7 @@ export function Footer() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="text-body transition-colors hover:text-green-bright"
+                    className="inline-flex min-h-11 items-center text-body transition-colors hover:text-green-bright"
                   >
                     {item.label}
                   </Link>
@@ -42,7 +42,7 @@ export function Footer() {
                 <li key={service.slug}>
                   <Link
                     href={`/services/${service.slug}`}
-                    className="text-body transition-colors hover:text-green-bright"
+                    className="inline-flex min-h-11 items-center text-body transition-colors hover:text-green-bright"
                   >
                     {service.name}
                   </Link>
@@ -59,7 +59,7 @@ export function Footer() {
               {/* QA #18 / #19: phone and email are always real links. */}
               <a
                 href={business.phoneHref}
-                className="font-display text-h4 font-600 transition-colors hover:text-green-bright"
+                className="font-display text-h4 font-semibold transition-colors hover:text-green-bright"
               >
                 {business.phoneDisplay}
               </a>

@@ -1,0 +1,99 @@
+import Image from "next/image";
+import { featuredProject } from "@/lib/content/home";
+import { ArrowLink } from "@/components/ui/ArrowLink";
+import { Container } from "@/components/ui/Container";
+import { Reveal } from "@/components/ui/Reveal";
+import { SectionLabel } from "@/components/ui/SectionLabel";
+import { STAGGER } from "@/lib/animations/motion";
+
+/**
+ * Homepage featured project.
+ *
+ * DESIGNED AROUND AN ABSENCE. No project name, client, location, value or
+ * date has been verified (CONTENT-RULES.md §2), so there is deliberately no
+ * metadata table — a spec list with empty or invented rows is precisely the
+ * failure this section is shaped to avoid. The photograph and the heading
+ * carry the block. The service category is the only fact shown, and it comes
+ * from the photograph's own provenance.
+ *
+ * `View project` resolves to /portfolio, not a project detail page. No detail
+ * route exists because no project has been verified, so /portfolio is the
+ * genuine destination — not a placeholder standing in for a future one.
+ *
+ * Composition: the photograph runs off the RIGHT gutter from lg up, with the
+ * copy vertically centred beside it. It bleeds right rather than left so it
+ * does not echo the sticky image on the service index immediately above.
+ */
+
+/**
+ * Media frame. Left and right margins are set separately rather than via
+ * `mx`, so the lg reset (`lg:ml-0`) cannot collide with the persisting right
+ * bleed — two different properties, no cascade-order dependency.
+ *
+ * Desktop keeps the source's native 3:4 so the full-height rope lines are
+ * never cropped. Below lg the frame is squarer, because a full-bleed 3:4 at
+ * tablet width would stand taller than the viewport.
+ */
+const mediaFrame =
+  "relative aspect-[4/5] overflow-hidden bg-ink " +
+  "-ml-(--spacing-gutter) -mr-(--spacing-gutter) " +
+  "md:-ml-(--spacing-gutter-lg) md:-mr-(--spacing-gutter-lg) " +
+  "lg:col-span-7 lg:ml-0 lg:aspect-[3/4]";
+
+export function FeaturedProject() {
+  const { image } = featuredProject;
+
+  return (
+    <section
+      data-ground="dark"
+      aria-labelledby="featured-project-heading"
+      className="border-t border-hairline-dark bg-ink-raised text-bone"
+    >
+      <Container className="py-20 lg:py-28">
+        <SectionLabel index="03" ground="dark">
+          Featured Project
+        </SectionLabel>
+
+        <div className="mt-6 grid gap-12 border-t border-hairline-dark pt-12 lg:mt-8 lg:grid-cols-12 lg:items-center lg:gap-x-16 lg:pt-16">
+          <Reveal className="lg:col-span-5">
+            {/* Green marker echoes the hero trust rail. green-bright, not
+                green: this is small text on a dark ground. */}
+            <p className="eyebrow flex items-center gap-2.5 text-green-bright">
+              <span
+                aria-hidden="true"
+                className="size-1.5 shrink-0 bg-green-bright"
+              />
+              {featuredProject.serviceCategory}
+            </p>
+
+            {/* Measure capped at 20ch so the heading still breaks
+                editorially in the wide single-column tablet layout.
+                `text-wrap: balance` is already global — see globals.css. */}
+            <h2 id="featured-project-heading" className="mt-6 max-w-[20ch]">
+              {featuredProject.heading}
+            </h2>
+
+            <p className="mt-7 max-w-[46ch] text-body-lg text-mist">
+              {featuredProject.body}
+            </p>
+
+            <ArrowLink href={"/portfolio"} ground="dark" className="mt-8">
+              View projects
+            </ArrowLink>
+          </Reveal>
+
+          <Reveal as="figure" delay={STAGGER} y={28} className={mediaFrame}>
+            <Image
+              src={image.src}
+              alt={image.alt}
+              fill
+              sizes="(min-width: 1024px) 60vw, 100vw"
+              quality={72}
+              className="object-cover"
+            />
+          </Reveal>
+        </div>
+      </Container>
+    </section>
+  );
+}

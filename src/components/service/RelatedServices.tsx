@@ -42,7 +42,7 @@ export function RelatedServices({
                 <span aria-hidden="true" className="eyebrow text-green">
                   {service.index}
                 </span>
-                <span className="font-display text-h4 font-600">
+                <span className="font-display text-h4 font-semibold">
                   {service.name}
                 </span>
               </Link>

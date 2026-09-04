@@ -42,7 +42,7 @@ export default function ServicesPage() {
                   <span aria-hidden="true" className="eyebrow w-8 shrink-0 text-green">
                     {service.index}
                   </span>
-                  <span className="flex-1 font-display text-h3 font-700 tracking-[-0.022em] transition-colors group-hover:text-green">
+                  <span className="flex-1 font-display text-h3 font-bold tracking-[-0.022em] transition-colors group-hover:text-green">
                     {service.name}
                   </span>
                   <ArrowUpRight

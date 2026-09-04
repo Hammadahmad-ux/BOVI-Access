@@ -44,6 +44,9 @@ const nextConfig: NextConfig = {
   images: {
     // AVIF first, WebP second, original as the final fallback.
     formats: ["image/avif", "image/webp"],
+    // Next 16 only honours quality values declared here; anything else
+    // silently falls back to the default. 72 is what the sections request.
+    qualities: [72, 75],
     // Sanity's image CDN — enabled ahead of the Phase 4 CMS integration.
     remotePatterns: [
       { protocol: "https", hostname: "cdn.sanity.io", pathname: "/**" },

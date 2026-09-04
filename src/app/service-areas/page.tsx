@@ -23,7 +23,7 @@ export default function ServiceAreasPage() {
 
       <section className="bg-bone">
         <Container className="py-20 lg:py-28">
-          <p className="font-display text-h1 font-800 uppercase leading-[0.9] tracking-[-0.035em]">
+          <p className="font-display text-h1 font-extrabold uppercase leading-[0.9] tracking-[-0.035em]">
             <span className="block">London &amp;</span>
             <span className="block text-green">The South East</span>
           </p>

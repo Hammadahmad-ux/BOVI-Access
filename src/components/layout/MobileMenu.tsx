@@ -57,11 +57,23 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
 
     document.addEventListener("keydown", onKeyDown);
 
+    // The panel is hidden from `xl` up. If a tablet is rotated (or a window
+    // resized) across that boundary while the menu is open, the panel
+    // disappears but its scroll lock would survive and leave the page
+    // permanently unscrollable. Closing on the media-query change keeps the
+    // lock's lifetime tied to the panel's.
+    const desktop = window.matchMedia("(min-width: 1280px)");
+    const onBreakpointChange = () => {
+      if (desktop.matches) onClose();
+    };
+    desktop.addEventListener("change", onBreakpointChange);
+
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
     return () => {
       document.removeEventListener("keydown", onKeyDown);
+      desktop.removeEventListener("change", onBreakpointChange);
       document.body.style.overflow = previousOverflow;
     };
   }, [open, onClose]);
@@ -76,7 +88,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
       role="dialog"
       aria-modal="true"
       aria-label="Site navigation"
-      className="fixed inset-0 z-50 flex flex-col bg-ink text-bone lg:hidden"
+      className="fixed inset-0 z-50 flex flex-col bg-ink text-bone xl:hidden"
     >
       <div className="flex items-center justify-between border-b border-hairline-dark px-(--spacing-gutter) py-4">
         <Logo ground="dark" className="h-8 w-auto" />
@@ -110,7 +122,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                 <span aria-hidden="true" className="eyebrow text-green-bright">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <span className="font-display text-h3 font-700 tracking-[-0.02em]">
+                <span className="font-display text-h3 font-bold tracking-[-0.02em]">
                   {item.label}
                 </span>
               </Link>
