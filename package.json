@@ -12,7 +12,8 @@
     "test:e2e": "playwright test",
     "assets:brand": "node scripts/generate-brand-assets.mjs",
     "assets:images": "node scripts/generate-web-images.mjs",
-    "cms:migrate": "sanity exec scripts/migrate-to-sanity.ts --with-user-token"
+    "cms:migrate": "sanity exec scripts/migrate-to-sanity.ts --with-user-token",
+    "assets:video": "node scripts/generate-hero-video.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
@@ -43,6 +44,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
+    "ffmpeg-static": "^5.3.0",
     "sharp": "^0.35.4",
     "tailwindcss": "^4",
     "typescript": "^5"

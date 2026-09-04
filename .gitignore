@@ -51,6 +51,11 @@ next-env.d.ts
 # separately — they are deliberately not tracked in git.
 /client-assets/raw/
 /client-assets/jpg/
+# Client-supplied hero footage (13.7MB). The web derivative in
+# public/media is generated from it by `npm run assets:video` and IS
+# committed; the source is not.
+/client-assets/*.MP4
+/client-assets/*.mp4
 # client-assets/selected/ IS tracked — it is the curated shortlist.
 
 # Playwright

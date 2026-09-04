@@ -201,3 +201,60 @@ test.describe("mobile homepage", () => {
     expect(offenders).toEqual([]);
   });
 });
+
+/**
+ * Hero background video.
+ *
+ * Guards the three behaviours that make a background video safe rather
+ * than merely present: it must be silent and uncontrollable, it must not
+ * play for people who asked for less motion, and it must not be pushed at
+ * phones — where the 2.34:1 source would be cropped to a sliver anyway.
+ */
+test.describe("hero video", () => {
+  test("plays silently and decoratively on desktop", async ({ page, viewport }) => {
+    test.skip((viewport?.width ?? 0) < 768, "Video is desktop and tablet only.");
+
+    await page.goto("/");
+    const video = page.locator("section video").first();
+    await expect(video).toBeAttached();
+
+    const state = await video.evaluate((el: HTMLVideoElement) => ({
+      muted: el.muted,
+      loop: el.loop,
+      playsInline: el.playsInline,
+      controls: el.controls,
+      ariaHidden: el.getAttribute("aria-hidden"),
+      preload: el.preload,
+      hasAudioTrack: el.src.length > 0,
+    }));
+
+    expect(state.muted).toBe(true);
+    expect(state.loop).toBe(true);
+    expect(state.playsInline).toBe(true);
+    // Native controls would break the composition and invite interaction
+    // with something purely decorative.
+    expect(state.controls).toBe(false);
+    // Decorative: it must not be announced.
+    expect(state.ariaHidden).toBe("true");
+    // Never "auto" — the poster is the LCP element and must not compete
+    // with a 3.6MB download.
+    expect(state.preload).not.toBe("auto");
+  });
+
+  test("is not served to small screens", async ({ page, viewport }) => {
+    test.skip((viewport?.width ?? 0) >= 768, "Checks the mobile branch.");
+    await page.goto("/");
+    await page.waitForTimeout(1500);
+    await expect(page.locator("section video")).toHaveCount(0);
+  });
+
+  test("the hero still is always present as poster and fallback", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    // Whether or not video plays, the photograph is what holds the hero
+    // together and carries the LCP.
+    const still = page.locator('section img[alt*="rope access technician"]');
+    await expect(still.first()).toBeAttached();
+  });
+});

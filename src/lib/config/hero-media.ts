@@ -9,16 +9,17 @@
  *   1. Sanity  — `heroVideoUrl` on the `homepage` singleton. This is where
  *                Renan changes it, with no developer involved.
  *   2. Env     — NEXT_PUBLIC_BOVI_HERO_VIDEO_URL, for a deployment that
- *                needs a video before the CMS is connected.
- *   3. Neither — the genuine BOVI photograph. A supported production
- *                state, not a degraded one.
+ *                needs a different video before the CMS is connected.
+ *   3. Local   — the client-supplied footage bundled at
+ *                /media/bovi-hero-background.mp4.
+ *   4. None    — the genuine BOVI photograph, if the local file is ever
+ *                removed. A supported state, not a broken one.
  *
  * The same order applies to the poster and fallback images.
  *
- * There is deliberately NO hardcoded video URL anywhere in this codebase.
- * If no URL is configured, `videoUrl` resolves to `null` and the Hero
- * renders the genuine BOVI still image instead — which is a fully
- * supported production state, not a degraded one.
+ * Setting DEFAULT_HERO_VIDEO to null returns the hero to the photograph.
+ * Either of the two layers above it overrides the local file without any
+ * code change, which is the whole point of this module.
  */
 
 export type HeroMedia = {
@@ -53,6 +54,21 @@ const DEFAULT_HERO_STILL = "/images/hero/hero-still.jpg";
 const DEFAULT_HERO_ALT =
   "BOVI Access rope access technician working at height on the facade of a modern brick and metal-clad building";
 
+/**
+ * Client-supplied hero footage, encoded for the web by
+ * `npm run assets:video` from client-assets/BOVI-hero-background.MP4.
+ *
+ * 17.5s, 1280x548, silent, faststart. The source is 2.34:1 — far wider
+ * than a portrait phone viewport — which is a further reason the video is
+ * suppressed on small screens in favour of the still (see HeroMedia).
+ *
+ * PROVENANCE PENDING: supplied and approved by the client as temporary
+ * hero footage. It has not been confirmed as BOVI's own crew — the PPE
+ * and setting differ from the verified BOVI photography. Tracked in
+ * client-assets/ASSET-INVENTORY.md; confirm before launch.
+ */
+const DEFAULT_HERO_VIDEO: string | null = "/media/bovi-hero-background.mp4";
+
 function readEnvVideoUrl(): string | null {
   const raw = process.env.NEXT_PUBLIC_BOVI_HERO_VIDEO_URL?.trim();
   if (!raw) return null;
@@ -67,7 +83,7 @@ export function resolveHeroMedia(overrides: HeroMediaOverrides = {}): HeroMedia 
   const poster = cms?.posterImage?.trim() || DEFAULT_HERO_STILL;
 
   return {
-    videoUrl: cms?.videoUrl?.trim() || readEnvVideoUrl(),
+    videoUrl: cms?.videoUrl?.trim() || readEnvVideoUrl() || DEFAULT_HERO_VIDEO,
     posterImage: poster,
     fallbackImage: cms?.fallbackImage?.trim() || poster,
     imageAlt: cms?.imageAlt?.trim() || DEFAULT_HERO_ALT,

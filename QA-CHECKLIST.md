@@ -379,3 +379,37 @@ never to `info@boviaccess.co.uk`. The `boviaccess.co.uk` domain is
 unverified — its DNS sits with Wix and Resend reported an MX/subdomain
 limitation. See DEPLOYMENT.md §5. **Do not describe enquiries as working
 until a real message arrives in the BOVI inbox.**
+
+### Pre-Phase-5 (hero video + introduction rebalance)
+
+```
+Lint PASS · Typecheck PASS · Build PASS (23 routes)
+E2E 568 passed + 3 new hero-video guards, 0 failed
+Cumulative Layout Shift on the homepage: 0.0000
+```
+
+**Hero video**, measured at runtime rather than assumed:
+
+| Context | Result |
+| --- | --- |
+| Desktop 1440 | Playing, `muted`, `loop`, `playsInline`, no controls, `aria-hidden`, `preload="metadata"`, `object-fit: cover` |
+| Mobile 390 | No video element — the still photograph, as intended |
+| `prefers-reduced-motion: reduce` | No video element |
+| Poster / fallback | Always rendered; still the LCP element |
+
+**Introduction — root cause of the dead space.** The photograph sat in
+columns 7-12 of a second grid row, mirroring the copy above it, which left
+columns 1-6 of that row entirely empty: roughly 890×600px of nothing under
+the heading. It read as a rendering fault because nothing anchored it.
+
+Fixed structurally: the media now spans columns 4-12, its row gap is
+tightened so it sits just under the copy, and the "About BOVI" link moved
+into the media row's left columns so that space holds something. The
+aspect steps 4:5 → 3:2 → 16:10 with the breakpoint, so a tall crop never
+pushes the next section off screen.
+
+Two regressions were introduced and fixed during this work, both caught by
+looking at the render rather than the tests: the link initially shared the
+heading's grid cell and **overlapped it**, and the mobile reading order
+briefly became heading → image → copy. Final DOM order is heading → copy →
+link → image, which is both the correct reading order and the mobile flow.

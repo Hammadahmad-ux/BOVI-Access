@@ -23,21 +23,30 @@ import { introduction } from "@/lib/content/home";
  * uppercase Archivo at the h2 step would compete with the hero directly
  * above it rather than follow it.
  *
- * The photograph is portrait (1200x1600) and is given a tall 4:5 box so it
- * runs down well past the heading. The left column therefore ends higher
- * than the right — that asymmetry is the point.
+ * COMPOSITION, and the reason it changed.
  *
- * The ArrowLink sits directly under the heading rather than being pinned to
- * the bottom of the column. Pinning it aligned the two columns' closing
- * lines, but it left a ~500px gap between the heading and the link, which
- * reads as a rendering fault rather than as negative space. Short column,
- * tall column, clean break.
+ * The photograph used to sit in columns 7-12 of a second row, mirroring
+ * the copy above it. That left columns 1-6 of that row completely empty —
+ * a ~890x600px void under the heading that read as a rendering fault
+ * rather than as negative space, because nothing anchored it.
+ *
+ * The fix is structural, not cosmetic: the media now spans columns 4-12
+ * (three quarters of the width) and its row gap is tightened, so it reads
+ * as an editorial media block anchoring the section instead of a small
+ * attachment hanging off the right column. What remains empty is a
+ * three-column margin, which is a margin — the shape a reader expects.
+ *
+ * The aspect also changes with the breakpoint: 4:5 portrait while the
+ * image is narrow on mobile, 16:10 once it is wide enough that a tall
+ * crop would push the following section off the screen.
  */
 export function Introduction() {
   return (
     <section className="bg-bone text-ink">
       <Container className="py-20 lg:py-28">
-        <div className="grid gap-y-12 border-t border-hairline-light pt-10 lg:grid-cols-12 lg:gap-x-10 lg:gap-y-16 lg:pt-14">
+        {/* gap-y is deliberately tighter than gap-x: the media should sit
+            close under the copy it belongs to, not float away from it. */}
+        <div className="grid gap-y-10 border-t border-hairline-light pt-10 lg:grid-cols-12 lg:gap-x-10 lg:gap-y-12 lg:pt-14">
           <Reveal className="lg:col-span-5 lg:col-start-1 lg:row-start-1">
             <SectionLabel index="01">{introduction.eyebrow}</SectionLabel>
             {/* Measure is looser on mobile: 15ch at the small end of the h2
@@ -46,36 +55,16 @@ export function Introduction() {
             <h2 className="mt-6 max-w-[20ch] lg:mt-8 lg:max-w-[15ch]">
               {introduction.heading}
             </h2>
-            <div className="mt-10 lg:mt-12">
-              <ArrowLink href="/about">About BOVI</ArrowLink>
-            </div>
-          </Reveal>
-
-          <Reveal
-            as="figure"
-            delay={0.1}
-            className="relative aspect-[4/5] w-full overflow-hidden rounded-sm lg:col-span-6 lg:col-start-7 lg:row-start-2"
-          >
-            <Image
-              src={introduction.image.src}
-              alt={introduction.image.alt}
-              fill
-              quality={72}
-              sizes="(min-width: 1440px) 660px, (min-width: 1024px) 46vw, 100vw"
-              className="object-cover object-center"
-            />
           </Reveal>
 
           {/* Lead paragraph in ink, supporting paragraph in moss — one step
               of hierarchy inside the copy block, without a second heading. */}
-          <div className="max-w-[46ch] space-y-5 lg:col-span-6 lg:col-start-7 lg:row-start-1 lg:self-start">
+          <div className="max-w-[46ch] space-y-5 lg:col-span-6 lg:col-start-7 lg:row-start-1 lg:self-end">
             {introduction.body.map((paragraph, index) => (
               <p
                 key={paragraph}
                 className={
-                  index === 0
-                    ? "text-body-lg text-ink"
-                    : "text-body text-moss"
+                  index === 0 ? "text-body-lg text-ink" : "text-body text-moss"
                 }
               >
                 {paragraph}
@@ -83,6 +72,36 @@ export function Introduction() {
             ))}
           </div>
 
+          {/* Its own cell rather than part of the heading group, so the
+              DOM order is heading -> copy -> link -> image. That is the
+              right reading order on mobile: the link should follow the
+              copy it concludes, not interrupt it. On desktop it returns
+              to the foot of the heading column. */}
+          {/* Row 2, beside the media rather than under the heading.
+              Sharing the heading's cell made the two overlap; moving it
+              here both fixes that and gives the otherwise-empty left of
+              the media row something to hold, so the link anchors the
+              composition instead of trailing off the heading. */}
+          <div className="lg:col-span-3 lg:col-start-1 lg:row-start-2 lg:self-start">
+            <ArrowLink href="/about">About BOVI</ArrowLink>
+          </div>
+
+          <Reveal
+            as="figure"
+            delay={0.1}
+            className="relative aspect-[4/5] w-full overflow-hidden rounded-sm sm:aspect-[3/2] lg:col-span-9 lg:col-start-4 lg:row-start-2 lg:aspect-[16/10]"
+          >
+            <Image
+              src={introduction.image.src}
+              alt={introduction.image.alt}
+              fill
+              quality={72}
+              sizes="(min-width: 1024px) 72vw, 100vw"
+              /* The technician sits in the upper-left of the frame; a
+                 centred crop pushes them out at wide aspects. */
+              className="object-cover object-[35%_35%]"
+            />
+          </Reveal>
         </div>
       </Container>
     </section>
