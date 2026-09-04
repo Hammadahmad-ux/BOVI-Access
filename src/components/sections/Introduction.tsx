@@ -23,83 +23,76 @@ import { introduction } from "@/lib/content/home";
  * uppercase Archivo at the h2 step would compete with the hero directly
  * above it rather than follow it.
  *
- * COMPOSITION, and the reason it changed.
+ * COMPOSITION
  *
- * The photograph used to sit in columns 7-12 of a second row, mirroring
- * the copy above it. That left columns 1-6 of that row completely empty —
- * a ~890x600px void under the heading that read as a rendering fault
- * rather than as negative space, because nothing anchored it.
+ * Two columns, and only two: the entire text column on the left, the
+ * photograph on the right.
  *
- * The fix is structural, not cosmetic: the media now spans columns 4-12
- * (three quarters of the width) and its row gap is tightened, so it reads
- * as an editorial media block anchoring the section instead of a small
- * attachment hanging off the right column. What remains empty is a
- * three-column margin, which is a margin — the shape a reader expects.
+ * Earlier versions split heading and copy across the page and dropped the
+ * media into a second row. Every one of those left a large empty cell —
+ * at worst a ~890x600px void under the heading that read as a rendering
+ * fault rather than as negative space. A single text column has no such
+ * gap to leave: the reader moves straight down it, and the photograph
+ * holds the other half of the page.
  *
- * The aspect also changes with the breakpoint: 4:5 portrait while the
- * image is narrow on mobile, 16:10 once it is wide enough that a tall
- * crop would push the following section off the screen.
+ * The figure uses the source's own 3:4 ratio, so the frame is shown
+ * WHOLE. The previous 16:10 box cropped most of the picture away.
  */
 export function Introduction() {
   return (
     <section className="bg-bone text-ink">
       <Container className="py-20 lg:py-28">
-        {/* gap-y is deliberately tighter than gap-x: the media should sit
-            close under the copy it belongs to, not float away from it. */}
-        <div className="grid gap-y-10 border-t border-hairline-light pt-10 lg:grid-cols-12 lg:gap-x-10 lg:gap-y-12 lg:pt-14">
-          <Reveal className="lg:col-span-5 lg:col-start-1 lg:row-start-1">
-            <SectionLabel index="01">{introduction.eyebrow}</SectionLabel>
-            {/* Measure is looser on mobile: 15ch at the small end of the h2
-                clamp leaves a near-empty right margin and risks one-word
-                lines, which DESIGN.md treats as a failure. */}
-            <h2 className="mt-6 max-w-[20ch] lg:mt-8 lg:max-w-[15ch]">
-              {introduction.heading}
-            </h2>
-          </Reveal>
+        <div className="grid gap-y-10 border-t border-hairline-light pt-10 lg:grid-cols-12 lg:gap-x-12 lg:pt-14">
+          {/* LEFT: the whole text column — label, heading, copy, link.
+              Keeping them together means the reader moves down one column
+              instead of tracking across the page, and it leaves no empty
+              cell for the media row to sit beside. */}
+          <div className="lg:col-span-6 lg:col-start-1">
+            <Reveal>
+              <SectionLabel index="01">{introduction.eyebrow}</SectionLabel>
+              <h2 className="mt-6 max-w-[18ch] lg:mt-8">
+                {introduction.heading}
+              </h2>
+            </Reveal>
 
-          {/* Lead paragraph in ink, supporting paragraph in moss — one step
-              of hierarchy inside the copy block, without a second heading. */}
-          <div className="max-w-[46ch] space-y-5 lg:col-span-6 lg:col-start-7 lg:row-start-1 lg:self-end">
-            {introduction.body.map((paragraph, index) => (
-              <p
-                key={paragraph}
-                className={
-                  index === 0 ? "text-body-lg text-ink" : "text-body text-moss"
-                }
-              >
-                {paragraph}
-              </p>
-            ))}
+            {/* Lead paragraph in ink, supporting paragraph in moss — one
+                step of hierarchy inside the copy block, without a second
+                heading. */}
+            <div className="mt-10 max-w-[46ch] space-y-5 lg:mt-12">
+              {introduction.body.map((paragraph, index) => (
+                <p
+                  key={paragraph}
+                  className={
+                    index === 0
+                      ? "text-body-lg text-ink"
+                      : "text-body text-moss"
+                  }
+                >
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+
+            <div className="mt-10 lg:mt-12">
+              <ArrowLink href="/about">About BOVI</ArrowLink>
+            </div>
           </div>
 
-          {/* Its own cell rather than part of the heading group, so the
-              DOM order is heading -> copy -> link -> image. That is the
-              right reading order on mobile: the link should follow the
-              copy it concludes, not interrupt it. On desktop it returns
-              to the foot of the heading column. */}
-          {/* Row 2, beside the media rather than under the heading.
-              Sharing the heading's cell made the two overlap; moving it
-              here both fixes that and gives the otherwise-empty left of
-              the media row something to hold, so the link anchors the
-              composition instead of trailing off the heading. */}
-          <div className="lg:col-span-3 lg:col-start-1 lg:row-start-2 lg:self-start">
-            <ArrowLink href="/about">About BOVI</ArrowLink>
-          </div>
-
+          {/* RIGHT: the photograph, at the source's own 3:4 ratio so the
+              frame is shown whole. Any other aspect would crop it — the
+              earlier 16:10 treatment cut most of the picture away. */}
           <Reveal
             as="figure"
             delay={0.1}
-            className="relative aspect-[4/5] w-full overflow-hidden rounded-sm sm:aspect-[3/2] lg:col-span-9 lg:col-start-4 lg:row-start-2 lg:aspect-[16/10]"
+            className="relative aspect-[3/4] w-full overflow-hidden rounded-sm lg:col-span-5 lg:col-start-8 lg:self-start"
           >
             <Image
               src={introduction.image.src}
               alt={introduction.image.alt}
               fill
               quality={72}
-              sizes="(min-width: 1024px) 72vw, 100vw"
-              /* The technician sits in the upper-left of the frame; a
-                 centred crop pushes them out at wide aspects. */
-              className="object-cover object-[35%_35%]"
+              sizes="(min-width: 1024px) 40vw, 100vw"
+              className="object-cover object-center"
             />
           </Reveal>
         </div>

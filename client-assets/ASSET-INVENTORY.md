@@ -199,9 +199,11 @@ before showing a frame; and it carried an audio track a muted background
 video must never ship.
 
 **The 2.34:1 aspect matters.** It is far wider than a portrait phone
-viewport, so `object-fit: cover` on a mobile hero would crop it to a
-sliver. This is the second reason — alongside bandwidth — that `HeroMedia`
-serves the still photograph below 768px.
+viewport, so `object-fit: cover` shows only the middle band of the frame,
+scaled up. The client asked for video on mobile regardless; it was checked
+on screen and the technicians stay in shot, but it is a 3.6MB download on
+mobile data. `object-position: 50% 45%` keeps that band on the action.
+Reduced-motion users still get the still photograph.
 
 > **PROVENANCE PENDING CONFIRMATION.** The client supplied and approved
 > this footage as temporary hero background. It has **not** been confirmed

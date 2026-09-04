@@ -413,3 +413,36 @@ looking at the render rather than the tests: the link initially shared the
 heading's grid cell and **overlapped it**, and the mobile reading order
 briefly became heading → image → copy. Final DOM order is heading → copy →
 link → image, which is both the correct reading order and the mobile flow.
+
+### Follow-up (client-requested revisions)
+
+```
+Lint PASS · Typecheck PASS · Build PASS · E2E 589 passed, 0 failed
+```
+
+**1. Hero video now plays on mobile too**, at the client's request. The
+earlier 768px gate is gone; `prefers-reduced-motion` is still honoured,
+because that is a stated user preference rather than a breakpoint.
+
+Worth knowing: the source is 2.34:1, so on a portrait phone `cover` shows
+only the middle band of the frame, scaled up. Checked on screen — the
+technicians stay in shot and the text stays legible — but it is a 3.6MB
+download on mobile data that the still previously avoided.
+
+**A real bug surfaced doing this.** On mobile the video was present,
+playing and at `readyState 4`, but rendering at **opacity 0** — invisible
+behind the poster. The fade-in was driven by a `canplay` listener attached
+inside an effect; on a cached or fast-starting file the event fired before
+the listener existed and was simply missed, leaving `videoReady` false
+forever. It could have bitten desktop on a warm cache too. Now the
+element's `readyState` is checked in a ref callback at attach time, with
+`onCanPlay` covering the slower path. A regression test asserts the video
+is *visible and playing*, not merely in the DOM — being in the DOM is what
+the old test checked, and it passed throughout the bug.
+
+**2. Introduction is now two columns, not three cells.** The whole text
+column — label, heading, both paragraphs, link — sits on the left; the
+photograph sits on the right at the source's own **3:4 ratio**, so the
+frame is shown whole. The previous 16:10 box cropped most of the picture
+away. A single text column leaves no empty cell to explain, so the dead
+space is gone by construction rather than by adjustment.

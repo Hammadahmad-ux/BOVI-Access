@@ -205,15 +205,13 @@ test.describe("mobile homepage", () => {
 /**
  * Hero background video.
  *
- * Guards the three behaviours that make a background video safe rather
- * than merely present: it must be silent and uncontrollable, it must not
- * play for people who asked for less motion, and it must not be pushed at
- * phones — where the 2.34:1 source would be cropped to a sliver anyway.
+ * Guards the behaviours that make a background video safe rather than
+ * merely present: silent, uncontrollable, hidden from assistive tech, not
+ * played for people who asked for less motion — and actually VISIBLE,
+ * which is not the same as being in the DOM.
  */
 test.describe("hero video", () => {
-  test("plays silently and decoratively on desktop", async ({ page, viewport }) => {
-    test.skip((viewport?.width ?? 0) < 768, "Video is desktop and tablet only.");
-
+  test("plays silently and decoratively at every width", async ({ page }) => {
     await page.goto("/");
     const video = page.locator("section video").first();
     await expect(video).toBeAttached();
@@ -241,11 +239,25 @@ test.describe("hero video", () => {
     expect(state.preload).not.toBe("auto");
   });
 
-  test("is not served to small screens", async ({ page, viewport }) => {
-    test.skip((viewport?.width ?? 0) >= 768, "Checks the mobile branch.");
+  test("is actually visible, not just present", async ({ page }) => {
     await page.goto("/");
-    await page.waitForTimeout(1500);
-    await expect(page.locator("section video")).toHaveCount(0);
+    const video = page.locator("section video").first();
+    await expect(video).toBeAttached();
+
+    // Regression guard. The fade-in was driven by a `canplay` listener
+    // attached in an effect, so on a cached or fast-starting file the
+    // event fired first, was missed, and the video played at opacity 0
+    // behind the poster — present, playing, and invisible.
+    await expect
+      .poll(
+        () =>
+          video.evaluate((el: HTMLVideoElement) => ({
+            opacity: Number(getComputedStyle(el).opacity),
+            playing: !el.paused,
+          })),
+        { timeout: 15000 },
+      )
+      .toEqual({ opacity: 1, playing: true });
   });
 
   test("the hero still is always present as poster and fallback", async ({
