@@ -109,6 +109,27 @@ test("unknown routes render the custom 404", async ({ page }) => {
   ).toBeVisible();
 });
 
+test.describe("footer build credit", () => {
+  test("credits SadaWorks and links out correctly", async ({ page }) => {
+    await page.goto("/");
+
+    const credit = page
+      .locator("footer")
+      .getByRole("link", { name: /designed by sadaworks/i });
+
+    await expect(credit).toBeVisible();
+    await expect(credit).toHaveAttribute("href", "https://sadaworks.com");
+    // An external target must not hand the opener over to the new document.
+    await expect(credit).toHaveAttribute("target", "_blank");
+    await expect(credit).toHaveAttribute("rel", /noreferrer/);
+
+    // The mark is decorative — the link text already says who built it, so
+    // it must not be announced a second time.
+    const mark = credit.locator("img");
+    await expect(mark).toHaveAttribute("alt", "");
+  });
+});
+
 test.describe("mobile navigation", () => {
   // QA #3: the mobile menu must actually work — open, navigate, close,
   // and be operable from the keyboard.
@@ -158,6 +179,43 @@ test.describe("mobile navigation", () => {
     await expect(dialog).toBeHidden();
     // Background scroll must be released again.
     await expect(page.locator("body")).not.toHaveCSS("overflow", "hidden");
+  });
+
+  test("opens full-screen after the page has been scrolled", async ({
+    page,
+  }) => {
+    await page.goto("/");
+
+    // REGRESSION GUARD.
+    //
+    // Past the scroll threshold the header gains `backdrop-blur-md`, and a
+    // backdrop-filter makes an element a containing block for its `fixed`
+    // descendants. While the panel was nested inside the header, scrolling
+    // down silently re-anchored it to the 80px bar: the button worked, the
+    // dialog opened, and the visitor saw nothing usable. Every existing
+    // menu test opened it at scroll zero, where there is no filter — which
+    // is exactly why this reached production.
+    await page.evaluate(() => window.scrollTo(0, 1500));
+    await expect
+      .poll(() => page.evaluate(() => window.scrollY))
+      .toBeGreaterThan(24);
+
+    await page.getByRole("button", { name: /open navigation/i }).click();
+
+    const dialog = page.getByRole("dialog", { name: /site navigation/i });
+    await expect(dialog).toBeVisible();
+    await expect(
+      dialog.getByRole("link", { name: "About", exact: true }),
+    ).toBeVisible();
+
+    // Visible is not enough — assert it actually fills the viewport rather
+    // than being clipped to the header bar.
+    const viewport = page.viewportSize();
+    const box = await dialog.boundingBox();
+    expect(box).not.toBeNull();
+    expect(Math.round(box!.width)).toBeGreaterThanOrEqual(viewport!.width);
+    expect(Math.round(box!.height)).toBeGreaterThanOrEqual(viewport!.height);
+    expect(Math.round(box!.y)).toBe(0);
   });
 
   test("the logo is not clipped by the header", async ({ page }) => {

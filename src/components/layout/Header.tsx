@@ -74,82 +74,95 @@ export function Header() {
   };
 
   return (
-    <header
-      data-ground="dark"
-      data-scrolled={scrolled}
-      className={cn(
-        "sticky top-0 z-40 border-b text-bone",
-        // Cancels the header's own flow height (bar + 1px hairline) so it
-        // overlays the page. Without the +1px a hairline of page background
-        // would show above the masthead at scroll zero.
-        // (Negative sign lives inside the calc so it stays valid CSS.)
-        "mb-[calc(-5rem_-_1px)] lg:mb-[calc(-5.5rem_-_1px)]",
-        "transition-[background-color,border-color,backdrop-filter] duration-[250ms] ease-out",
-        scrolled
-          ? // 95% rather than flat ink so the blur is actually doing something
-            // as light sections pass underneath. It still reads as solid ink.
-            "border-hairline-dark bg-ink/95 backdrop-blur-md"
-          : "border-transparent bg-transparent",
-      )}
-    >
-      <Container className="flex h-20 items-center justify-between gap-6 lg:h-[5.5rem]">
-        <Logo ground="dark" priority className="h-8 w-auto lg:h-11" />
+    <>
+      <header
+        data-ground="dark"
+        data-scrolled={scrolled}
+        className={cn(
+          "sticky top-0 z-40 border-b text-bone",
+          // Cancels the header's own flow height (bar + 1px hairline) so it
+          // overlays the page. Without the +1px a hairline of page background
+          // would show above the masthead at scroll zero.
+          // (Negative sign lives inside the calc so it stays valid CSS.)
+          "mb-[calc(-5rem_-_1px)] lg:mb-[calc(-5.5rem_-_1px)]",
+          "transition-[background-color,border-color,backdrop-filter] duration-[250ms] ease-out",
+          scrolled
+            ? // 95% rather than flat ink so the blur is actually doing something
+              // as light sections pass underneath. It still reads as solid ink.
+              "border-hairline-dark bg-ink/95 backdrop-blur-md"
+            : "border-transparent bg-transparent",
+        )}
+      >
+        <Container className="flex h-20 items-center justify-between gap-6 lg:h-[5.5rem]">
+          <Logo ground="dark" priority className="h-8 w-auto lg:h-11" />
 
-        <nav aria-label="Primary" className="hidden xl:block">
-          <ul className="flex items-center gap-8">
-            {primaryNav.map((item) => {
-              const active =
-                item.href === "/"
-                  ? pathname === "/"
-                  : pathname.startsWith(item.href);
+          <nav aria-label="Primary" className="hidden xl:block">
+            <ul className="flex items-center gap-8">
+              {primaryNav.map((item) => {
+                const active =
+                  item.href === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(item.href);
 
-              return (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    aria-current={active ? "page" : undefined}
-                    className={cn(
-                      "eyebrow py-2 transition-colors",
-                      active
-                        ? "text-green-bright"
-                        : "text-bone hover:text-green-bright",
-                    )}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      aria-current={active ? "page" : undefined}
+                      className={cn(
+                        "eyebrow py-2 transition-colors",
+                        active
+                          ? "text-green-bright"
+                          : "text-bone hover:text-green-bright",
+                      )}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
 
-        <div className="flex items-center gap-3">
-          <a
-            href={business.phoneHref}
-            className="eyebrow hidden text-mist transition-colors hover:text-bone 2xl:inline-flex"
-          >
-            {business.phoneDisplay}
-          </a>
+          <div className="flex items-center gap-3">
+            <a
+              href={business.phoneHref}
+              className="eyebrow hidden text-mist transition-colors hover:text-bone 2xl:inline-flex"
+            >
+              {business.phoneDisplay}
+            </a>
 
-          <Button href="/contact" className="hidden sm:inline-flex">
-            Request a Quote
-          </Button>
+            <Button href="/contact" className="hidden sm:inline-flex">
+              Request a Quote
+            </Button>
 
-          <button
-            ref={triggerRef}
-            type="button"
-            onClick={() => setMenuOpen(true)}
-            aria-label="Open navigation"
-            aria-expanded={menuOpen}
-            aria-controls="mobile-menu"
-            className="-mr-2 inline-flex size-11 items-center justify-center rounded-sm xl:hidden"
-          >
-            <Menu aria-hidden="true" className="size-6" />
-          </button>
-        </div>
-      </Container>
+            <button
+              ref={triggerRef}
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              aria-label="Open navigation"
+              aria-expanded={menuOpen}
+              aria-controls="mobile-menu"
+              className="-mr-2 inline-flex size-11 items-center justify-center rounded-sm xl:hidden"
+            >
+              <Menu aria-hidden="true" className="size-6" />
+            </button>
+          </div>
+        </Container>
+      </header>
 
+      {/*
+        The panel is rendered as a SIBLING of the header, never inside it.
+
+        Past the scroll threshold the header gains `backdrop-blur-md`. A
+        backdrop-filter makes an element a CONTAINING BLOCK for its `fixed`
+        descendants, so a panel nested here stopped being viewport-fixed the
+        moment the page was scrolled and collapsed into the 80px bar — the
+        menu did open, it was just clipped to the header. At scroll zero
+        there is no filter, so it worked, which is exactly why this only
+        showed up after scrolling down.
+      */}
       <MobileMenu open={menuOpen} onClose={closeMenu} />
-    </header>
+    </>
   );
 }

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { business, footerNav, services } from "@/lib/config/site";
 import { Container } from "@/components/ui/Container";
@@ -71,9 +72,34 @@ export function Footer() {
               </a>
             </div>
 
-            <p className="text-small text-mist">
-              &copy; {year} {business.legalName}. All rights reserved.
-            </p>
+            <div className="flex flex-col gap-2 sm:items-end">
+              <p className="text-small text-mist">
+                &copy; {year} {business.legalName}. All rights reserved.
+              </p>
+
+              {/*
+                Build credit. External, so it opens in a new tab and carries
+                `noreferrer`. The mark is decorative — the link already reads
+                "Designed by SadaWorks" — so it is hidden from assistive tech
+                rather than announced twice.
+              */}
+              <a
+                href="https://sadaworks.com"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="inline-flex min-h-11 items-center gap-2 text-small text-mist transition-colors hover:text-bone sm:min-h-0 sm:py-2"
+              >
+                <Image
+                  src="/brand/sadaworks-mark.svg"
+                  alt=""
+                  aria-hidden="true"
+                  width={16}
+                  height={16}
+                  className="size-4 shrink-0"
+                />
+                Designed by SadaWorks
+              </a>
+            </div>
           </div>
         </div>
       </Container>
