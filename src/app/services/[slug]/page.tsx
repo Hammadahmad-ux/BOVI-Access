@@ -1,25 +1,22 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { business, services, getService } from "@/lib/config/site";
+import { getServicePage, servicePages } from "@/lib/content/services";
 import { buildMetadata } from "@/lib/seo/metadata";
-import { JsonLd, breadcrumbSchema, serviceSchema } from "@/lib/seo/structured-data";
-import { PageHeader } from "@/components/sections/PageHeader";
+import {
+  JsonLd,
+  breadcrumbSchema,
+  serviceSchema,
+} from "@/lib/seo/structured-data";
+import { PageHero } from "@/components/sections/PageHero";
 import { FinalCta } from "@/components/sections/FinalCta";
+import { ServiceBody } from "@/components/service/ServiceBody";
+import { ServiceFaqSection } from "@/components/service/ServiceFaq";
 import { RelatedServices } from "@/components/service/RelatedServices";
 
 type Params = { slug: string };
 
 export function generateStaticParams(): Params[] {
-  return services.map((service) => ({ slug: service.slug }));
-}
-
-/**
- * Description used for metadata and Service schema until Sanity supplies
- * per-service copy. Written from the service name only — no capability,
- * accreditation or coverage claim beyond what the client has confirmed.
- */
-function describeService(name: string): string {
-  return `${name} delivered by rope access on commercial buildings across ${business.coverage}. ${business.name} — ${business.slogan}.`;
+  return servicePages.map((service) => ({ slug: service.slug }));
 }
 
 export async function generateMetadata({
@@ -28,21 +25,28 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const service = getService(slug);
+  const service = getServicePage(slug);
   if (!service) return {};
 
   return buildMetadata({
-    title: service.name,
-    description: describeService(service.name),
+    title: service.heroTitle,
+    description: service.seoDescription,
     path: `/services/${service.slug}`,
+    ogImage: service.heroMedia.src,
   });
 }
 
 /**
- * PHASE 3 builds the full reusable service template on this route:
- * ServiceHero, ServiceOverview, CommonWorks, gallery, FAQ, RelatedServices —
- * all driven by the Sanity `service` document. The URL contract is fixed now
- * so the legacy Wix redirects in next.config.ts stay valid.
+ * The service page — ONE template for all eight services.
+ *
+ * Everything that differs between pages is data in
+ * src/lib/content/services.ts, whose shape mirrors the Sanity `service`
+ * document field for field. Phase 4 swaps the provider; this file and the
+ * section components do not change.
+ *
+ * The URL contract (`slug`) comes from src/lib/config/site.ts rather than
+ * the content module, because it also drives the legacy Wix redirect map
+ * in next.config.ts — see ROUTES.md.
  */
 export default async function ServicePage({
   params,
@@ -50,26 +54,38 @@ export default async function ServicePage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const service = getService(slug);
+  const service = getServicePage(slug);
 
   if (!service) notFound();
 
-  const description = describeService(service.name);
-  const schema = serviceSchema(service.slug, description);
-
   return (
     <>
-      <PageHeader
-        eyebrow={`${service.index} — Service`}
-        title={service.name}
-        intro={`${service.name} delivered by rope access, without scaffolding or powered access, on occupied commercial buildings across ${business.coverage}.`}
+      <PageHero
+        eyebrow={service.eyebrow}
+        title={service.heroTitle}
+        lead={service.intro}
+        media={service.heroMedia}
+        height="tall"
+        crumbs={[
+          { label: "Home", href: "/" },
+          { label: "Services", href: "/services" },
+          { label: service.name },
+        ]}
       />
 
-      <RelatedServices currentSlug={service.slug} />
+      <ServiceBody service={service} />
+
+      {/* Renders nothing until verified FAQ content exists. */}
+      <ServiceFaqSection faq={service.faq} />
+
+      <RelatedServices
+        currentSlug={service.slug}
+        slugs={service.relatedServices}
+      />
 
       <FinalCta />
 
-      {schema ? <JsonLd data={schema} /> : null}
+      <JsonLd data={serviceSchema(service.slug, service.seoDescription) ?? {}} />
       <JsonLd
         data={breadcrumbSchema([
           { name: "Home", path: "/" },

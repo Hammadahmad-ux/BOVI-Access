@@ -72,7 +72,7 @@ export function Coverage() {
           */}
           <h2
             id="coverage-heading"
-            className="mt-8 text-h1 leading-[0.9] tracking-[-0.035em] uppercase lg:mt-10"
+            className="mt-8 text-h2 leading-[0.9] tracking-[-0.035em] uppercase sm:text-h1 lg:mt-10"
           >
             {coverage.lines.map((line, index) => (
               // Hard breaks. This statement never relies on natural wrapping.

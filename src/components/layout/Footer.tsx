@@ -10,7 +10,7 @@ export function Footer() {
   return (
     <footer data-ground="dark" className="bg-ink text-bone">
       <Container className="py-16 lg:py-20">
-        <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr_1fr] lg:gap-16">
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr] lg:gap-16">
           <div>
             <Logo ground="dark" className="h-12 w-auto lg:h-14" />
             <p className="mt-6 max-w-[38ch] text-body text-mist">

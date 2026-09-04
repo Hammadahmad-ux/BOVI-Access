@@ -223,4 +223,36 @@ at 768–1023; skip-link focus-ring clipping and `<main>` not being focusable;
 hero CTA widths at 390; "EAST" orphaning onto its own line at 390; the unused
 `gsap` / `lenis` dependencies.
 
+### Phase 3 (secondary site)
 
+```
+Lint PASS · Typecheck PASS · Build PASS (21 static pages + 8 service pages)
+E2E 524 passed, 0 failed, 22 skipped (viewport-gated)
+Internal link crawl: 15 routes reached, 0 broken links, 0 redirect loops
+Visual review: About, Services, 3 service pages, Projects, Contact @ 1440/768/390
+```
+
+**The five deferred Homepage issues are closed:**
+
+| Issue | Root cause | Fix |
+| --- | --- | --- |
+| Heading case | No stated rule, so sections drifted | UPPERCASE reserved for the three display statements (hero, coverage, closing CTA); everything else sentence case. Rule written into DESIGN.md §2 and the Services heading corrected. |
+| AudienceSection baseline drift | A two-line title pushed its column off the shared baseline | Two lines reserved on the `h3` from `sm` up |
+| Footer single column 640–1023 | Grid went straight from 1 to 3 columns at `lg` | `sm:grid-cols-2` added |
+| Skip-link focus ring clipped | `margin:0` on focus put it flush in the viewport corner | Offset by `0.75rem`; `<main>` also given `tabIndex={-1}` so the skip link actually moves focus |
+| "EAST" orphaning at 390px | 14 characters cannot fit one line at the `h1` step on a 390px screen | Coverage statement steps down to `h2` below `sm` |
+
+Also fixed while in the same code: `Route` without a type parameter silently
+excludes dynamic routes, so `ArrowLink` was rejecting every
+`/services/<slug>` link — it is now generic over the route, as `next/link`
+is, and service slugs stay literal via `satisfies`.
+
+Phase 3 additions to the QA suite: all eight service routes are in the
+sweep (including the two longest titles, which is where responsive
+typography breaks first), plus a bounded internal-link crawl.
+
+**Playwright worker count is capped at 3.** Seven viewport projects at full
+parallelism saturate `next start`'s single-process image optimiser, which
+then returns 5xx and trips the console-error guard — a harness artefact,
+not a site defect. Capping keeps the suite deterministic without weakening
+any assertion.

@@ -13,6 +13,15 @@ const baseURL = `http://127.0.0.1:${PORT}`;
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
+  /**
+   * Capped deliberately. Seven viewport projects sweeping every route at
+   * full parallelism saturate `next start`'s single-process image
+   * optimizer, which then returns 5xx for image requests and trips the
+   * "no console errors" guard — a harness artefact, not a site defect
+   * (production serves optimised images from the edge). Capping workers
+   * keeps the suite deterministic without weakening any assertion.
+   */
+  workers: process.env.CI ? 2 : 3,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? "github" : "list",

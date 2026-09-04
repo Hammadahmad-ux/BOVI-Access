@@ -11,14 +11,14 @@ and a bad migration loses that.
 
 | Route | Purpose | Status |
 | --- | --- | --- |
-| `/` | Homepage | Live — hero only (Phase 2 completes it) |
-| `/about` | About / Safety | Live — minimal (Phase 3 expands) |
-| `/services` | Services overview | Live — stacked list (Phase 2 adds sticky interaction) |
-| `/services/[slug]` | Individual service pages (×8) | Live — minimal (Phase 3 builds full template) |
-| `/portfolio` | Projects index | Live — no entries until verified |
-| `/projects/[slug]` | Project detail | **Not built** — Phase 4, needs Sanity |
-| `/service-areas` | Coverage | Live |
-| `/contact` | Request a Quote | Live — form is Phase 4 |
+| `/` | Homepage | **Complete** |
+| `/about` | About / Safety | **Complete** |
+| `/services` | Services overview | **Complete** — alternating editorial directory |
+| `/services/[slug]` | Individual service pages (×8) | **Complete** — one reusable template, data-driven |
+| `/portfolio` | Projects index | **Complete** — category-led, six verified images, no filters |
+| `/projects/[slug]` | Project detail | **Built, generates 0 pages** — no project has a verified name, so none has a URL. Template waits for Sanity. |
+| `/service-areas` | Coverage | **Complete** |
+| `/contact` | Request a Quote | **Complete front end** — submission wired in Phase 4 |
 | `/privacy` | Privacy Policy | Live — needs legal review |
 | `/sitemap.xml` | Generated | Live |
 | `/robots.txt` | Generated | Live |

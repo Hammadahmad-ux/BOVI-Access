@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { business } from "@/lib/config/site";
 import { buildMetadata } from "@/lib/seo/metadata";
-import { PageHeader } from "@/components/sections/PageHeader";
+import { PageHero } from "@/components/sections/PageHero";
 import { Container } from "@/components/ui/Container";
 
 export const metadata: Metadata = buildMetadata({
@@ -19,7 +19,12 @@ export const metadata: Metadata = buildMetadata({
 export default function PrivacyPage() {
   return (
     <>
-      <PageHeader eyebrow="Legal" title="Privacy policy" />
+      <PageHero
+        eyebrow="Legal"
+        title="Privacy policy"
+        lead="How we handle the information you send us, and nothing more than that."
+        height="compact"
+      />
 
       <section className="bg-bone">
         <Container width="narrow" className="py-20 lg:py-28">

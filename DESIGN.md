@@ -102,6 +102,17 @@ unhandled.
 | `--text-small` | 13 → 14px | |
 | `--text-eyebrow` | 12 → 13px | uppercase, tracking `0.14em`, weight 600 |
 
+### Case — hard rule
+
+**UPPERCASE is reserved for the three display statements**: the hero H1, the
+coverage statement, and the closing CTA. They are short, declarative, and
+carry the page.
+
+**Every other heading is sentence case.** A section heading that reads as a
+sentence ("Specialist works, delivered at height.") set in uppercase competes
+with the hero instead of following it. If a heading has a full stop, it is
+sentence case.
+
 ### Heading wrapping — hard rule
 
 **One letter per line is a design failure.** Headings are set with:

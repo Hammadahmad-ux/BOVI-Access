@@ -26,7 +26,9 @@ export const ACCEPTED_UPLOAD_TYPES = [
   "application/pdf",
 ] as const;
 
-const serviceNames = services.map((service) => service.name);
+// Widened deliberately: this is a runtime membership check against
+// arbitrary submitted input, not a compile-time union.
+const serviceNames: readonly string[] = services.map((service) => service.name);
 
 export const contactMethods = ["Email", "Phone", "Either"] as const;
 

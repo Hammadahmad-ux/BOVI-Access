@@ -58,7 +58,9 @@ export function ServiceIndex() {
             page uses.
           */}
           <div className="mt-6 lg:grid lg:grid-cols-12 lg:items-end lg:gap-x-16">
-            <h2 className="max-w-[15ch] uppercase lg:col-span-7">
+            {/* Sentence case: uppercase is reserved for the three display
+                statements (hero, coverage, closing CTA). See DESIGN.md. */}
+            <h2 className="max-w-[18ch] lg:col-span-7">
               {servicesIntro.heading}
             </h2>
             <p className="mt-6 max-w-[46ch] text-body-lg text-mist lg:col-span-5 lg:mt-0">

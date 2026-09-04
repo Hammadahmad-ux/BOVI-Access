@@ -22,13 +22,9 @@
  * never asserts that the image shows a specific service, client or place.
  */
 
-export type ImageAsset = {
-  src: string;
-  alt: string;
-  /** Intrinsic dimensions of the generated derivative — prevents CLS. */
-  width: number;
-  height: number;
-};
+import type { ImageAsset } from "@/lib/content/types";
+
+export type { ImageAsset };
 
 export type ServiceContent = {
   slug: string;
@@ -81,8 +77,8 @@ export const serviceContent: readonly ServiceContent[] = [
     image: {
       src: "/images/services/commercial-window-cleaning.jpg",
       alt: "Three BOVI Access technicians descending the glazed facade of a high-rise tower on ropes",
-      width: 1000,
-      height: 1333,
+      width: 1400,
+      height: 1867,
     },
   },
   {
@@ -92,8 +88,8 @@ export const serviceContent: readonly ServiceContent[] = [
     image: {
       src: "/images/services/brickwork-repointing.jpg",
       alt: "Rope lines rigged to a brick chimney stack against a clear sky",
-      width: 1000,
-      height: 1333,
+      width: 1400,
+      height: 1867,
     },
   },
   {
@@ -103,8 +99,8 @@ export const serviceContent: readonly ServiceContent[] = [
     image: {
       src: "/images/services/gutter-cleaning.jpg",
       alt: "A roof gutter filled with fallen leaves alongside orange brickwork",
-      width: 1000,
-      height: 1003,
+      width: 1400,
+      height: 1404,
     },
   },
   {
@@ -114,8 +110,8 @@ export const serviceContent: readonly ServiceContent[] = [
     image: {
       src: "/images/services/drainage-external-pipe-repairs.jpg",
       alt: "External soil stacks running the full height of a brick lightwell, seen from below",
-      width: 1000,
-      height: 1335,
+      width: 1400,
+      height: 1869,
     },
   },
   {
@@ -125,8 +121,8 @@ export const serviceContent: readonly ServiceContent[] = [
     image: {
       src: "/images/services/mastic-sealant.jpg",
       alt: "A BOVI Access technician working on rope beside a glazed elevation",
-      width: 1000,
-      height: 1333,
+      width: 1400,
+      height: 1867,
     },
     imageIsGeneric: true,
   },
@@ -137,8 +133,8 @@ export const serviceContent: readonly ServiceContent[] = [
     image: {
       src: "/images/services/pressure-washing-doff-cleaning.jpg",
       alt: "A BOVI Access technician descending a dark, weathered masonry elevation on rope",
-      width: 1000,
-      height: 1333,
+      width: 1400,
+      height: 1867,
     },
     imageIsGeneric: true,
   },
@@ -249,52 +245,11 @@ export const audiences = {
 /* ------------------------------------------------------------------ */
 
 /**
- * Only the service category is shown. Project titles, clients, locations
- * and dates are omitted because none has been verified — see
- * CONTENT-RULES.md §2. Categories come from the photographs' folder
- * provenance in client-assets/ASSET-INVENTORY.md.
- *
- * `span` drives the deliberately uneven editorial grid — see DESIGN.md
- * § Project composition. Three identical cards would be wrong here.
+ * The three shown on the Homepage. The full set — and the reason no
+ * project carries a name, location or date — lives in
+ * src/lib/content/projects.ts.
  */
-export const projects = [
-  {
-    id: "project-01",
-    serviceCategory: "Commercial Window Cleaning",
-    serviceSlug: "commercial-window-cleaning",
-    span: "wide" as const,
-    image: {
-      src: "/images/home/project-01.jpg",
-      alt: "Rope lines rigged down a brick and glass elevation",
-      width: 1600,
-      height: 1200,
-    },
-  },
-  {
-    id: "project-02",
-    serviceCategory: "Brickwork & Repointing",
-    serviceSlug: "brickwork-repointing",
-    span: "tall" as const,
-    image: {
-      src: "/images/home/project-02.jpg",
-      alt: "Rope rigging hardware anchored beside a brick parapet and slate roof",
-      width: 1000,
-      height: 1333,
-    },
-  },
-  {
-    id: "project-03",
-    serviceCategory: "Lightning Protection",
-    serviceSlug: "lightning-protection",
-    span: "tall" as const,
-    image: {
-      src: "/images/home/project-03.jpg",
-      alt: "A BOVI Access technician on rope above a street, with a red London bus passing below",
-      width: 1200,
-      height: 1600,
-    },
-  },
-] as const;
+export { homepageProjects as projects } from "@/lib/content/projects";
 
 /* ------------------------------------------------------------------ */
 /* Coverage                                                            */

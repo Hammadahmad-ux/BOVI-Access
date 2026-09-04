@@ -68,13 +68,15 @@ export default function RootLayout({
           <style>{`[data-reveal]{opacity:1!important;transform:none!important}`}</style>
         </noscript>
 
-        <a href="#main" className="sr-only-focusable z-100 m-3 bg-ink px-4 py-3 text-bone">
+        <a href="#main" className="sr-only-focusable bg-ink px-4 py-3 text-bone">
           Skip to main content
         </a>
 
         <Header />
 
-        <main id="main" className="flex-1">
+        {/* tabIndex -1 so the skip link actually moves focus here rather
+            than leaving it on <body>. */}
+        <main id="main" tabIndex={-1} className="flex-1 outline-none">
           {children}
         </main>
 

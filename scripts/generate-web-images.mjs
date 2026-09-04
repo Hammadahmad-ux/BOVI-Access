@@ -50,39 +50,39 @@ const images = [
   {
     src: `${SRC}/02-Window-Cleaning/ca095fda-7cb7-43c1-bfcb-080939001734.jpg`,
     out: "public/images/services/commercial-window-cleaning.jpg",
-    width: 1000,
+    width: 1400,
     quality: 74,
   },
   {
     src: `${SRC}/03-Brickwork-Repointing/IMG_1722.jpg`,
     out: "public/images/services/brickwork-repointing.jpg",
-    width: 1000,
+    width: 1400,
     quality: 74,
   },
   {
     src: `${SRC}/05-Drainage-Pipes/IMG_6272.jpg`,
     out: "public/images/services/gutter-cleaning.jpg",
-    width: 1000,
+    width: 1400,
     quality: 74,
     trimBars: true,
   },
   {
     src: `${SRC}/05-Drainage-Pipes/IMG_5861.jpg`,
     out: "public/images/services/drainage-external-pipe-repairs.jpg",
-    width: 1000,
+    width: 1400,
     quality: 74,
     trimBars: true,
   },
   {
     src: `${SRC}/07-General-Rope-Access/IMG_4093.jpg`,
     out: "public/images/services/mastic-sealant.jpg",
-    width: 1000,
+    width: 1400,
     quality: 74,
   },
   {
     src: `${SRC}/07-General-Rope-Access/IMG_9398.jpg`,
     out: "public/images/services/pressure-washing-doff-cleaning.jpg",
-    width: 1000,
+    width: 1400,
     quality: 74,
   },
 
@@ -115,6 +115,66 @@ const images = [
     out: "public/images/home/project-03.jpg",
     width: 1200,
     quality: 76,
+  },
+  /* ---------------- Services 07-08 (secondary) ---------------- */
+  {
+    src: `${SRC}/07-General-Rope-Access/IMG_9419.jpg`,
+    out: "public/images/services/roof-roofline-repairs.jpg",
+    width: 1400,
+    quality: 74,
+  },
+  {
+    src: `${SRC}/04-Lightning-Protection/cf652e84-b883-4a7f-9cec-8e66c7e05797.jpg`,
+    out: "public/images/services/lightning-protection.jpg",
+    width: 1400,
+    quality: 74,
+  },
+
+  /* ---------------- About ---------------- */
+  {
+    src: `${SRC}/02-Window-Cleaning/1886bb55-7623-4559-8a65-b2d8df3495dd.jpg`,
+    out: "public/images/about/hero.jpg",
+    width: 1600,
+    quality: 76,
+  },
+  {
+    src: `${SRC}/02-Window-Cleaning/5df96089-7359-4355-9b53-aa3473345e8b.jpg`,
+    out: "public/images/about/elevation.jpg",
+    width: 1400,
+    quality: 76,
+  },
+  {
+    src: `${SRC}/07-General-Rope-Access/IMG_2983.jpg`,
+    out: "public/images/about/safety.jpg",
+    width: 1200,
+    quality: 74,
+  },
+
+  /* ---------------- Portfolio ---------------- */
+  {
+    src: `${SRC}/02-Window-Cleaning/IMG_3384.jpg`,
+    out: "public/images/portfolio/hero.jpg",
+    width: 1600,
+    quality: 74,
+  },
+  {
+    src: `${SRC}/06-Window-Cleaning-Liverpool/IMG_4063.jpg`,
+    out: "public/images/home/project-04.jpg",
+    width: 1200,
+    quality: 74,
+  },
+  {
+    src: `${SRC}/05-Drainage-Pipes/IMG_5865.jpg`,
+    out: "public/images/home/project-05.jpg",
+    width: 1200,
+    quality: 74,
+    trimBars: true,
+  },
+  {
+    src: `${SRC}/04-Lightning-Protection/4c19f2c3-9952-47b8-b19b-11cd8563a264.jpg`,
+    out: "public/images/home/project-06.jpg",
+    width: 1200,
+    quality: 74,
   },
 ];
 

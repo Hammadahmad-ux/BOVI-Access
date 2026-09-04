@@ -13,6 +13,15 @@ const ROUTES = [
   "/about",
   "/services",
   "/services/commercial-window-cleaning",
+  "/services/brickwork-repointing",
+  "/services/gutter-cleaning",
+  // The two longest service titles — they are where responsive
+  // typography breaks first, so they are always in the sweep.
+  "/services/drainage-external-pipe-repairs",
+  "/services/pressure-washing-doff-cleaning",
+  "/services/mastic-sealant",
+  "/services/roof-roofline-repairs",
+  "/services/lightning-protection",
   "/portfolio",
   "/service-areas",
   "/contact",
@@ -161,5 +170,65 @@ test.describe("mobile navigation", () => {
     expect(headerBox).not.toBeNull();
     expect(logoBox).not.toBeNull();
     expect(logoBox!.height).toBeLessThanOrEqual(headerBox!.height);
+  });
+});
+
+/**
+ * Bounded internal-link crawl.
+ *
+ * Walks every internal href reachable from the site's own pages and
+ * asserts each resolves. This is the check that catches a link no
+ * individual page test thought to look at — a footer entry, a related
+ * service, a breadcrumb.
+ *
+ * Runs on one viewport only: link validity is not width-dependent, and
+ * running it seven times would just be slow.
+ */
+test.describe("internal link crawl", () => {
+  test.skip(
+    ({ viewport }) => viewport?.width !== 1440,
+    "Link validity does not vary by viewport.",
+  );
+
+  test("every internal link resolves without 404, 500 or a redirect loop", async ({
+    page,
+    request,
+  }) => {
+    const seenPages = new Set<string>();
+    const hrefs = new Set<string>();
+    const queue = [...ROUTES];
+
+    while (queue.length > 0) {
+      const route = queue.shift() as string;
+      if (seenPages.has(route)) continue;
+      seenPages.add(route);
+
+      await page.goto(route);
+      const found = await page.locator("a[href]").evaluateAll((links) =>
+        links.map((link) => link.getAttribute("href") ?? ""),
+      );
+
+      for (const href of found) {
+        // tel: and mailto: are not HTTP and must not be fetched.
+        if (!href.startsWith("/")) continue;
+        const clean = href.split("#")[0];
+        if (!clean) continue;
+        hrefs.add(clean);
+        if (!seenPages.has(clean) && !queue.includes(clean)) queue.push(clean);
+      }
+    }
+
+    const failures: string[] = [];
+    for (const href of hrefs) {
+      const response = await request.get(href, { maxRedirects: 5 });
+      if (response.status() >= 400) {
+        failures.push(`${response.status()} ${href}`);
+      }
+    }
+
+    // Sanity check that the crawl actually walked the site: it must have
+    // reached at least every route the sweep already knows about.
+    expect(hrefs.size).toBeGreaterThanOrEqual(ROUTES.length);
+    expect(failures).toEqual([]);
   });
 });

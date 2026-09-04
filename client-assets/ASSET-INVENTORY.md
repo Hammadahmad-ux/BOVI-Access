@@ -159,6 +159,28 @@ up cropped both to a wide desktop band and a tall mobile frame.
 cleaning, brickwork, lightning protection — so the section reads as breadth of
 capability rather than one repeated job.
 
+### Phase 3 additions
+
+| Slot | Source file | Output |
+| --- | --- | --- |
+| Service 07 — Roof & Roofline Repairs | `07-General-Rope-Access/IMG_9419.jpg` | `services/roof-roofline-repairs.jpg` |
+| Service 08 — Lightning Protection | `04-Lightning-Protection/cf652e84-…jpg` | `services/lightning-protection.jpg` |
+| About — hero | `02-Window-Cleaning/1886bb55-…jpg` | `about/hero.jpg` |
+| About — full-bleed elevation | `02-Window-Cleaning/5df96089-…jpg` | `about/elevation.jpg` |
+| About — safety | `07-General-Rope-Access/IMG_2983.jpg` | `about/safety.jpg` |
+| Portfolio — hero | `02-Window-Cleaning/IMG_3384.jpg` | `portfolio/hero.jpg` |
+| Project 04 | `06-Window-Cleaning-Liverpool/IMG_4063.jpg` | `home/project-04.jpg` |
+| Project 05 | `05-Drainage-Pipes/IMG_5865.jpg` (trimmed) | `home/project-05.jpg` |
+| Project 06 | `04-Lightning-Protection/4c19f2c3-…jpg` | `home/project-06.jpg` |
+
+The six primary service images were regenerated at **1400px** (was 1000px)
+because they now serve the service-page hero as well as the Homepage stage.
+
+`IMG_6361` was rejected for the roof slot: it is a phone screenshot whose
+letterbox bars are not pure black, so `trimBars` left it at a 0.45 aspect.
+`IMG_9419` is a genuine photograph and was used instead. **Check the aspect
+ratio (0.75 = photo, ~0.46 = screenshot) before adopting any new source.**
+
 ### Letterbox trimming
 
 `IMG_6272` and `IMG_5861` are iPhone **screenshots** (1170×2532) with black

@@ -3,8 +3,17 @@ import type { Route } from "next";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
-type ArrowLinkProps = {
-  href: Route;
+type ArrowLinkProps<T extends string> = {
+  /**
+   * Generic over the route, exactly as next/link is.
+   *
+   * A bare `Route` resolves to `RouteImpl<string>`, whose dynamic-route
+   * branch collapses to `never` — so a plain `href: Route` silently
+   * rejects every dynamic path like `/services/<slug>`. Taking the route
+   * as a type parameter lets the literal flow through and the dynamic
+   * branch resolve.
+   */
+  href: Route<T>;
   children: React.ReactNode;
   className?: string;
   /** `dark` for light text on a dark ground. */
@@ -17,12 +26,12 @@ type ArrowLinkProps = {
  *
  * The arrow is aria-hidden; the accessible name is the label alone.
  */
-export function ArrowLink({
+export function ArrowLink<T extends string>({
   href,
   children,
   className,
   ground = "light",
-}: ArrowLinkProps) {
+}: ArrowLinkProps<T>) {
   return (
     <Link
       href={href}

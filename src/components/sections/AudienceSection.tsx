@@ -45,7 +45,12 @@ export function AudienceSection() {
               </span>
 
               <div className="mt-auto pt-10">
-                <h3 className="text-h4 leading-tight">{item.title}</h3>
+                {/* Two lines are reserved so a title that wraps ("Commercial
+                    Property Owners") keeps the same baseline as the ones
+                    that do not. Without this the four columns drift. */}
+                <h3 className="text-h4 leading-tight sm:min-h-[2lh]">
+                  {item.title}
+                </h3>
                 <p className="mt-4 text-body text-mist">{item.body}</p>
               </div>
             </Reveal>

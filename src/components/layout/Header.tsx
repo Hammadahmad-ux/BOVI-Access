@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils/cn";
  * than above it, so the header cancels its own flow height with a negative
  * bottom margin instead of switching to `fixed` — it stays `sticky`, keyboard
  * focus order is unchanged, and no ancestor needs to know about it. Every
- * route opens on a dark ground (Hero, or PageHeader's `bg-ink` masthead), so
+ * route opens on a dark ground (Hero, or PageHero's `bg-ink` masthead), so
  * bone-on-dark stays legible everywhere at scroll zero.
  */
 

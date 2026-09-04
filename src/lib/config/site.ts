@@ -105,7 +105,7 @@ export const footerNav: readonly NavItem[] = [
  * Legacy URLs are the two confirmed live Wix paths. Others are `null` until
  * the full legacy URL audit is completed (see ROUTES.md).
  */
-export const services: readonly ServiceSummary[] = [
+export const services = [
   {
     slug: "commercial-window-cleaning",
     name: "Commercial Window Cleaning",
@@ -162,7 +162,18 @@ export const services: readonly ServiceSummary[] = [
     primary: false,
     legacyUrl: null,
   },
-] as const;
+] as const satisfies readonly ServiceSummary[];
+
+/**
+ * Literal union of every service slug.
+ *
+ * `satisfies` above keeps the slugs as literals instead of widening them
+ * to `string`. That matters because typedRoutes resolves
+ * `/services/${slug}` against the real route table — with a widened
+ * `string` the template literal stops being a valid Route and every
+ * service link becomes a type error.
+ */
+export type ServiceSlug = (typeof services)[number]["slug"];
 
 export const primaryServices = services.filter((s) => s.primary);
 
