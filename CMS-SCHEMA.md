@@ -4,10 +4,26 @@ Schema design in `sanity/schemaTypes/index.ts`.
 
 ---
 
-## 1. Status and the authentication blocker
+## 1. Status
 
-**No Sanity project exists for BOVI yet.** This is a genuine blocker and
-cannot be resolved from this repository.
+**The integration is code-complete and mounted. It is not connected**,
+because no Sanity project exists yet — creating one requires the client's
+own account, which cannot be done from this repository.
+
+| Piece | State |
+| --- | --- |
+| Schemas | Registered in `sanity.config.ts` |
+| Studio | Mounted at `/studio`, with client-facing structure and singletons |
+| Content provider | `src/lib/content/provider.ts` — every page reads through it |
+| Image pipeline | `src/lib/sanity/image.ts`, hotspot-aware, CLS-safe |
+| Publish → live | `/api/revalidate`, signature-verified |
+| Seed script | `npm run cms:migrate`, idempotent |
+
+Until a project ID is set, `/studio` shows setup instructions and every
+page serves its verified local content. See DEPLOYMENT.md §2.
+
+**GROQ queries are written but unverified** — there is no dataset to run
+them against. Re-check them during the first CMS smoke test.
 
 ### What is needed from the client
 

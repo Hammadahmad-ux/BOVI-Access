@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { business } from "@/lib/config/site";
-import { servicePages } from "@/lib/content/services";
+import { getServices } from "@/lib/content/provider";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { PageHero } from "@/components/sections/PageHero";
 import { FinalCta } from "@/components/sections/FinalCta";
@@ -32,7 +32,10 @@ export const metadata: Metadata = buildMetadata({
  * services get a tighter pair below — present and properly linked, but not
  * competing with the six.
  */
-export default function ServicesPage() {
+export const revalidate = 3600;
+
+export default async function ServicesPage() {
+  const servicePages = await getServices();
   const primary = servicePages.filter((s) => s.primary);
   const secondary = servicePages.filter((s) => !s.primary);
 

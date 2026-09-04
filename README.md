@@ -32,6 +32,7 @@ supplied.
 | `npm run test:e2e` | Playwright QA across 7 viewports (build first) |
 | `npm run assets:brand` | Regenerate logos and favicons |
 | `npm run assets:images` | Regenerate web image derivatives |
+| `npm run cms:migrate` | One-off Sanity seed (needs a write token) |
 
 ## Documentation
 
@@ -40,6 +41,8 @@ Read these before making significant changes.
 | File | What it covers |
 | --- | --- |
 | **`CLAUDE.md`** | Project constitution — start here |
+| **`CMS-HANDOVER.md`** | **For the client** — how to edit the website |
+| `DEPLOYMENT.md` | Hosting, environment variables, going live |
 | `DESIGN.md` | Colour, type, layout, motion, anti-patterns |
 | `CONTENT-RULES.md` | What may and may not be written or claimed |
 | `ROUTES.md` | URL contract and legacy Wix migration |

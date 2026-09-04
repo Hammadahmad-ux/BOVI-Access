@@ -55,6 +55,30 @@ export function breadcrumbSchema(trail: { name: string; path: string }[]) {
   };
 }
 
+/**
+ * FAQPage schema.
+ *
+ * Returns null for an empty list — emitting FAQPage with no questions, or
+ * with questions invented to fill it, is schema spam and would put
+ * fabricated claims into Google. No BOVI service has verified FAQ content
+ * yet, so today this always returns null. See CONTENT-RULES.md §8.
+ */
+export function faqSchema(
+  faq: readonly { question: string; answer: string }[],
+) {
+  if (faq.length === 0) return null;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  };
+}
+
 /** Renders a JSON-LD script tag. */
 export function JsonLd({ data }: { data: object }) {
   return (

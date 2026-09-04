@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { business } from "@/lib/config/site";
-import { projects } from "@/lib/content/projects";
+import { getProjects } from "@/lib/content/provider";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { PageHero } from "@/components/sections/PageHero";
 import { FinalCta } from "@/components/sections/FinalCta";
@@ -34,7 +34,10 @@ export const metadata: Metadata = buildMetadata({
  * to need them; with six verified images they would be theatre. They
  * arrive with the Sanity project records in Phase 4.
  */
-export default function PortfolioPage() {
+export const revalidate = 3600;
+
+export default async function PortfolioPage() {
+  const projects = await getProjects();
   const [featured, ...rest] = projects;
 
   return (

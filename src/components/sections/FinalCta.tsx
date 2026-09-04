@@ -68,10 +68,9 @@ export function FinalCta() {
             </div>
 
             <p className="mt-6 text-small text-mist">
-              {/* Reinstate "Photos can be attached to your enquiry." once
-                  the Phase 4 quote form actually accepts uploads — until
-                  then it promises something the site cannot do. */}
-              Call or email and we will come back to you.
+              {/* Restored in Phase 4: the enquiry form now genuinely
+                  accepts attachments and forwards them with the email. */}
+              Photos can be attached to your enquiry.
             </p>
           </div>
         </Reveal>

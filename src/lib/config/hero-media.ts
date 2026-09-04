@@ -5,14 +5,15 @@
  * TO SWAP THE HERO VIDEO, CHANGE ONE VALUE — NOTHING ELSE.
  * ============================================================
  *
- * Phase 1-3 (now):
- *   Set NEXT_PUBLIC_BOVI_HERO_VIDEO_URL in .env.local / Vercel.
+ * RESOLUTION ORDER (first match wins):
+ *   1. Sanity  — `heroVideoUrl` on the `homepage` singleton. This is where
+ *                Renan changes it, with no developer involved.
+ *   2. Env     — NEXT_PUBLIC_BOVI_HERO_VIDEO_URL, for a deployment that
+ *                needs a video before the CMS is connected.
+ *   3. Neither — the genuine BOVI photograph. A supported production
+ *                state, not a degraded one.
  *
- * Phase 4 (once Sanity is live):
- *   Renan sets `heroVideoUrl` on the `homepage` singleton in Sanity Studio.
- *   Pass that value into `resolveHeroMedia({ cms })` from the Homepage's
- *   server component. It takes precedence over the environment variable.
- *   No component, style or layout change is required for either path.
+ * The same order applies to the poster and fallback images.
  *
  * There is deliberately NO hardcoded video URL anywhere in this codebase.
  * If no URL is configured, `videoUrl` resolves to `null` and the Hero

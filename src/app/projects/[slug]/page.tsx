@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getProjectBySlug, publishedProjects } from "@/lib/content/projects";
+import { getProject, getPublishedProjects } from "@/lib/content/provider";
 import { getServicePage } from "@/lib/content/services";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { JsonLd, breadcrumbSchema } from "@/lib/seo/structured-data";
@@ -34,10 +34,11 @@ type Params = { slug: string };
  * which renders the custom 404 — the honest outcome.
  * ---------------------------------------------------------------------
  */
-export function generateStaticParams(): Params[] {
-  return publishedProjects
-    .filter((project) => project.slug)
-    .map((project) => ({ slug: project.slug as string }));
+export const revalidate = 3600;
+
+export async function generateStaticParams(): Promise<Params[]> {
+  const published = await getPublishedProjects();
+  return published.map((project) => ({ slug: project.slug as string }));
 }
 
 export async function generateMetadata({
@@ -46,7 +47,7 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getProject(slug);
   if (!project) return {};
 
   return buildMetadata({
@@ -65,7 +66,7 @@ export default async function ProjectPage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getProject(slug);
 
   if (!project) notFound();
 

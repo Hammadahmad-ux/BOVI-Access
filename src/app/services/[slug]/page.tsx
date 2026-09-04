@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getServicePage, servicePages } from "@/lib/content/services";
+import { servicePages } from "@/lib/content/services";
+import { getService } from "@/lib/content/provider";
 import { buildMetadata } from "@/lib/seo/metadata";
 import {
   JsonLd,
   breadcrumbSchema,
+  faqSchema,
   serviceSchema,
 } from "@/lib/seo/structured-data";
 import { PageHero } from "@/components/sections/PageHero";
@@ -15,9 +17,18 @@ import { RelatedServices } from "@/components/service/RelatedServices";
 
 type Params = { slug: string };
 
+/**
+ * Params come from the LOCAL service index, not the CMS. Service slugs
+ * are a URL contract that drives the legacy Wix redirect map, so a
+ * content edit must never be able to add or remove a public route.
+ * Sanity supplies the content for these slugs. See ROUTES.md §2.
+ */
 export function generateStaticParams(): Params[] {
   return servicePages.map((service) => ({ slug: service.slug }));
 }
+
+/** Rebuild service pages hourly, or on demand via the Sanity webhook. */
+export const revalidate = 3600;
 
 export async function generateMetadata({
   params,
@@ -25,7 +36,7 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const service = getServicePage(slug);
+  const service = await getService(slug);
   if (!service) return {};
 
   return buildMetadata({
@@ -54,9 +65,11 @@ export default async function ServicePage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const service = getServicePage(slug);
+  const service = await getService(slug);
 
   if (!service) notFound();
+
+  const faq = faqSchema(service.faq);
 
   return (
     <>
@@ -86,6 +99,8 @@ export default async function ServicePage({
       <FinalCta />
 
       <JsonLd data={serviceSchema(service.slug, service.seoDescription) ?? {}} />
+      {/* Emitted only when the service has verified FAQ content. */}
+      {faq ? <JsonLd data={faq} /> : null}
       <JsonLd
         data={breadcrumbSchema([
           { name: "Home", path: "/" },

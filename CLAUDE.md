@@ -76,10 +76,10 @@ these three. Do not rephrase them into something stronger.
 | Framework | Next.js 16 (App Router, Turbopack) |
 | Language | TypeScript, `strict: true` |
 | Styling | Tailwind CSS v4 (`@theme` tokens in `globals.css`) |
-| CMS | Sanity (designed; not yet mounted — see §7) |
+| CMS | Sanity — Studio mounted at `/studio`, awaiting the client's project ID |
 | Motion | Motion; GSAP selectively; Lenis lightly |
 | Forms | React Hook Form + Zod |
-| Email | Resend (Phase 4) |
+| Email | Resend — `/api/quote`, awaiting credentials |
 | QA | Playwright |
 | Deploy | Vercel |
 
@@ -118,8 +118,10 @@ Never ship a visible placeholder: no Lorem ipsum, "Coming soon", "[TBC]",
 "Project title", fake stats or fake reviews.
 
 If a fact is unknown, **omit the element**. An honest gap beats an invented
-detail. `/portfolio` currently has no project entries for exactly this
-reason — no project has been verified.
+detail. `/portfolio` shows photographs grouped by service and no project
+names, locations or dates, for exactly this reason — none has been
+verified. `/projects/[slug]` is built and generates zero pages until real
+projects exist.
 
 ---
 
@@ -152,26 +154,20 @@ The client's raw package is also backed up outside the repo at
 
 ---
 
-## 7. Sanity — current status
+## 7. Content architecture
 
-**No Sanity project exists yet.** Creating one requires the client's own
-Sanity account. This is a genuine blocker, documented in `CMS-SCHEMA.md`.
+Every page reads content through `src/lib/content/provider.ts`. It is the
+**only** module that knows whether Sanity is connected: with a project ID
+it returns CMS content, without one it returns the verified local content,
+and both paths return the same types. No page or component branches on it.
 
-What exists now:
+CMS values are merged **over** the local baseline field by field, so a
+half-filled Sanity document can never blank a page.
 
-- Full schema design in `sanity/schemaTypes/index.ts` (plain schema objects,
-  no `sanity` dependency).
-- Read client in `src/lib/sanity/client.ts` (inert until configured).
-- Image URL builder in `src/lib/sanity/image.ts`.
-
-What Phase 4 does: install `sanity` + `@sanity/vision`, wrap the exports in
-`defineType`, mount `/studio`, populate content.
-
-`sanityConfig.isConfigured` is `false` until a project ID is supplied. **Do
-not import the Sanity client into a rendering path before then**, and do
-not invent a project ID.
-
----
+**Service slugs are NOT CMS-controlled.** They live in
+`src/lib/config/site.ts` because they drive the legacy Wix redirect map —
+a content edit must not be able to change a public URL. Sanity supplies
+the content for a known slug; it does not decide which slugs exist.
 
 ## 8. Hero media architecture
 

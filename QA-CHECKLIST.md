@@ -256,3 +256,44 @@ parallelism saturate `next start`'s single-process image optimiser, which
 then returns 5xx and trips the console-error guard — a harness artefact,
 not a site defect. Capping keeps the suite deterministic without weakening
 any assertion.
+
+### Phase 4 (CMS, forms, SEO)
+
+```
+Lint PASS · Typecheck PASS · Build PASS (23 routes)
+E2E 567 passed, 0 failed, 70 skipped (viewport-gated)
+Link crawl: 0 broken links, 0 redirect loops
+npm audit: 9 transitive, all via the Sanity CLI toolchain — see below
+```
+
+**Items 12 and 13 are now genuinely functional.** The form posts to
+`/api/quote`, which validates server-side against the same Zod schema,
+checks attachments, and delivers via Resend. The success state appears
+**only** when the provider confirms delivery. With no credentials the
+endpoint returns 503 and the form says the enquiry was not sent and gives
+the phone number — verified by test and by a live request against the
+built server.
+
+| Check | How |
+| --- | --- |
+| Server rejects invalid payloads | Automated — 422 with per-field errors |
+| Honeypot | Automated — 200, nothing sent |
+| Refuses honestly without credentials | Automated + verified live (503) |
+| File type / size / count | Server-enforced; `accept` excludes executables |
+| Robots excludes `/studio` | Automated |
+| Sitemap lists public pages only | Automated |
+| Studio is noindex | Automated |
+| Canonical + Open Graph on every page | Automated |
+| Organization schema has no fabricated fields | Automated — asserts no address, rating, review or award |
+
+**Not verified, and cannot be until credentials exist:** actual email
+delivery, attachment arrival, Sanity reads, Studio editing, publish
+webhook. Mocking the provider and calling it verified would be worse than
+saying this plainly.
+
+**npm audit — 9 advisories, 0 in the request path.** All are transitive
+through `sanity` → `@sanity/cli` → `@sanity/runtime-cli` (`adm-zip`,
+`js-yaml`, `uuid`, `@vercel/frameworks`). That chain is build/dev
+tooling; none of it executes when a visitor loads a page.
+`npm audit fix --force` proposes sanity@5.14.1 — a **downgrade** from
+5.31.2 — so it was not applied. Re-check when Sanity ships a CLI update.

@@ -1,12 +1,15 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, CheckCircle2, Paperclip, X } from "lucide-react";
 import {
   quoteSchema,
   contactMethods,
+  ACCEPTED_UPLOAD_TYPES,
+  MAX_UPLOAD_BYTES,
+  MAX_UPLOAD_FILES,
   type QuoteInput,
 } from "@/lib/forms/quote-schema";
 import { services } from "@/lib/config/site";
@@ -16,37 +19,36 @@ import { cn } from "@/lib/utils/cn";
 /**
  * The quote enquiry form.
  *
- * ---------------------------------------------------------------------
- * PHASE 3 SCOPE: the complete, accessible, validating front end.
- * PHASE 4 wires the server: /api/quote, Resend delivery, rate limiting
- * and file upload.
+ * Submits to /api/quote, which validates against the SAME Zod schema
+ * used here and delivers through Resend.
  *
- * SUBMISSION IS DELIBERATELY NOT WIRED, AND THE FORM SAYS SO.
+ * The success state is shown ONLY when the server confirms the provider
+ * accepted the message. If email is not configured, or the provider
+ * fails, the route returns an error and this form says so and points at
+ * the phone number — it never reports a delivery that did not happen.
  *
- * Showing a success message for a submission that goes nowhere would be
- * worse than having no form: a property manager would believe BOVI had
- * their enquiry. So the submit handler sets an explicit "not yet
- * connected" notice that points at the phone number and email address,
- * both of which work today. There is no fake success state anywhere in
- * this component.
- * ---------------------------------------------------------------------
- *
- * Validation runs against src/lib/forms/quote-schema.ts — the same schema
- * the Phase 4 route handler will parse against, so the client can never
- * accept something the server would reject.
+ * Attachments are posted as multipart form data and forwarded straight to
+ * the email as attachments. Nothing is stored: the enquiry files live in
+ * BOVI's inbox and nowhere else.
  */
 
-type Status = "idle" | "submitting" | "unavailable";
+type Status = "idle" | "submitting" | "success" | "error";
 
 const OTHER_SERVICE = "Other / not sure";
 
 export function QuoteForm() {
   const [status, setStatus] = useState<Status>("idle");
+  const [serverMessage, setServerMessage] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
+  const [fileError, setFileError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const statusRef = useRef<HTMLDivElement>(null);
   const formId = useId();
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitted },
   } = useForm<QuoteInput>({
     resolver: zodResolver(quoteSchema),
@@ -54,10 +56,93 @@ export function QuoteForm() {
     defaultValues: { preferredContact: "Either", website: "" },
   });
 
-  const onSubmit = async () => {
+  // Move focus to the outcome so submitting always lands the user
+  // somewhere meaningful and the message is announced. Done in an effect
+  // rather than in the submit handler, which would read a ref during the
+  // render pass that handleSubmit triggers.
+  useEffect(() => {
+    if (status === "success" || status === "error") {
+      statusRef.current?.focus();
+    }
+  }, [status]);
+
+  const addFiles = (incoming: FileList | null) => {
+    if (!incoming) return;
+    setFileError("");
+
+    const next = [...files];
+    for (const file of Array.from(incoming)) {
+      if (next.length >= MAX_UPLOAD_FILES) {
+        setFileError(`You can attach up to ${MAX_UPLOAD_FILES} files.`);
+        break;
+      }
+      if (
+        !ACCEPTED_UPLOAD_TYPES.includes(
+          file.type as (typeof ACCEPTED_UPLOAD_TYPES)[number],
+        )
+      ) {
+        setFileError(`“${file.name}” is not a supported file type.`);
+        continue;
+      }
+      if (file.size > MAX_UPLOAD_BYTES) {
+        setFileError(`“${file.name}” is larger than 8MB.`);
+        continue;
+      }
+      if (next.some((f) => f.name === file.name && f.size === file.size)) {
+        continue;
+      }
+      next.push(file);
+    }
+
+    setFiles(next);
+    // Clearing lets the same file be re-picked after removal.
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeFile = (index: number) =>
+    setFiles((current) => current.filter((_, i) => i !== index));
+
+  const onSubmit = async (values: QuoteInput) => {
     setStatus("submitting");
-    // Phase 4 replaces this with a POST to the quote route handler.
-    setStatus("unavailable");
+    setServerMessage("");
+
+    const payload = new FormData();
+    for (const [key, value] of Object.entries(values)) {
+      if (typeof value === "string") payload.append(key, value);
+    }
+    files.forEach((file) => payload.append("files", file));
+
+    try {
+      const response = await fetch("/api/quote", {
+        method: "POST",
+        body: payload,
+      });
+      const result = (await response.json()) as {
+        ok?: boolean;
+        message?: string;
+      };
+
+      if (response.ok && result.ok) {
+        setStatus("success");
+        setServerMessage(
+          result.message ??
+            "Thanks — your project details have been sent to BOVI Access.",
+        );
+        reset();
+        setFiles([]);
+      } else {
+        setStatus("error");
+        setServerMessage(
+          result.message ??
+            "We could not send that just now. Please call 07990 377780.",
+        );
+      }
+    } catch {
+      setStatus("error");
+      setServerMessage(
+        "We could not reach the server. Please check your connection, or call 07990 377780.",
+      );
+    }
   };
 
   const field = (name: keyof QuoteInput) => `${formId}-${name}`;
@@ -261,52 +346,132 @@ export function QuoteForm() {
         />
       </Field>
 
-      {/*
-        No file input is rendered. The upload field only becomes honest
-        once Phase 4 can actually receive and store the file — an input
-        that appears to accept photographs and silently discards them is
-        worse than not offering it. The schema and MIME/size validation
-        are already written in src/lib/forms/quote-schema.ts.
-      */}
+      {/* ---------------- Attachments ---------------- */}
+      <div className="flex flex-col gap-3">
+        <label htmlFor={field("name") + "-files"} className="eyebrow text-moss">
+          Photographs
+          <span className="ml-1 normal-case tracking-normal opacity-70">
+            (optional)
+          </span>
+        </label>
+        <p className="text-small text-moss">
+          A photograph from the ground usually tells us more than a paragraph.
+          JPG, PNG, HEIC, WebP or PDF — up to {MAX_UPLOAD_FILES} files, 8MB
+          each.
+        </p>
+
+        {/* A real file input, visually restyled but never hidden from the
+            keyboard: the label is bound by id, so it is focusable and
+            operable exactly as a native control. */}
+        <input
+          ref={fileInputRef}
+          id={field("name") + "-files"}
+          type="file"
+          multiple
+          accept={ACCEPTED_UPLOAD_TYPES.join(",")}
+          onChange={(event) => addFiles(event.target.files)}
+          aria-describedby={fileError ? field("name") + "-files-error" : undefined}
+          className={cn(
+            "w-full rounded-sm border border-hairline-light bg-pure px-4 py-3 text-body text-ink",
+            "file:mr-4 file:min-h-9 file:cursor-pointer file:rounded-sm file:border-0",
+            "file:bg-ink file:px-4 file:py-2 file:font-display file:text-[13px]",
+            "file:font-semibold file:tracking-[0.08em] file:text-bone file:uppercase",
+          )}
+        />
+
+        {fileError ? (
+          <p
+            id={field("name") + "-files-error"}
+            role="alert"
+            className="text-small text-[#B3261E]"
+          >
+            {fileError}
+          </p>
+        ) : null}
+
+        {files.length > 0 ? (
+          <ul className="flex flex-col gap-2">
+            {files.map((file, index) => (
+              <li
+                key={`${file.name}-${file.size}`}
+                className="flex items-center justify-between gap-4 rounded-sm border border-hairline-light bg-pure px-4 py-2"
+              >
+                <span className="flex min-w-0 items-center gap-3">
+                  <Paperclip
+                    aria-hidden="true"
+                    className="size-4 shrink-0 text-moss"
+                  />
+                  <span className="truncate text-small text-ink">
+                    {file.name}
+                  </span>
+                  <span className="shrink-0 text-small text-moss">
+                    {(file.size / 1024 / 1024).toFixed(1)}MB
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removeFile(index)}
+                  className="inline-flex size-11 shrink-0 items-center justify-center rounded-sm text-moss transition-colors hover:text-ink"
+                >
+                  <X aria-hidden="true" className="size-4" />
+                  <span className="sr-only-focusable">Remove {file.name}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
 
       <div className="mt-2 flex flex-col gap-5">
         <Button type="submit" size="lg" disabled={status === "submitting"}>
           {status === "submitting" ? "Sending…" : "Send enquiry"}
         </Button>
 
-        {status === "unavailable" ? (
-          <div
-            role="alert"
-            className="flex gap-3 rounded-sm border border-hairline-light bg-pure p-5"
-          >
-            <AlertCircle
-              aria-hidden="true"
-              className="mt-0.5 size-5 shrink-0 text-green"
-            />
-            <div className="text-body text-ink">
-              <p className="font-semibold">
-                Online sending is not switched on yet.
-              </p>
-              <p className="mt-2 text-moss">
-                Your details have not been sent. Please call{" "}
-                <a
-                  href="tel:+447990377780"
-                  className="text-ink underline underline-offset-4 hover:text-green"
-                >
-                  07990 377780
-                </a>{" "}
-                or email{" "}
-                <a
-                  href="mailto:info@boviaccess.co.uk"
-                  className="text-ink underline underline-offset-4 hover:text-green"
-                >
-                  info@boviaccess.co.uk
-                </a>{" "}
-                and we will pick it up straight away.
-              </p>
+        {/* Outcome. role="status" for success, role="alert" for failure,
+            and focusable so submitting always lands the user somewhere
+            meaningful. */}
+        <div
+          ref={statusRef}
+          tabIndex={-1}
+          role={status === "error" ? "alert" : "status"}
+          aria-live="polite"
+          className="outline-none"
+        >
+          {status === "success" ? (
+            <div className="flex gap-3 rounded-sm border border-green/30 bg-pure p-5">
+              <CheckCircle2
+                aria-hidden="true"
+                className="mt-0.5 size-5 shrink-0 text-green"
+              />
+              <div className="text-body text-ink">
+                <p className="font-semibold">{serverMessage}</p>
+                <p className="mt-2 text-moss">
+                  If it is urgent, call{" "}
+                  <a
+                    href="tel:+447990377780"
+                    className="text-ink underline underline-offset-4 hover:text-green"
+                  >
+                    07990 377780
+                  </a>
+                  .
+                </p>
+              </div>
             </div>
-          </div>
-        ) : null}
+          ) : null}
+
+          {status === "error" ? (
+            <div className="flex gap-3 rounded-sm border border-[#B3261E]/40 bg-pure p-5">
+              <AlertCircle
+                aria-hidden="true"
+                className="mt-0.5 size-5 shrink-0 text-[#B3261E]"
+              />
+              <div className="text-body text-ink">
+                <p className="font-semibold">Your enquiry was not sent.</p>
+                <p className="mt-2 text-moss">{serverMessage}</p>
+              </div>
+            </div>
+          ) : null}
+        </div>
 
         {isSubmitted && Object.keys(errors).length > 0 ? (
           <p role="alert" className="text-small text-[#B3261E]">

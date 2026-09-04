@@ -2,17 +2,15 @@
  * BOVI ACCESS — Sanity schema.
  *
  * ---------------------------------------------------------------------
- * STATUS: designed, not yet mounted.
+ * STATUS: mounted at /studio (Phase 4).
  *
- * No Sanity project exists for BOVI yet — creating one requires the
- * client's own Sanity account (see CMS-SCHEMA.md § Authentication). These
- * definitions are therefore written as plain schema objects rather than
- * `defineType(...)` calls, so the repository does not carry the heavy
- * `sanity` Studio dependency before it can actually be used.
+ * These are plain schema objects rather than `defineType(...)` calls.
+ * `defineType`/`defineField` are type helpers only — the object shape IS
+ * the Sanity schema, and it is registered as-is in sanity.config.ts.
  *
- * The object shape IS the Sanity schema — `defineType`/`defineField` are
- * type helpers only. Phase 4 installs `sanity` + `@sanity/vision`, wraps
- * these exports, and mounts /studio. No field has to be redesigned.
+ * The Studio only becomes reachable once NEXT_PUBLIC_SANITY_PROJECT_ID is
+ * set; until then /studio renders setup instructions instead. See
+ * CMS-HANDOVER.md.
  * ---------------------------------------------------------------------
  *
  * EDITING PHILOSOPHY
@@ -25,14 +23,10 @@
  * are the only instructions Renan will see inside Studio.
  */
 
-/** Minimal shape of the Studio's validation builder, used before `sanity` is installed. */
-type RuleBuilder = {
-  required: () => unknown;
-  max: (n: number) => unknown;
-};
+import type { Rule } from "sanity";
 
-const required = (Rule: RuleBuilder) => Rule.required();
-const maxLength = (n: number) => (Rule: RuleBuilder) => Rule.max(n);
+const required = (rule: Rule) => rule.required();
+const maxLength = (n: number) => (rule: Rule) => rule.max(n);
 
 /* ------------------------------------------------------------------ */
 /* Reusable object types                                               */

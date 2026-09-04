@@ -11,10 +11,16 @@ export const metadata: Metadata = buildMetadata({
 });
 
 /**
- * PRE-LAUNCH: this policy describes only what the site actually does. It
- * deliberately contains no company registration number, registered office
- * or ICO registration, because none has been supplied. Those details, and a
- * legal review, are required before launch — see CONTENT-RULES.md.
+ * PRE-LAUNCH — LEGAL REVIEW REQUIRED.
+ *
+ * This describes accurately what the website actually does with data, and
+ * nothing more. It deliberately contains no company registration number,
+ * registered office or ICO registration number, because none has been
+ * supplied — and it does not claim to have been reviewed by a solicitor,
+ * because it has not been.
+ *
+ * Before launch: obtain the company details, have the wording reviewed,
+ * and update. Tracked in CONTENT-RULES.md §10 and DEPLOYMENT.md §7.
  */
 export default function PrivacyPage() {
   return (
@@ -51,11 +57,36 @@ export default function PrivacyPage() {
             </div>
 
             <div>
+              <h2 className="text-h4 text-ink">Photographs and files</h2>
+              <p className="mt-3">
+                If you attach photographs or a PDF to an enquiry, they are sent
+                to us as email attachments and are not stored on this website
+                or in any separate file store. They exist in our email inbox
+                and nowhere else.
+              </p>
+            </div>
+
+            <div>
               <h2 className="text-h4 text-ink">How it reaches us</h2>
               <p className="mt-3">
                 Enquiries submitted through this website are delivered to us by
                 email through a third-party email delivery provider. Your
                 message is transmitted over an encrypted connection.
+              </p>
+              <p className="mt-3">
+                The website is hosted by a third-party hosting provider, and
+                its page content is managed through a third-party content
+                management service. Neither is given your enquiry: the enquiry
+                goes only to the email provider and then to us.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-h4 text-ink">Cookies and analytics</h2>
+              <p className="mt-3">
+                This website does not set advertising or analytics cookies, and
+                does not track you across other websites. If that changes we
+                will update this page and ask for your consent first.
               </p>
             </div>
 
