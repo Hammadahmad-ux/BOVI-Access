@@ -48,8 +48,23 @@ export default async function StudioPage() {
   ]);
 
   return (
-    <div className="fixed inset-0 z-100 bg-pure">
-      <NextStudio config={config} />
-    </div>
+    <>
+      {/*
+        Removes the site chrome outright rather than merely covering it.
+        The overlay alone left the header and footer in the layout and in
+        the tab order, so a keyboard user could tab into navigation hidden
+        behind the editor. `display: none` takes them out of both.
+
+        Done here rather than by moving the chrome into a route group:
+        that was tried and reverted, because with the root route inside a
+        group Next stops resolving the custom 404 for unmatched URLs and
+        silently serves its built-in one. A working 404 is a hard QA
+        requirement; tidying an internal tool is not worth losing it.
+      */}
+      <style>{`body > header, body > footer, body > a[href="#main"] { display: none !important; }`}</style>
+      <div className="fixed inset-0 z-100 bg-pure">
+        <NextStudio config={config} />
+      </div>
+    </>
   );
 }

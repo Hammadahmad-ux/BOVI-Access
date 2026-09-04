@@ -446,3 +446,55 @@ photograph sits on the right at the source's own **3:4 ratio**, so the
 frame is shown whole. The previous 16:10 box cropped most of the picture
 away. A single text column leaves no empty cell to explain, so the dead
 space is gone by construction rather than by adjustment.
+
+---
+
+## Phase 5 — final production QA
+
+```
+Lint PASS · Typecheck PASS · Build PASS (23 routes)
+Playwright 589 passed, 0 failed, 76 skipped (viewport-gated)
+Link crawl: 0 broken, 0 loops · Legacy redirects: single hop, 200
+LCP 268-340ms · CLS 0.0000 · No-JS: 0 hidden elements
+```
+
+Audited **16 routes × 7 viewports** (1440/1280/1024/768/430/390/375) for
+overflow, console errors, network failures, H1 count, metadata, canonical,
+computed font weights, stuck reveals and tap targets — plus 30 inspected
+screenshots across ten pages.
+
+**Clean at every width:** zero horizontal overflow, zero console errors,
+zero failed requests, zero headings falling back to weight 400, exactly
+one H1 per page, canonical on every page.
+
+### Confirmed defects and fixes
+
+| Sev | Defect | Root cause | Fix |
+| --- | --- | --- | --- |
+| P2 | The 404 reprinted the whole site index — all six pages and all eight services — **immediately above a footer listing the same links**. The service list appeared twice within one screen and left a large dead gap. | The page was built before the footer carried a full index; the duplication was never revisited. | Replaced the two lists with three real routes out (Home, All services, Contact) plus a line pointing at the footer. |
+| P2 | Footer phone (32px) and email (24px) below the 44px touch target on mobile. | `min-h-11` was applied to the footer nav links but not to the contact block. | `min-h-11` on both. |
+| P2 | `/studio` isolation was visual only — header and footer stayed in the DOM and in the tab order behind the editor overlay. | The overlay covers but does not remove. | The Studio route hides the site chrome outright, so it leaves both layout and tab order. |
+| P3 | 404 meta description was 49 characters. | Terse first draft. | Rewritten to describe the recovery routes. |
+
+### Investigated and dismissed — not defects
+
+- **"Stuck hidden" elements.** A fast automated scroll reported dozens of
+  elements below full opacity. Re-checked at human pace: **zero** on
+  every page. The scroll outran the 0.65s reveal; the elements were
+  mid-animation, not stuck.
+- **5 hidden elements under reduced motion.** These are the five inactive
+  images in the ServiceIndex sticky stage, which are meant to be at
+  opacity 0. Correct behaviour.
+- **Inline links at 20px in the privacy prose.** WCAG 2.5.8 exempts
+  targets in a sentence; enlarging them would break the text.
+- **Logo link at 32px tall on mobile.** Passes the 24×24 AA minimum and is
+  ~90px wide. Enlarging it would unbalance the header.
+
+### Route-group note
+
+`/studio` would be cleaner still with the site chrome in a `(site)` route
+group. That was tried in a previous phase and **reverted**: with the root
+route inside a group, Next 16 stops resolving the custom `not-found` for
+unmatched URLs and silently serves its built-in 404. A working custom 404
+is a hard requirement (#8); tidying an internal tool is not worth losing
+it. The CSS approach achieves the same isolation with no routing risk.

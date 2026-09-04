@@ -59,13 +59,13 @@ export function Footer() {
               {/* QA #18 / #19: phone and email are always real links. */}
               <a
                 href={business.phoneHref}
-                className="font-display text-h4 font-semibold transition-colors hover:text-green-bright"
+                className="inline-flex min-h-11 items-center font-display text-h4 font-semibold transition-colors hover:text-green-bright"
               >
                 {business.phoneDisplay}
               </a>
               <a
                 href={business.emailHref}
-                className="text-body text-mist transition-colors hover:text-bone"
+                className="inline-flex min-h-11 items-center text-body text-mist transition-colors hover:text-bone"
               >
                 {business.emailDisplay}
               </a>
