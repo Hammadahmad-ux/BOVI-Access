@@ -7,11 +7,20 @@ Nothing in this document contains a password. Your login is your own.
 
 ---
 
-## Before you can use it — one-time setup
+## The editor is connected
 
-**The content editor is not connected yet.** The website is live and
-working, but it is currently running on its built-in content. Until the
-step below is done, content changes still need a developer.
+Your content editor is live. The eight services are already in it and the
+website is reading from it — you can start editing straight away.
+
+### One thing still to sort: ownership
+
+The Sanity project was set up under the developer's account. **Ask them to
+add your BOVI email address as an Administrator and transfer ownership to
+you.** Until that is done, the account holding your website content is not
+yours. It takes about five minutes.
+
+<details>
+<summary>How the project was originally created (for reference)</summary>
 
 1. Go to **https://sanity.io** and create a free account. **Use the BOVI
    Access email address**, not a personal one — this account owns your
@@ -24,12 +33,7 @@ step below is done, content changes still need a developer.
 5. They add it to the website's settings and redeploy. That is the whole
    job — everything else is already built.
 
-Once that is done, `https://www.boviaccess.co.uk/studio` becomes your
-content editor and this page stops showing setup instructions.
-
-**Make sure you are the project owner in Sanity, and that your developer
-is added as a collaborator — not the other way round.** If the developer's
-account owns it, you cannot take it with you.
+</details>
 
 ---
 

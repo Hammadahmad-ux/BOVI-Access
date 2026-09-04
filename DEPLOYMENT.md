@@ -10,16 +10,19 @@ document says so.
 | Capability | State | What is missing |
 | --- | --- | --- |
 | Website | **Built and buildable** | — |
-| Content editor (Sanity) | **Code complete, not connected** | Client must create the Sanity project |
+| Content editor (Sanity) | **CONNECTED** — project `4x76hdgl`, dataset `production` | Ownership transfer (see §6) |
 | Enquiry email (Resend) | **Code complete, not connected** | API key + verified sending domain |
 | File attachments | **Working end to end in code** | Delivery depends on Resend above |
 | Publish → live refresh | **Code complete, not connected** | Webhook secret + Sanity webhook |
 | Custom domain | **Not pointed** | Deliberate — see §7 |
+| Service content in CMS | **Migrated** — 8 documents, verified once each | Images still to upload in Studio |
 | Analytics | **Not installed** | No IDs supplied; no cookie banner needed yet |
 
-**The site runs correctly with none of the above configured.** It serves
-its verified built-in content, and the enquiry form tells the visitor to
-call or email rather than pretending to send. Nothing is faked.
+**The site still runs correctly with none of the above configured.** The
+local fallback was not removed when the CMS was connected: it remains the
+behaviour for any field Renan leaves blank, and for the whole site if the
+project ID is ever unset. The enquiry form tells the visitor to call or
+email rather than pretending to send. Nothing is faked.
 
 ---
 
@@ -68,25 +71,38 @@ are read server-side only, inside the route handler.
 
 ---
 
-## 4. Connecting Sanity
+## 4. Sanity — done, and what remains
 
-1. Client creates the account and project — see `CMS-HANDOVER.md` §1.
-   **The client's account must own the project**; the developer is added
-   as a collaborator, not the reverse.
-2. Set `NEXT_PUBLIC_SANITY_PROJECT_ID` and `NEXT_PUBLIC_SANITY_DATASET`.
-3. Add the deployment URL to Sanity → API → **CORS origins** (with
-   credentials) so `/studio` can talk to the dataset.
-4. Seed the eight services:
-   ```bash
-   SANITY_WRITE_TOKEN=<editor token> npm run cms:migrate
-   ```
-   Idempotent — safe to re-run, never duplicates, never overwrites an
-   edit made in Studio. It does **not** create projects (none verified)
-   and does **not** upload images (do those in Studio, where the hotspot
-   tool sets the crop).
-5. Delete the write token.
-6. Redeploy and confirm `/studio` loads the editor rather than the setup
-   notice.
+Completed:
+
+- [x] Project `4x76hdgl` / dataset `production` created
+- [x] `NEXT_PUBLIC_SANITY_PROJECT_ID` and `NEXT_PUBLIC_SANITY_DATASET` set
+      in `.env.local` (git-ignored)
+- [x] CORS origins allowed: `http://localhost:3000`, `http://localhost:3333`
+- [x] Eight service documents migrated, verified present exactly once
+- [x] GROQ verified against the real dataset
+- [x] Frontend confirmed rendering CMS content with no visual change
+
+Still to do:
+
+- [ ] **Transfer project ownership to Renan** — see §6
+- [ ] Add the production and Vercel preview URLs to Sanity CORS origins
+- [ ] Set the same two env vars in Vercel
+- [ ] Upload service images in Studio (the migration deliberately does not
+      migrate images, so the hotspot tool can set the crop)
+- [ ] Configure the publish webhook below
+
+### Re-running the migration
+
+```bash
+npm run cms:migrate
+```
+
+This is `sanity exec … --with-user-token` under the hood: it authenticates
+from the CLI session, so **no write token needs to be created or stored**.
+It is idempotent — a second run reports all eight as already present and
+writes nothing. It does not create project documents (none verified) and
+does not upload images.
 
 ### Revalidation — so publishing updates the site
 
@@ -160,6 +176,17 @@ Target state before launch:
 
 The point: Renan can change developer without losing his website, his
 content or his enquiries.
+
+> **OPEN ISSUE — Sanity ownership.** Project `4x76hdgl` was created under a
+> developer Google account (`hammadahmadd543@gmail.com`), not a BOVI
+> account. As it stands, Renan does not own his own content.
+>
+> Fix before launch, in Sanity → Project → Members:
+> 1. Invite Renan's BOVI email as **Administrator**.
+> 2. Have him accept and confirm he can log in at `/studio`.
+> 3. Transfer ownership to him, and reduce the developer to a normal member.
+>
+> This is a five-minute job now and a painful one later.
 
 ---
 

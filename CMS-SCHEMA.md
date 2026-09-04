@@ -6,9 +6,11 @@ Schema design in `sanity/schemaTypes/index.ts`.
 
 ## 1. Status
 
-**The integration is code-complete and mounted. It is not connected**,
-because no Sanity project exists yet — creating one requires the client's
-own account, which cannot be done from this repository.
+**CONNECTED.** Project `4x76hdgl`, dataset `production`.
+
+The eight service documents are migrated and the frontend renders from
+Sanity. Ownership still sits with a developer account and must be
+transferred — see DEPLOYMENT.md §6.
 
 | Piece | State |
 | --- | --- |
@@ -22,8 +24,11 @@ own account, which cannot be done from this repository.
 Until a project ID is set, `/studio` shows setup instructions and every
 page serves its verified local content. See DEPLOYMENT.md §2.
 
-**GROQ queries are written but unverified** — there is no dataset to run
-them against. Re-check them during the first CMS smoke test.
+**GROQ queries are now verified against the real dataset.** The Portable
+Text extraction was the one that needed correcting: `pt::text(@)` per block
+returns one string per paragraph, which is what the template renders.
+Confirmed live — 2 overview paragraphs and 3 delivery items on
+`drainage-external-pipe-repairs`.
 
 ### What is needed from the client
 

@@ -297,3 +297,44 @@ through `sanity` → `@sanity/cli` → `@sanity/runtime-cli` (`adm-zip`,
 tooling; none of it executes when a visitor loads a page.
 `npm audit fix --force` proposes sanity@5.14.1 — a **downgrade** from
 5.31.2 — so it was not applied. Re-check when Sanity ships a CLI update.
+
+### Phase 4.1 (production Sanity connected)
+
+```
+Lint PASS · Typecheck PASS · Build PASS (23 routes)
+E2E 567 passed, 0 failed, 70 skipped (viewport-gated)
+CMS: project 4x76hdgl / production, 8 service documents, verified once each
+```
+
+**Verified against the real dataset:**
+
+| Check | Result |
+| --- | --- |
+| Frontend queries project `4x76hdgl` | Yes — service overview and delivery copy render from Sanity |
+| `pt::text()` Portable Text extraction | Correct — 2 overview paragraphs, 3 delivery items |
+| Related-service references resolve | `["gutter-cleaning","mastic-sealant","roof-roofline-repairs"]` |
+| Empty CMS field falls back to local | Yes — `heroMedia` is unset in Sanity and the local image still renders |
+| Empty Homepage singleton | All fields null; page unchanged |
+| Migration idempotent | Second run: 0 created, 8 already present |
+| No fake projects seeded | `count(*[_type == "project"])` = 0 |
+| Visual regression | Service page renders at 1440×5206 — identical to the Phase 3 measurement |
+| `.env.local` git-ignored | Yes (`.gitignore:34`) |
+| Secrets committed | None |
+
+**Not verified:** Studio's document-list UI. The Studio boots, loads the
+BOVI workspace and renders its login screen with CORS working, but reading
+the four content groups requires logging in as the project owner — not
+something to automate with someone else's account.
+
+**Route-group experiment, reverted.** Moving the site chrome into a
+`(site)` group so `/studio` could render full-screen was tried and undone:
+the measurement that prompted it was taken against a stale server process
+still holding port 3000. The Studio is instead wrapped in a fixed
+top-layer container, which achieves the same result with no routing
+change. The custom 404 is confirmed working (`Page not found`, HTTP 404,
+with site chrome).
+
+**npm audit unchanged: 9 advisories, 0 in the request path.** All
+transitive through the Sanity CLI toolchain. `npm audit fix` (without
+`--force`) resolves none of them; `--force` proposes downgrading sanity
+5.31.2 → 5.14.1, so neither was applied.

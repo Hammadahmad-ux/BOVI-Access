@@ -12,7 +12,7 @@
     "test:e2e": "playwright test",
     "assets:brand": "node scripts/generate-brand-assets.mjs",
     "assets:images": "node scripts/generate-web-images.mjs",
-    "cms:migrate": "node --experimental-strip-types scripts/migrate-to-sanity.mjs"
+    "cms:migrate": "sanity exec scripts/migrate-to-sanity.ts --with-user-token"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
