@@ -11,8 +11,8 @@ document says so.
 | --- | --- | --- |
 | Website | **Built and buildable** | — |
 | Content editor (Sanity) | **CONNECTED** — project `4x76hdgl`, dataset `production` | Ownership transfer (see §6) |
-| Enquiry email (Resend) | **Code complete, not connected** | API key + verified sending domain |
-| File attachments | **Working end to end in code** | Delivery depends on Resend above |
+| Enquiry email (Resend) | **Verified in development** — real API, real message IDs | **Production sending is NOT verified** — see below |
+| File attachments | **Verified end to end** — sent, received, nothing stored | — |
 | Publish → live refresh | **Code complete, not connected** | Webhook secret + Sanity webhook |
 | Custom domain | **Not pointed** | Deliberate — see §7 |
 | Service content in CMS | **Migrated** — 8 documents, verified once each | Images still to upload in Studio |
@@ -123,19 +123,52 @@ it fails closed on purpose.
 
 ---
 
-## 5. Connecting enquiry email
+## 5. Enquiry email
 
-1. Create a Resend account for BOVI.
-2. **Verify the `boviaccess.co.uk` domain** (DNS records in Resend). Until
-   this is done, mail sent as `@boviaccess.co.uk` will be rejected — the
-   sending address cannot simply be typed in.
-3. Set `RESEND_API_KEY`, `CONTACT_TO_EMAIL=info@boviaccess.co.uk`, and
-   `CONTACT_FROM_EMAIL` to an address on the verified domain.
-4. Redeploy and send a real test enquiry, with and without an attachment.
+### What is verified
 
-Until all three are set, `/api/quote` returns **503** with an honest
-message and the form points the visitor at the phone number. It never
-reports a success it did not achieve.
+The Resend integration is **real and working**, tested against the live
+API with a development sender and recipient:
+
+```
+CONTACT_FROM_EMAIL=onboarding@resend.dev
+CONTACT_TO_EMAIL=delivered@resend.dev
+```
+
+Confirmed: valid submissions are accepted and return genuine Resend
+message IDs; attachments are transmitted; invalid files, oversized files
+and spoofed executables are rejected; the rate limit engages on the sixth
+attempt; and the success UI appears only after the provider confirms.
+
+### What is NOT verified — production delivery
+
+> **Enquiries do NOT yet reach `info@boviaccess.co.uk`.**
+>
+> `delivered@resend.dev` is Resend's test sink. Nothing has been
+> delivered to a BOVI inbox, and the site must not be described as
+> "enquiries working" until the step below is done.
+
+The blocker is DNS. `boviaccess.co.uk` is currently managed by Wix, and
+Resend reported an MX/subdomain limitation when verifying it. Sending as
+`@boviaccess.co.uk` will be **rejected** until the domain is verified —
+the address cannot simply be typed into the config.
+
+To finish:
+
+1. Resolve the DNS position. Either move the domain's DNS to a provider
+   that allows the required records, or add Resend's records within Wix if
+   it permits them. A dedicated sending subdomain (e.g. `mail.` or
+   `send.boviaccess.co.uk`) is usually the least disruptive route and
+   avoids touching the existing MX records that carry BOVI's mail.
+2. Verify the domain in Resend.
+3. Set `CONTACT_FROM_EMAIL` to an address on the verified domain (e.g.
+   `website@boviaccess.co.uk`) and `CONTACT_TO_EMAIL=info@boviaccess.co.uk`.
+4. Send one real enquiry, with an attachment, and confirm it arrives.
+5. Only then tell the client enquiries are live.
+
+Until the three variables are set, `/api/quote` returns **503** with an
+honest message and the form points the visitor at the phone number. It
+never reports a success it did not achieve.
 
 ### Attachments
 
@@ -148,6 +181,15 @@ infrastructure and less personal data at rest.
 
 Limits: 5 files, 8MB each, 15MB total (Resend caps a request at 40MB).
 Accepted: JPG, PNG, WebP, HEIC/HEIF, PDF.
+
+**Both the declared MIME type and the file extension must be acceptable.**
+Testing showed that an `.exe` sent with `Content-Type: image/jpeg` passed
+a MIME-only check and was stopped only by Resend — a control we do not
+own. The extension check closes that, and such a file is now rejected
+with a 422 before it leaves the server.
+
+Verified: no file is written to disk. There is no upload directory, and
+nothing appears in `.next` or the OS temp directory after a submission.
 
 ### Abuse protection
 

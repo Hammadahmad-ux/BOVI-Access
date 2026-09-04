@@ -338,3 +338,44 @@ with site chrome).
 transitive through the Sanity CLI toolchain. `npm audit fix` (without
 `--force`) resolves none of them; `--force` proposes downgrading sanity
 5.31.2 → 5.14.1, so neither was applied.
+
+### Phase 4.2 (Resend verified in development)
+
+```
+Lint PASS · Typecheck PASS · Build PASS (23 routes)
+E2E 568 passed, 0 failed, 76 skipped (viewport-gated)
+```
+
+Tested against the **live Resend API** with a development sender and the
+`delivered@resend.dev` sink. Every result below is from a real request.
+
+| # | Test | Result |
+| --- | --- | --- |
+| 1 | Valid submission | 200, genuine Resend message ID returned |
+| 2 | Invalid data | 422 with six per-field messages |
+| 3 | Honeypot | 200, nothing sent (no message ID logged) |
+| 4 | Valid image attachment | 200, delivered with the file |
+| 5 | Executable rejected | 422 |
+| 5b | **Executable with spoofed `image/jpeg` type** | **Was 502 — passed our MIME check and was stopped only by Resend. Fixed: now 422.** |
+| 6 | Oversized single file (9MB) | 422 |
+| 7 | Total size (3 × 6MB = 18MB) | 422 |
+| 8 | Multiple valid files | 200, delivered |
+| 9 | Rate limit | attempts 1-5 → 200, 6 and 7 → 429 |
+| 10 | Provider unconfigured | 503, honest refusal naming the phone number |
+| 11 | Full browser submission with attachment | Success UI shown only after confirmation; focus moved to the status region; form and file input cleared |
+| 12 | File persistence | None. No upload directory; nothing in `.next` or OS temp |
+
+**Items 12 and 13 of the twenty hard checks are now genuinely satisfied**
+with real provider responses, not mocks.
+
+**One real defect was found and fixed by this testing.** The upload guard
+trusted the client-declared `Content-Type`, so an executable renamed with
+an image MIME type reached the mail provider. It is now rejected by the
+extension check as well, before it leaves the server. A regression test
+covers it.
+
+**Production email is NOT verified.** Delivery went to Resend's test sink,
+never to `info@boviaccess.co.uk`. The `boviaccess.co.uk` domain is
+unverified — its DNS sits with Wix and Resend reported an MX/subdomain
+limitation. See DEPLOYMENT.md §5. **Do not describe enquiries as working
+until a real message arrives in the BOVI inbox.**

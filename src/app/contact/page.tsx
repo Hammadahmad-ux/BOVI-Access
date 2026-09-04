@@ -16,10 +16,9 @@ export const metadata: Metadata = buildMetadata({
 /**
  * Contact / Request a Quote.
  *
- * The form's submit path is NOT wired — see QuoteForm. Both contact
- * methods on this page are live links today, and they are given equal
- * weight to the form for that reason: a property manager who wants an
- * answer this afternoon will call.
+ * The form submits for real — see QuoteForm and /api/quote. Both contact
+ * methods on this page are still given equal weight to the form, because
+ * a property manager who wants an answer this afternoon will call.
  */
 
 const expectations = [

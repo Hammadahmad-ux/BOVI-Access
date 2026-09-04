@@ -6,6 +6,7 @@ import {
   MAX_UPLOAD_BYTES,
   MAX_UPLOAD_FILES,
   ACCEPTED_UPLOAD_TYPES,
+  hasAcceptedExtension,
 } from "@/lib/forms/quote-schema";
 import { renderEnquiryEmail, enquirySubject } from "@/lib/forms/enquiry-email";
 import { checkRateLimit } from "@/lib/forms/rate-limit";
@@ -104,10 +105,15 @@ export async function POST(request: Request) {
 
   let totalBytes = 0;
   for (const file of files) {
+    // BOTH the declared MIME type and the extension must be acceptable.
+    // Content-Type comes from the client and can be spoofed; checking the
+    // extension too means a renamed executable is rejected here rather
+    // than relying on the email provider to catch it.
     if (
       !ACCEPTED_UPLOAD_TYPES.includes(
         file.type as (typeof ACCEPTED_UPLOAD_TYPES)[number],
-      )
+      ) ||
+      !hasAcceptedExtension(file.name)
     ) {
       return fail(
         422,
@@ -154,7 +160,7 @@ export async function POST(request: Request) {
 
     const resend = new Resend(emailConfig.apiKey);
 
-    const { error } = await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from: emailConfig.from as string,
       to: [emailConfig.to as string],
       replyTo: enquiry.email,
@@ -171,6 +177,12 @@ export async function POST(request: Request) {
         "We could not send that just now. Please call 07990 377780 or email info@boviaccess.co.uk.",
       );
     }
+
+    // The provider's message id is the only trace a delivered enquiry
+    // leaves. Without it there is nothing to check when someone reports
+    // that an enquiry never arrived. It identifies the message, not its
+    // contents — no field the visitor typed is ever logged.
+    console.info(`[quote] delivered, resend id ${data?.id ?? "unknown"}`);
   } catch (error) {
     console.error(
       "[quote] delivery failed:",

@@ -16,6 +16,28 @@ import { services } from "@/lib/config/site";
 export const MAX_UPLOAD_BYTES = 8 * 1024 * 1024; // 8MB per file
 export const MAX_UPLOAD_FILES = 5;
 
+/**
+ * File EXTENSIONS accepted, checked alongside the MIME type.
+ *
+ * The declared Content-Type is supplied by the client and can be spoofed —
+ * an .exe sent as `image/jpeg` passes a MIME-only check. Verified in
+ * testing: such a file got past our validation and was only stopped by the
+ * email provider, which is not a control we own. Checking the extension as
+ * well means we reject it ourselves, with a message the sender can act on.
+ *
+ * Both checks must pass. Neither is a substitute for the other: the
+ * extension stops a spoofed type, the MIME type stops a renamed file.
+ */
+export const ACCEPTED_UPLOAD_EXTENSIONS = [
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".webp",
+  ".heic",
+  ".heif",
+  ".pdf",
+] as const;
+
 /** Deliberately narrow. Site photos are images or the occasional PDF. */
 export const ACCEPTED_UPLOAD_TYPES = [
   "image/jpeg",
@@ -84,12 +106,23 @@ export const quoteSchema = z.object({
 
 export type QuoteInput = z.infer<typeof quoteSchema>;
 
+/** True when the filename ends in an accepted extension. */
+export function hasAcceptedExtension(filename: string): boolean {
+  const lower = filename.toLowerCase();
+  return ACCEPTED_UPLOAD_EXTENSIONS.some((ext) => lower.endsWith(ext));
+}
+
 /** File validation runs separately — files do not travel as JSON. */
-export function validateUpload(file: { size: number; type: string }) {
+export function validateUpload(file: { size: number; type: string; name: string }) {
   if (file.size > MAX_UPLOAD_BYTES) {
     return { ok: false as const, error: "Each file must be 8MB or smaller." };
   }
-  if (!ACCEPTED_UPLOAD_TYPES.includes(file.type as (typeof ACCEPTED_UPLOAD_TYPES)[number])) {
+  if (
+    !ACCEPTED_UPLOAD_TYPES.includes(
+      file.type as (typeof ACCEPTED_UPLOAD_TYPES)[number],
+    ) ||
+    !hasAcceptedExtension(file.name)
+  ) {
     return { ok: false as const, error: "Please attach images or a PDF." };
   }
   return { ok: true as const };
