@@ -120,11 +120,10 @@ export const serviceContent: readonly ServiceContent[] = [
       "Renewal of perimeter and movement joints to address water ingress.",
     image: {
       src: "/images/services/mastic-sealant.jpg",
-      alt: "A BOVI Access technician working on rope beside a glazed elevation",
+      alt: "A BOVI Access technician on rope applying sealant from a cordless gun into a vertical joint in a brick elevation",
       width: 1400,
       height: 1867,
     },
-    imageIsGeneric: true,
   },
   {
     slug: "pressure-washing-doff-cleaning",

@@ -143,7 +143,7 @@ client, project or place.
 | Service 02 — Brickwork & Repointing | `03-Brickwork-Repointing/IMG_1722.jpg` | `services/brickwork-repointing.jpg` | 129KB |
 | Service 03 — Gutter Cleaning | `05-Drainage-Pipes/IMG_6272.jpg` | `services/gutter-cleaning.jpg` | 203KB |
 | Service 04 — Drainage & External Pipe Repairs | `05-Drainage-Pipes/IMG_5861.jpg` | `services/drainage-external-pipe-repairs.jpg` | 171KB |
-| Service 05 — Mastic & Sealant | `07-General-Rope-Access/IMG_4093.jpg` | `services/mastic-sealant.jpg` | 74KB |
+| Service 05 — Mastic & Sealant | `07-General-Rope-Access/IMG_9969.jpg` | `services/mastic-sealant.jpg` | 376KB |
 | Service 06 — Pressure Washing / DOFF | `07-General-Rope-Access/IMG_9398.jpg` | `services/pressure-washing-doff-cleaning.jpg` | 227KB |
 | Featured project | `06-Window-Cleaning-Liverpool/IMG_4077.jpg` | `home/featured-project.jpg` 1500×2000 | 330KB |
 | Project 01 (landscape) | `02-Window-Cleaning/IMG_7448.jpg` | `home/project-01.jpg` 1600×1200 | 247KB |
@@ -224,16 +224,82 @@ ratio (0.46 rather than 0.75) before using one.
 
 ### Service imagery honesty
 
-Two services have **no genuine service-specific photography**:
+**Corrected in the client revision pass.** Renan reviewed the live
+preview and reported that the Mastic & Sealant page showed a window
+cleaning photograph. He was right, and more specifically right than the
+note that used to sit here: `IMG_4093` shows a technician on rope at a
+glazed elevation **carrying a window cleaner's bucket with a squeegee in
+it**. Calling it "generic" was too generous — it depicts a different
+service.
+
+It was worse than a bad crop, because the earlier audit had recorded
+"no genuine Mastic & Sealant photography exists". That was wrong. A
+complete joint-sealing job sits in `07-General-Rope-Access`, which is
+the unsorted folder, so it was never read as service imagery:
+
+| File | What is actually visible |
+| --- | --- |
+| `IMG_9969` | Technician applying sealant from a **cordless applicator gun** into a vertical joint; fresh bead visible along the joint |
+| `IMG_9892` | Technician feeding **backer rod** into a joint, pointing tool in hand, sealant gun on the ledge below |
+| `IMG_9966` | Second technician on the same elevation, backer strips on the harness |
+| `IMG_9896` | Two technicians working panel joints on a rendered elevation |
+
+`IMG_9969` is now the hero and the other three are the gallery. Mastic &
+Sealant is no longer flagged generic in `src/lib/content/services.ts`,
+because it no longer is.
+
+**The lesson for future audits:** `07-General-Rope-Access` is a mixed
+folder, not a folder of unusable images. Read it per-file before
+concluding a service has no coverage.
+
+One service still has none:
 
 | Service | Image used | Why it is acceptable |
 | --- | --- | --- |
-| Mastic & Sealant | `IMG_4093` — technician on rope at a glazed elevation | A real BOVI rope-access photograph. Alt text describes the technician and the elevation; it does **not** claim to show mastic work. |
 | Pressure Washing / DOFF | `IMG_9398` — technician descending weathered masonry | A real BOVI photograph, and masonry is the actual DOFF context. Alt text describes the elevation, not the process. |
 
-Both are flagged `imageIsGeneric: true` in `src/lib/content/home.ts` so the gap
-stays visible in code rather than being quietly forgotten. Replace them as soon
-as genuine imagery is supplied — see §7.
+It stays flagged `mediaIsGeneric: true` in `src/lib/content/services.ts`
+and carries **one** extra image rather than a pair — see §7.
+
+### Service galleries
+
+Added in the client revision pass, after Renan asked for more pictures on
+the internal pages. These feed the `gallery` field that already existed
+on the Sanity `service` document, so he can replace any of them in Studio
+without a code change.
+
+Slot `-01` is the large mid-page image; `-02` and `-03` are the
+asymmetric pair beneath the overview. **The pair renders only when both
+exist**, so a service with thin coverage is simply shorter.
+
+| Service | `-01` | `-02` | `-03` |
+| --- | --- | --- | --- |
+| Commercial Window Cleaning | `02/810C5448-….jpg` | `02/IMG_9304.jpg` | `02/bd7eada4-….jpg` |
+| Brickwork & Repointing | `03/IMG_1718.jpg` | `03/IMG_1745.jpg` | `03/IMG_1698.jpg` |
+| Gutter Cleaning | `03/IMG_0710.jpg` | `05/IMG_6274.jpg` | `03/IMG_0707.jpg` |
+| Drainage & External Pipe Repairs | `05/PHOTO-2024-12-27-10-54-10.jpg` | `05/IMG_5859.jpg` | `05/IMG_5863.jpg` |
+| Mastic & Sealant | `07/IMG_9892.jpg` | `07/IMG_9966.jpg` | `07/IMG_9896.jpg` |
+| Pressure Washing / DOFF | `07/IMG_9664.jpg` | — | — |
+| Roof & Roofline Repairs | `07/IMG_9420.jpg` | `07/IMG_6403.jpg` | `03/IMG_0706.jpg` |
+| Lightning Protection | `04/dc4aec95-….jpg` | `04/7c7e3f8d-….jpg` | `04/fe14fd76-….jpg` |
+
+Notes:
+
+- **The gutter frames come from "Repoint"** — `IMG_0707`, `IMG_0710` and
+  `IMG_0711` were always mis-filed (§2). They are the library's only real
+  gutter imagery and are now used as such.
+- `07/IMG_6403` is one of the few frames where the **BOVI Access hoodie
+  is legible**. It is used on Roof & Roofline Repairs.
+- Before this pass the service template re-used `heroMedia` for the
+  "Access and delivery" figure, so **every service page showed the same
+  photograph twice**. `gallery[0]` replaces it.
+- Several sources are 1170×2532 full-screen phone frames (aspect 0.462).
+  These are photographs, **not** letterboxed screenshots — top and bottom
+  bands were sampled and no bar was found — so `trimBars` correctly leaves
+  most of them alone.
+- **Boxes stay portrait at every width.** A landscape mobile crop was
+  tried on the pair and cut the heads off technicians; the library is
+  almost entirely 3:4 phone photography (§4).
 
 ## 6. Shortlist for Phase 2 / 3
 
@@ -260,8 +326,15 @@ Candidates only — not yet cut into derivatives.
 
 1. **No Pressure Washing / DOFF imagery.** This is one of the two services
    with a confirmed legacy Wix URL, so it matters for SEO continuity.
-2. **No Mastic & Sealant imagery.**
-3. **No hero video.** Architecture is ready and waiting for a URL.
+   It is now the ONLY service still in this position.
+2. ~~No Mastic & Sealant imagery.~~ **Resolved** — see § Service imagery
+   honesty. Four genuine joint-sealing frames were found in the unsorted
+   general folder.
+3. **Hero video replacement pending.** The client has asked whether the
+   current background video can be changed and is supplying his own
+   footage. The current file stays until he does. Swapping it remains a
+   one-value change (`DEFAULT_HERO_VIDEO` in
+   `src/lib/config/hero-media.ts`, or the Sanity Homepage field).
 4. **No verified project metadata.** Photographs exist; titles, clients,
    locations, dates and scopes do not. Until they are supplied, no project
    can be published (`CONTENT-RULES.md` §1).
@@ -269,8 +342,9 @@ Candidates only — not yet cut into derivatives.
    Liverpool, while approved coverage is "London & the South East". Worth
    clarifying with Renan before these images anchor a project page.
 
-Until 1 and 2 are resolved, those service pages use a tasteful neutral
-layout or a genuine broader BOVI image — **never** substitute imagery.
+Until 1 is resolved, that service page uses a genuine broader BOVI image
+and carries fewer photographs than the rest — **never** substitute
+imagery from another service.
 
 ---
 

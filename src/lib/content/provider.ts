@@ -45,6 +45,7 @@ type SanityService = {
   heroTitle?: string;
   intro?: string;
   heroMedia?: SanityImage;
+  gallery?: SanityImage[];
   overview?: string[];
   commonWorks?: string[];
   delivery?: string[];
@@ -71,6 +72,7 @@ const SERVICE_QUERY = `*[_type == "service" && defined(slug.current)]{
   heroTitle,
   intro,
   heroMedia,
+  gallery,
   "overview": overview[]{"text": pt::text(@)}.text,
   commonWorks,
   "delivery": deliveryContent[]{"text": pt::text(@)}.text,
@@ -92,6 +94,14 @@ function mergeService(local: ServicePage, cms?: SanityService): ServicePage {
 
   const heroMedia = imageAssetFrom(cms.heroMedia, local.heroMedia);
 
+  // Gallery entries without alt text are dropped by `imageAssetFrom`
+  // rather than shipped unlabelled, so a CMS gallery can come back
+  // shorter than it is in Studio — and an all-invalid gallery falls back
+  // to the local one instead of emptying the page.
+  const gallery = cms.gallery
+    ?.map((image) => imageAssetFrom(image))
+    .filter((asset): asset is ImageAsset => asset !== null);
+
   return {
     ...local,
     eyebrow: cms.eyebrow?.trim() || local.eyebrow,
@@ -101,6 +111,7 @@ function mergeService(local: ServicePage, cms?: SanityService): ServicePage {
     // If the CMS supplied its own image, the local "this is a generic
     // photo" caveat no longer applies.
     mediaIsGeneric: cms.heroMedia ? undefined : local.mediaIsGeneric,
+    gallery: gallery?.length ? gallery : local.gallery,
     overview: cms.overview?.length ? cms.overview : local.overview,
     commonWorks: cms.commonWorks?.length ? cms.commonWorks : local.commonWorks,
     delivery: cms.delivery?.length ? cms.delivery : local.delivery,

@@ -52,6 +52,21 @@ export type ServicePageContent = {
    * in code — see client-assets/ASSET-INVENTORY.md §7.
    */
   mediaIsGeneric?: boolean;
+  /**
+   * Additional genuine photographs for this service.
+   *
+   * Mirrors the `gallery` field that already exists on the Sanity
+   * `service` document, so Renan can replace or extend these in Studio
+   * without a code change. NOTHING here is decorative filler: a service
+   * with thin photographic coverage carries fewer entries rather than
+   * borrowed ones, and the template renders whatever it is given.
+   *
+   *   [0]      the large mid-page image (Access and delivery)
+   *   [1],[2]  the asymmetric pair under the overview — rendered only
+   *            when BOTH exist, so a two-image gallery never leaves a
+   *            lone image stranded in a two-column composition.
+   */
+  gallery?: readonly ImageAsset[];
   /** Body paragraphs for the overview section. */
   overview: readonly string[];
   /** "What we deliver" — concrete, checkable items. */
@@ -81,6 +96,26 @@ const content: readonly ServicePageContent[] = [
       width: 1400,
       height: 1867,
     },
+    gallery: [
+      {
+        src: "/images/services/commercial-window-cleaning-01.jpg",
+        alt: "A BOVI Access technician on rope cleaning a window with an applicator, a green bucket clipped to the harness",
+        width: 1400,
+        height: 2489,
+      },
+      {
+        src: "/images/services/commercial-window-cleaning-02.jpg",
+        alt: "A technician on rope working at a window set into a brick and glass elevation",
+        width: 1100,
+        height: 1467,
+      },
+      {
+        src: "/images/services/commercial-window-cleaning-03.jpg",
+        alt: "Technicians descending the curved glazed facade of a tower on ropes",
+        width: 1100,
+        height: 1467,
+      },
+    ],
     overview: [
       "Glazing on tall or awkward elevations is often the hardest part of a building to keep clean. Cradles are not always available, scaffold is disproportionate for a clean, and powered access needs ground space that a city site rarely has.",
       "Rope access reaches the full height of an elevation from anchor points at roof level, so glazing can be cleaned on an occupied building without closing a road or booking a scaffold licence.",
@@ -127,6 +162,26 @@ const content: readonly ServicePageContent[] = [
       width: 1400,
       height: 1867,
     },
+    gallery: [
+      {
+        src: "/images/services/brickwork-repointing-01.jpg",
+        alt: "Close view of a brick parapet with eroded mortar joints, a rope running down the face",
+        width: 1400,
+        height: 1867,
+      },
+      {
+        src: "/images/services/brickwork-repointing-02.jpg",
+        alt: "Weathered brickwork with cracked and missing mortar beside a stone coping",
+        width: 1100,
+        height: 1467,
+      },
+      {
+        src: "/images/services/brickwork-repointing-03.jpg",
+        alt: "A brick chimney stack seen from rope level, with rooftops beyond",
+        width: 1200,
+        height: 900,
+      },
+    ],
     overview: [
       "Failed pointing is usually localised — a chimney stack, a parapet, a band of weathered mortar on one elevation. Scaffolding a whole building to reach it is slow and expensive.",
       "Rope access lets the affected area be reached directly, so a defect can be surveyed and repaired in the same visit without the programme and cost of a full scaffold.",
@@ -172,6 +227,26 @@ const content: readonly ServicePageContent[] = [
       width: 1400,
       height: 1404,
     },
+    gallery: [
+      {
+        src: "/images/services/gutter-cleaning-01.jpg",
+        alt: "A roof hopper head packed with leaves and silt, blocking the outlet",
+        width: 1170,
+        height: 2532,
+      },
+      {
+        src: "/images/services/gutter-cleaning-02.jpg",
+        alt: "A cleared gutter outlet on a tiled roof, with the gutter run empty behind it",
+        width: 1100,
+        height: 1104,
+      },
+      {
+        src: "/images/services/gutter-cleaning-03.jpg",
+        alt: "A gloved hand holding a plant pulled out of a downpipe, the street below in view",
+        width: 1100,
+        height: 1104,
+      },
+    ],
     overview: [
       "A blocked gutter is a small problem that becomes an expensive one. Water backs up over the fascia, tracks down the elevation, and shows up inside as staining long after the cause started.",
       "Clearing at roof level is straightforward when the roofline can be reached safely. Rope access reaches gutter runs on tall or awkward buildings without towers or a cherry picker.",
@@ -218,6 +293,26 @@ const content: readonly ServicePageContent[] = [
       width: 1400,
       height: 1869,
     },
+    gallery: [
+      {
+        src: "/images/services/drainage-external-pipe-repairs-01.jpg",
+        alt: "A technician on rope working on cast iron soil pipework in a narrow lightwell",
+        width: 1200,
+        height: 1600,
+      },
+      {
+        src: "/images/services/drainage-external-pipe-repairs-02.jpg",
+        alt: "Brickwork stained and streaked below a leaking pipe joint",
+        width: 1100,
+        height: 1469,
+      },
+      {
+        src: "/images/services/drainage-external-pipe-repairs-03.jpg",
+        alt: "Soil stacks and rainwater pipes running the full height of a lightwell",
+        width: 1100,
+        height: 1468,
+      },
+    ],
     overview: [
       "External soil stacks and rainwater pipes often run the full height of a building, frequently down a lightwell or a tight rear elevation where there is no room for access equipment.",
       "Rope access reaches the whole run from the roof down, so a leaking joint or a blocked section can be reached at the point it has failed rather than from the nearest available platform.",
@@ -258,14 +353,36 @@ const content: readonly ServicePageContent[] = [
     intro:
       "Renewal of perimeter and movement joints on facades and around openings, to address water ingress at the building envelope.",
     heroMedia: {
+      // WAS a generic frame in which the technician carried a window
+      // cleaner's bucket and squeegee — so the sealant page showed window
+      // cleaning kit, which the client spotted. This frame shows a
+      // cordless sealant gun applied to a vertical joint: the service
+      // itself. See ASSET-INVENTORY.md § Service imagery honesty.
       src: "/images/services/mastic-sealant.jpg",
-      // Deliberately generic: no genuine photograph of mastic work exists.
-      // The alt describes the photograph, not the service.
-      alt: "A BOVI Access technician working on rope beside a glazed elevation",
+      alt: "A BOVI Access technician on rope applying sealant from a cordless gun into a vertical joint in a brick elevation, with a second technician working above",
       width: 1400,
       height: 1867,
     },
-    mediaIsGeneric: true,
+    gallery: [
+      {
+        src: "/images/services/mastic-sealant-01.jpg",
+        alt: "A technician on rope working a vertical joint in brickwork, holding a pointing tool with backer rod fed into the joint",
+        width: 1400,
+        height: 1867,
+      },
+      {
+        src: "/images/services/mastic-sealant-02.jpg",
+        alt: "A technician descending a brick pier between panel and glazed sections of an elevation",
+        width: 1100,
+        height: 1467,
+      },
+      {
+        src: "/images/services/mastic-sealant-03.jpg",
+        alt: "Two technicians on rope working the joints of a rendered elevation above a railway line",
+        width: 1100,
+        height: 1467,
+      },
+    ],
     overview: [
       "Sealant is the part of a facade that fails first and is noticed last. Joints around windows, panel interfaces and movement joints all have a service life shorter than the building around them.",
       "Renewing them is straightforward work made difficult only by height. Rope access reaches a single failing joint on the eighth floor without treating it as a scaffold job.",
@@ -313,6 +430,17 @@ const content: readonly ServicePageContent[] = [
       height: 1867,
     },
     mediaIsGeneric: true,
+    // ONE additional image, and no pair. This remains the thinnest
+    // service in the library — see ASSET-INVENTORY.md §7. A short page
+    // is better than a borrowed photograph.
+    gallery: [
+      {
+        src: "/images/services/pressure-washing-doff-cleaning-01.jpg",
+        alt: "A technician on rope descending a brick elevation, seen from below through trees",
+        width: 1170,
+        height: 2532,
+      },
+    ],
     overview: [
       "Soiling on a facade is rarely uniform. Staining runs from a failed gutter, biological growth sits on the shaded elevation, and the street frontage picks up traffic film.",
       "Cleaning at height means matching the method to the surface — a low-pressure steam system for softer masonry and stone, higher pressure only where the substrate can take it.",
@@ -358,6 +486,26 @@ const content: readonly ServicePageContent[] = [
       width: 1400,
       height: 1867,
     },
+    gallery: [
+      {
+        src: "/images/services/roof-roofline-repairs-01.jpg",
+        alt: "A technician on rope working along a roof ridge, with open sky and treetops behind",
+        width: 1400,
+        height: 1867,
+      },
+      {
+        src: "/images/services/roof-roofline-repairs-02.jpg",
+        alt: "A BOVI Access technician rigging ropes at roof level on a city tower, an office block behind",
+        width: 1100,
+        height: 1467,
+      },
+      {
+        src: "/images/services/roof-roofline-repairs-03.jpg",
+        alt: "A technician on rope at the eaves of a pitched roof, seen from the ground",
+        width: 1100,
+        height: 1104,
+      },
+    ],
     overview: [
       "Roofline defects are usually small and specific — a slipped slate, a failed flashing, a length of fascia that has come away. The cost is almost entirely in reaching them.",
       "Rope access reaches the roofline directly, which makes it practical to inspect a suspected defect and repair it in the same visit.",
@@ -399,6 +547,26 @@ const content: readonly ServicePageContent[] = [
       width: 1400,
       height: 1867,
     },
+    gallery: [
+      {
+        src: "/images/services/lightning-protection-01.jpg",
+        alt: "Close view of a conductor tape fixed to brickwork with a saddle clip",
+        width: 1400,
+        height: 1867,
+      },
+      {
+        src: "/images/services/lightning-protection-02.jpg",
+        alt: "A technician on rope working down a red brick elevation above a street",
+        width: 1100,
+        height: 1467,
+      },
+      {
+        src: "/images/services/lightning-protection-03.jpg",
+        alt: "A conductor running the full height of a brick elevation against the sky",
+        width: 1100,
+        height: 1467,
+      },
+    ],
     overview: [
       "A lightning protection system runs the full height of a building, which makes almost every part of it a working-at-height problem.",
       "BOVI Access provides the access. Conductor tape, down conductors, fixings and roof-level components can all be reached by rope, so the system can be inspected, maintained or reinstated without scaffolding the elevation.",

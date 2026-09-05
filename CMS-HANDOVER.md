@@ -116,6 +116,13 @@ There are eight, already written and live. You can edit any of them.
 - **Main image** — click it, upload a new photograph, and **use the
   hotspot tool** (the little circle) to mark the part that must stay
   visible when the image is cropped on a phone.
+- **Photo gallery** — the extra photographs further down the service
+  page. The first one is the large image beside "How the work gets
+  done"; the next two sit side by side under the introduction. **Add
+  three and you get all of them; add one and you get just the large
+  one.** The page is built to look right either way, so only add photos
+  that genuinely show that service — a page with two honest photographs
+  beats a page with four borrowed ones.
 - **FAQs** — only add questions you are genuinely asked. These get sent
   to Google as structured data, so an invented answer becomes an invented
   Google result.

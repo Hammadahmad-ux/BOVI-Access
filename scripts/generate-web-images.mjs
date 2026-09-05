@@ -74,7 +74,12 @@ const images = [
     trimBars: true,
   },
   {
-    src: `${SRC}/07-General-Rope-Access/IMG_4093.jpg`,
+    // IMG_4093 was here and was WRONG: the technician is carrying a
+    // window cleaner's bucket and squeegee, so the page for a sealant
+    // service showed window cleaning kit. The client spotted it.
+    // IMG_9969 shows a technician applying sealant from a cordless gun
+    // into a vertical joint — genuinely this service.
+    src: `${SRC}/07-General-Rope-Access/IMG_9969.jpg`,
     out: "public/images/services/mastic-sealant.jpg",
     width: 1400,
     quality: 74,
@@ -174,6 +179,179 @@ const images = [
     src: `${SRC}/04-Lightning-Protection/4c19f2c3-9952-47b8-b19b-11cd8563a264.jpg`,
     out: "public/images/home/project-06.jpg",
     width: 1200,
+    quality: 74,
+  },
+  /* ---------------- Service galleries ----------------
+   * Added in the client image revision pass. Renan asked for more
+   * pictures on the internal pages; every frame below is a genuine BOVI
+   * photograph chosen because it shows THIS service, not because a slot
+   * needed filling. Services with thin coverage get fewer images rather
+   * than borrowed ones.
+   *
+   * Naming: `<slug>-01|02|03`. 01 is the large mid-page image; 02 and 03
+   * are the asymmetric pair. A service with no 02/03 simply renders no
+   * pair — see ServiceBody.
+   */
+
+  /* Commercial Window Cleaning — the best-covered service. */
+  {
+    src: `${SRC}/02-Window-Cleaning/810C5448-B313-4E13-8C42-B29AEEF4737E.jpg`,
+    out: "public/images/services/commercial-window-cleaning-01.jpg",
+    width: 1400,
+    quality: 74,
+  },
+  {
+    src: `${SRC}/02-Window-Cleaning/IMG_9304.jpg`,
+    out: "public/images/services/commercial-window-cleaning-02.jpg",
+    width: 1100,
+    quality: 74,
+  },
+  {
+    src: `${SRC}/02-Window-Cleaning/bd7eada4-16f4-4dc4-b8ef-4a5d6970252d.jpg`,
+    out: "public/images/services/commercial-window-cleaning-03.jpg",
+    width: 1100,
+    quality: 74,
+  },
+
+  /* Brickwork & Repointing — the "Repoint" folder. */
+  {
+    src: `${SRC}/03-Brickwork-Repointing/IMG_1718.jpg`,
+    out: "public/images/services/brickwork-repointing-01.jpg",
+    width: 1400,
+    quality: 74,
+  },
+  {
+    src: `${SRC}/03-Brickwork-Repointing/IMG_1745.jpg`,
+    out: "public/images/services/brickwork-repointing-02.jpg",
+    width: 1100,
+    quality: 74,
+  },
+  {
+    src: `${SRC}/03-Brickwork-Repointing/IMG_1698.jpg`,
+    out: "public/images/services/brickwork-repointing-03.jpg",
+    width: 1200,
+    quality: 74,
+  },
+
+  /* Gutter Cleaning — the gutter frames mis-filed under "Repoint",
+     plus the cleared-outlet shot from the drainage set. */
+  {
+    src: `${SRC}/03-Brickwork-Repointing/IMG_0710.jpg`,
+    out: "public/images/services/gutter-cleaning-01.jpg",
+    width: 1400,
+    quality: 74,
+    trimBars: true,
+  },
+  {
+    src: `${SRC}/05-Drainage-Pipes/IMG_6274.jpg`,
+    out: "public/images/services/gutter-cleaning-02.jpg",
+    width: 1100,
+    quality: 74,
+    trimBars: true,
+  },
+  {
+    src: `${SRC}/03-Brickwork-Repointing/IMG_0707.jpg`,
+    out: "public/images/services/gutter-cleaning-03.jpg",
+    width: 1100,
+    quality: 74,
+    trimBars: true,
+  },
+
+  /* Drainage & External Pipe Repairs — the "Waste pipe" folder. */
+  {
+    src: `${SRC}/05-Drainage-Pipes/PHOTO-2024-12-27-10-54-10.jpg`,
+    out: "public/images/services/drainage-external-pipe-repairs-01.jpg",
+    width: 1200,
+    quality: 74,
+  },
+  {
+    src: `${SRC}/05-Drainage-Pipes/IMG_5859.jpg`,
+    out: "public/images/services/drainage-external-pipe-repairs-02.jpg",
+    width: 1100,
+    quality: 74,
+    trimBars: true,
+  },
+  {
+    src: `${SRC}/05-Drainage-Pipes/IMG_5863.jpg`,
+    out: "public/images/services/drainage-external-pipe-repairs-03.jpg",
+    width: 1100,
+    quality: 74,
+    trimBars: true,
+  },
+
+  /* Mastic & Sealant — previously recorded as having NO genuine
+     imagery. It does: IMG_9892/9896/9966/9969 are one joint-sealing
+     job, with backer rod, pointing trowel and a cordless sealant gun
+     all visible. The earlier pass missed them because they sit in the
+     unsorted "general" folder. */
+  {
+    src: `${SRC}/07-General-Rope-Access/IMG_9892.jpg`,
+    out: "public/images/services/mastic-sealant-01.jpg",
+    width: 1400,
+    quality: 74,
+  },
+  {
+    src: `${SRC}/07-General-Rope-Access/IMG_9966.jpg`,
+    out: "public/images/services/mastic-sealant-02.jpg",
+    width: 1100,
+    quality: 74,
+  },
+  {
+    src: `${SRC}/07-General-Rope-Access/IMG_9896.jpg`,
+    out: "public/images/services/mastic-sealant-03.jpg",
+    width: 1100,
+    quality: 74,
+  },
+
+  /* Pressure Washing / DOFF — still the thinnest service in the
+     library. ONE additional genuine frame, and no pair. Better a
+     shorter page than a borrowed photograph. */
+  {
+    src: `${SRC}/07-General-Rope-Access/IMG_9664.jpg`,
+    out: "public/images/services/pressure-washing-doff-cleaning-01.jpg",
+    width: 1400,
+    quality: 74,
+    trimBars: true,
+  },
+
+  /* Roof & Roofline Repairs. */
+  {
+    src: `${SRC}/07-General-Rope-Access/IMG_9420.jpg`,
+    out: "public/images/services/roof-roofline-repairs-01.jpg",
+    width: 1400,
+    quality: 74,
+  },
+  {
+    src: `${SRC}/07-General-Rope-Access/IMG_6403.jpg`,
+    out: "public/images/services/roof-roofline-repairs-02.jpg",
+    width: 1100,
+    quality: 74,
+  },
+  {
+    src: `${SRC}/03-Brickwork-Repointing/IMG_0706.jpg`,
+    out: "public/images/services/roof-roofline-repairs-03.jpg",
+    width: 1100,
+    quality: 74,
+    trimBars: true,
+  },
+
+  /* Lightning Protection — the "Spda" folder. */
+  {
+    src: `${SRC}/04-Lightning-Protection/dc4aec95-66f6-49ef-a00b-af1b149e7c33.jpg`,
+    out: "public/images/services/lightning-protection-01.jpg",
+    width: 1400,
+    quality: 74,
+  },
+  {
+    src: `${SRC}/04-Lightning-Protection/7c7e3f8d-418f-46da-91c6-f5d7c61781ce.jpg`,
+    out: "public/images/services/lightning-protection-02.jpg",
+    width: 1100,
+    quality: 74,
+  },
+  {
+    src: `${SRC}/04-Lightning-Protection/fe14fd76-14a3-4dd7-9531-df2781e10d48.jpg`,
+    out: "public/images/services/lightning-protection-03.jpg",
+    width: 1100,
     quality: 74,
   },
 ];
