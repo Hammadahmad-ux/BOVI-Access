@@ -15,8 +15,8 @@ and a bad migration loses that.
 | `/about` | About / Safety | **Complete** |
 | `/services` | Services overview | **Complete** — alternating editorial directory |
 | `/services/[slug]` | Individual service pages (×8) | **Complete** — one reusable template, data-driven |
-| `/portfolio` | Projects index | **Complete** — category-led, six verified images, no filters |
-| `/projects/[slug]` | Project detail | **Built, generates 0 pages** — no project has a verified name, so none has a URL. Template waits for Sanity. |
+| `/portfolio` | Projects index | **Complete** — completed-work gallery: one card per job, each linking to its own project page. No filters. |
+| `/projects/[slug]` | Project detail | **Live — 6 pages.** One per completed job, each with its own photographs. Titles are service-led and verified against the photography; no client, address or date is published. |
 | `/service-areas` | Coverage | **Complete** |
 | `/contact` | Request a Quote | **Complete front end** — submission wired in Phase 4 |
 | `/privacy` | Privacy Policy | Live — needs legal review |

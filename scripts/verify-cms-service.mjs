@@ -167,7 +167,8 @@ try {
     );
 
     const map = await get("/sitemap.xml");
-    check("sitemap URL count", (map.body.match(/<loc>/g) ?? []).length, 16);
+    // 7 static + 8 core services + the fixture service + 6 projects.
+    check("sitemap URL count", (map.body.match(/<loc>/g) ?? []).length, 22);
     check(
       "sitemap contains the new service once",
       (map.body.match(new RegExp(`/services/${SLUG}<`, "g")) ?? []).length,
@@ -186,7 +187,8 @@ try {
     check("no longer listed", countLinks(list.body, SLUG), 0);
 
     const map = await get("/sitemap.xml");
-    check("sitemap URL count back to baseline", (map.body.match(/<loc>/g) ?? []).length, 15);
+    // 7 static + 8 core services + 6 projects.
+    check("sitemap URL count back to baseline", (map.body.match(/<loc>/g) ?? []).length, 21);
 
     const core = await get("/services/mastic-sealant");
     check("the original eight are untouched", core.status, 200);

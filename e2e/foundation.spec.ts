@@ -23,6 +23,11 @@ const ROUTES = [
   "/services/roof-roofline-repairs",
   "/services/lightning-protection",
   "/portfolio",
+  // Project detail pages exist now. Two of them: the one with the most
+  // photographs, and the one with the fewest — a single-image gallery is
+  // where an "and N more" layout would break first.
+  "/projects/external-pipe-repair",
+  "/projects/mastic-sealant-renewal",
   "/service-areas",
   "/contact",
   "/privacy",

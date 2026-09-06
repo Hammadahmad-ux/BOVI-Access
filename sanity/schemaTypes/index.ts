@@ -264,56 +264,91 @@ export const project = {
   title: "Project",
   type: "document",
   /**
-   * NOTE ON REQUIRED FIELDS: only title, slug and the main photograph are
-   * required. Location, completion date and scope are optional by design —
-   * Renan may not hold that information for older jobs, and a required
-   * field would push him towards inventing one. The front end renders only
-   * the fields that actually have values.
+   * A project is ONE JOB: its own photographs, its own short description,
+   * its own page at /projects/<slug>.
+   *
+   * NOTE ON REQUIRED FIELDS: only title, slug, the main photograph and a
+   * summary are required. Location, completion date and scope are optional
+   * by design — Renan may not hold that information for older jobs, and a
+   * required field would push him towards inventing one, which is exactly
+   * what CONTENT-RULES.md §1 forbids. The project page renders only the
+   * fields that actually have values, and omits whole sections rather than
+   * showing an empty label.
    */
   fields: [
     {
       name: "title",
       title: "Project title",
       type: "string",
+      description:
+        'What the work was, e.g. "External Pipe Repair" or "Brickwork Repointing". Only use a client name, building name or address if the client has agreed you can publish it.',
       validation: required,
     },
     {
       name: "slug",
-      title: "URL slug",
+      title: "Web address",
       type: "slug",
-      options: { source: "title", maxLength: 96 },
-      validation: required,
+      options: {
+        source: "title",
+        maxLength: 96,
+        slugify: (input: string) =>
+          input
+            .toLowerCase()
+            .replace(/&/g, "and")
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "")
+            .slice(0, 96),
+      },
+      description:
+        "The end of the page address: /projects/THIS-BIT. It fills in from the title, so leave it alone. Changing it on a project that is already live breaks any link to it.",
+      validation: (rule: Rule) =>
+        rule.required().custom((value: { current?: string } | undefined) => {
+          const current = value?.current;
+          if (!current) return "A web address is required.";
+          if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(current)) {
+            return "Use lowercase letters, numbers and hyphens only.";
+          }
+          return true;
+        }),
     },
     {
       name: "service",
       title: "Service",
       type: "reference",
       to: [{ type: "service" }],
-      description: "Which service was this project? Used for filtering.",
+      description:
+        "Which service this job was. Shown above the project title, and used to link the project to the right service page.",
     },
     {
       name: "location",
       title: "Location",
       type: "string",
-      description: "Optional. Leave blank if you would rather not say.",
+      description:
+        "OPTIONAL, and only if the client is happy for it to be published. Leave blank and the page simply does not show a location — it does not leave a gap.",
     },
     {
       name: "summary",
-      title: "Summary",
+      title: "Short description",
       type: "text",
-      rows: 3,
-      description: "Two or three sentences on what the job involved.",
+      rows: 4,
+      description:
+        "Two or three sentences on what the photographs show and what the work involved. This is what appears under the project on the Projects page, so keep it factual and specific — what was done, on what, and how it was reached.",
+      validation: required,
     },
     {
       name: "heroImage",
       title: "Main photograph",
       type: "image",
       options: { hotspot: true },
+      description:
+        "The photograph used on the Projects page card and at the top of the project's own page. Click the crop icon and drag the circle over the part that must stay visible when it is cropped.",
       fields: [
         {
           name: "alt",
           title: "Alt text",
           type: "string",
+          description:
+            "One sentence describing what is in the photograph, e.g. \"Rope access technician working on external pipework\". Do not put a client name, address or project title in here.",
           validation: required,
         },
       ],
@@ -321,34 +356,54 @@ export const project = {
     },
     {
       name: "gallery",
-      title: "Photo gallery",
+      title: "More photographs from this job",
       type: "array",
       of: [{ type: "galleryImage" }],
+      description:
+        "Shown on the project page below the details, and the count appears on the Projects card. Two to four is usually right — pick shots that show something different: the access, the problem, the work, the result. ALL of them must be from THIS job. Drag to reorder.",
     },
     {
       name: "scope",
       title: "Scope of works",
       type: "array",
       of: [{ type: "string" }],
-      description: "Optional. A short bulleted list of what was carried out.",
+      description:
+        "OPTIONAL. A short list of what was carried out, one line each. Leave it empty and the section is not shown at all.",
     },
     {
       name: "featured",
-      title: "Feature on the homepage",
+      title: "Feature this project",
       type: "boolean",
       initialValue: false,
+      description:
+        "Makes this the large lead project at the top of the Projects page. Tick it on one project only — if several are ticked, the first is used.",
     },
     {
       name: "completionDate",
       title: "Completed",
       type: "date",
       options: { dateFormat: "MMMM YYYY" },
-      description: "Optional.",
+      description:
+        "OPTIONAL. Leave blank unless you are sure of the date — the page shows no date rather than a guess.",
     },
     seoFields,
   ],
   preview: {
-    select: { title: "title", subtitle: "location", media: "heroImage" },
+    select: {
+      title: "title",
+      service: "service.name",
+      slug: "slug.current",
+      media: "heroImage",
+    },
+    prepare: ({ title, service, slug, media }: Record<string, unknown>) => ({
+      title: (title as string) || "Untitled project",
+      // The service, not the location: most projects have no published
+      // location, and a list of blank subtitles is no use for finding one.
+      subtitle:
+        (service as string) ||
+        (slug ? "/projects/" + (slug as string) : "No web address yet"),
+      media: media as never,
+    }),
   },
 };
 

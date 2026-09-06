@@ -354,6 +354,180 @@ const images = [
     width: 1100,
     quality: 74,
   },
+  /* ---------------- Projects ----------------
+   * Completed-work gallery. Renan asked for the Projects page to show
+   * photographs of real jobs rather than route people back into the
+   * service pages, so each entry below is ONE JOB and every frame in it
+   * is from that same job — verified by reviewing the source folders as
+   * contact sheets, not by trusting the folder names.
+   *
+   * Provenance for each grouping is in
+   * client-assets/ASSET-INVENTORY.md § Project groupings. Do not add a
+   * project here without adding that row, and do not mix frames from two
+   * buildings into one project.
+   *
+   * `main` is the card and page-hero image; 01-03 are the detail gallery.
+   */
+
+  /* External pipework — cream glazed-brick lightwell, cast iron stacks. */
+  {
+    src: `${SRC}/05-Drainage-Pipes/PHOTO-2024-12-27-10-54-10.jpg`,
+    out: "public/images/projects/external-pipe-repair/main.jpg",
+    width: 1300,
+    quality: 72,
+  },
+  {
+    src: `${SRC}/05-Drainage-Pipes/IMG_5861.jpg`,
+    out: "public/images/projects/external-pipe-repair/01.jpg",
+    width: 900,
+    quality: 72,
+    trimBars: true,
+  },
+  {
+    src: `${SRC}/05-Drainage-Pipes/IMG_5859.jpg`,
+    out: "public/images/projects/external-pipe-repair/02.jpg",
+    width: 900,
+    quality: 72,
+    trimBars: true,
+  },
+  {
+    src: `${SRC}/05-Drainage-Pipes/IMG_5860.jpg`,
+    out: "public/images/projects/external-pipe-repair/03.jpg",
+    width: 900,
+    quality: 72,
+    trimBars: true,
+  },
+
+  /* Gutter and downpipe clearance — residential block, blocked hopper. */
+  {
+    src: `${SRC}/03-Brickwork-Repointing/IMG_0706.jpg`,
+    out: "public/images/projects/gutter-downpipe-clearance/main.jpg",
+    width: 1300,
+    quality: 72,
+    trimBars: true,
+  },
+  {
+    src: `${SRC}/03-Brickwork-Repointing/IMG_0710.jpg`,
+    out: "public/images/projects/gutter-downpipe-clearance/01.jpg",
+    width: 900,
+    quality: 72,
+    trimBars: true,
+  },
+  {
+    src: `${SRC}/03-Brickwork-Repointing/IMG_0711.jpg`,
+    out: "public/images/projects/gutter-downpipe-clearance/02.jpg",
+    width: 900,
+    quality: 72,
+    trimBars: true,
+  },
+  {
+    src: `${SRC}/03-Brickwork-Repointing/IMG_0707.jpg`,
+    out: "public/images/projects/gutter-downpipe-clearance/03.jpg",
+    width: 900,
+    quality: 72,
+    trimBars: true,
+  },
+
+  /* Repointing — weathered chimney stacks and parapets. */
+  {
+    src: `${SRC}/03-Brickwork-Repointing/IMG_1722.jpg`,
+    out: "public/images/projects/brickwork-repointing-works/main.jpg",
+    width: 1300,
+    quality: 72,
+  },
+  {
+    src: `${SRC}/03-Brickwork-Repointing/IMG_1718.jpg`,
+    out: "public/images/projects/brickwork-repointing-works/01.jpg",
+    width: 900,
+    quality: 72,
+  },
+  {
+    src: `${SRC}/03-Brickwork-Repointing/IMG_1745.jpg`,
+    out: "public/images/projects/brickwork-repointing-works/02.jpg",
+    width: 900,
+    quality: 72,
+  },
+  {
+    src: `${SRC}/03-Brickwork-Repointing/IMG_1698.jpg`,
+    out: "public/images/projects/brickwork-repointing-works/03.jpg",
+    width: 1100,
+    quality: 72,
+  },
+
+  /* Lightning protection — one red brick block, conductor tape run. */
+  {
+    src: `${SRC}/04-Lightning-Protection/7c7e3f8d-418f-46da-91c6-f5d7c61781ce.jpg`,
+    out: "public/images/projects/lightning-protection-works/main.jpg",
+    width: 1300,
+    quality: 72,
+  },
+  {
+    src: `${SRC}/04-Lightning-Protection/4c19f2c3-9952-47b8-b19b-11cd8563a264.jpg`,
+    out: "public/images/projects/lightning-protection-works/01.jpg",
+    width: 900,
+    quality: 72,
+  },
+  {
+    src: `${SRC}/04-Lightning-Protection/cf652e84-b883-4a7f-9cec-8e66c7e05797.jpg`,
+    out: "public/images/projects/lightning-protection-works/02.jpg",
+    width: 900,
+    quality: 72,
+  },
+  {
+    src: `${SRC}/04-Lightning-Protection/dc4aec95-66f6-49ef-a00b-af1b149e7c33.jpg`,
+    out: "public/images/projects/lightning-protection-works/03.jpg",
+    width: 900,
+    quality: 72,
+  },
+
+  /* Sealant renewal.
+   *
+   * TWO images, not four, on purpose. The general folder holds joint
+   * sealing from TWO different sites — 9966/9969 on a brick-and-panel
+   * block, and 9892/9896 on a rendered elevation beside a railway line.
+   * They were nearly shipped as one project; presenting frames from two
+   * buildings as one job is exactly what CONTENT-RULES.md §2 forbids, and
+   * the second site has no frame showing the work itself. So this project
+   * is the brick-and-panel site only, where the sealant gun and the bead
+   * in the joint are both plainly visible. */
+  {
+    src: `${SRC}/07-General-Rope-Access/IMG_9969.jpg`,
+    out: "public/images/projects/mastic-sealant-renewal/main.jpg",
+    width: 1300,
+    quality: 72,
+  },
+  {
+    src: `${SRC}/07-General-Rope-Access/IMG_9966.jpg`,
+    out: "public/images/projects/mastic-sealant-renewal/01.jpg",
+    width: 900,
+    quality: 72,
+  },
+
+  /* Glazing clean — the single coherent apartment-block job. */
+  {
+    src: `${SRC}/06-Window-Cleaning-Liverpool/IMG_4045.jpg`,
+    out: "public/images/projects/commercial-glazing-clean/main.jpg",
+    width: 1300,
+    quality: 72,
+  },
+  {
+    src: `${SRC}/06-Window-Cleaning-Liverpool/IMG_4063.jpg`,
+    out: "public/images/projects/commercial-glazing-clean/01.jpg",
+    width: 900,
+    quality: 72,
+  },
+  {
+    src: `${SRC}/06-Window-Cleaning-Liverpool/IMG_4037.jpg`,
+    out: "public/images/projects/commercial-glazing-clean/02.jpg",
+    width: 900,
+    quality: 72,
+  },
+  {
+    src: `${SRC}/06-Window-Cleaning-Liverpool/IMG_4097.jpg`,
+    out: "public/images/projects/commercial-glazing-clean/03.jpg",
+    width: 900,
+    quality: 72,
+  },
 ];
 
 let total = 0;

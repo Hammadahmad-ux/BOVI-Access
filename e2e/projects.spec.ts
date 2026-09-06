@@ -1,0 +1,184 @@
+import { test, expect } from "@playwright/test";
+
+/**
+ * Projects — completed-work gallery.
+ *
+ * These guard the two things the client actually reported: project cards
+ * that sent visitors to service pages instead of showing the work, and
+ * two Lightning Protection entries on one page. Both were symptoms of the
+ * same thing — the list was photographs grouped by category rather than
+ * jobs — so the guards below assert the shape, not just the symptom.
+ *
+ * Page-level invariants; one viewport is enough. The responsive checks
+ * for these routes live in foundation.spec.ts, which runs everywhere.
+ */
+test.describe("projects gallery", () => {
+  test.skip(
+    ({ viewport }) => viewport?.width !== 1440,
+    "Content invariants are viewport-independent.",
+  );
+
+  test("no project card links to a service page", async ({ page }) => {
+    // THE CLIENT'S ACTUAL COMPLAINT: "it redirects to the service pages
+    // rather than actually showing photos of completed work."
+    await page.goto("/portfolio");
+
+    const serviceLinks = await page
+      .locator('main a[href^="/services/"]')
+      .count();
+    expect(serviceLinks).toBe(0);
+
+    const projectLinks = await page
+      .locator('main a[href^="/projects/"]')
+      .count();
+    expect(projectLinks).toBeGreaterThanOrEqual(3);
+  });
+
+  test("every project appears exactly once", async ({ page }) => {
+    // The duplicate Lightning Protection entry existed because two
+    // photographs shared a category. Now one card is one job, so a
+    // repeated destination means a genuine duplicate.
+    await page.goto("/portfolio");
+
+    const hrefs = await page
+      .locator('main a[href^="/projects/"]')
+      .evaluateAll((links) =>
+        links.map((link) => link.getAttribute("href") ?? ""),
+      );
+
+    expect(hrefs.length).toBe(new Set(hrefs).size);
+  });
+
+  test("no service category is listed twice", async ({ page }) => {
+    await page.goto("/portfolio");
+
+    // `data-project-category` marks the two places a project's service
+    // category is rendered — the featured block and each card. Matching on
+    // the `.eyebrow` class instead swept up the section labels and the
+    // "4 photos" badges, which repeat legitimately.
+    const categories = await page
+      .locator("main [data-project-category]")
+      .evaluateAll((nodes) =>
+        nodes
+          .map((node) => node.textContent?.trim().toLowerCase() ?? "")
+          .filter(Boolean),
+      );
+
+    expect(categories.length).toBeGreaterThanOrEqual(3);
+
+    const counts = new Map<string, number>();
+    for (const category of categories) {
+      counts.set(category, (counts.get(category) ?? 0) + 1);
+    }
+
+    const repeated = [...counts].filter(([, n]) => n > 1);
+    expect(repeated).toEqual([]);
+  });
+
+  test("every project card resolves to a real detail page", async ({
+    page,
+    request,
+  }) => {
+    await page.goto("/portfolio");
+    const hrefs = await page
+      .locator('main a[href^="/projects/"]')
+      .evaluateAll((links) => [
+        ...new Set(links.map((link) => link.getAttribute("href") ?? "")),
+      ]);
+
+    expect(hrefs.length).toBeGreaterThan(0);
+    for (const href of hrefs) {
+      const response = await request.get(href);
+      expect(response.status(), `${href} should render`).toBe(200);
+    }
+  });
+
+  test("a project page shows its own photographs", async ({ page }) => {
+    await page.goto("/portfolio");
+    const href = await page
+      .locator('main a[href^="/projects/"]')
+      .first()
+      .getAttribute("href");
+    await page.goto(href as string);
+
+    // The whole point of the rebuild: more than one photograph of the job.
+    const figures = page.locator("main section ul li figure img");
+    await expect(figures.first()).toBeVisible();
+    expect(await figures.count()).toBeGreaterThanOrEqual(1);
+
+    const broken = await page
+      .locator("img")
+      .evaluateAll((images) =>
+        (images as HTMLImageElement[])
+          .filter((img) => img.complete && img.naturalWidth === 0)
+          .map((img) => img.currentSrc || img.src),
+      );
+    expect(broken).toEqual([]);
+  });
+
+  test("a project with no location, date or scope renders cleanly", async ({
+    page,
+  }) => {
+    // None of the current projects has verified metadata, so this is the
+    // normal case rather than an edge case. What must never happen is an
+    // empty "Location" label or a Details band containing nothing.
+    await page.goto("/portfolio");
+    const href = await page
+      .locator('main a[href^="/projects/"]')
+      .first()
+      .getAttribute("href");
+    await page.goto(href as string);
+
+    // No metadata means no definition rows at all — not rows with empty
+    // values, and not a "Details" band containing one line that repeats
+    // the category already in the hero.
+    expect(await page.locator("main dt").count()).toBe(0);
+    expect(
+      await page.getByRole("heading", { name: /details/i }).count(),
+    ).toBe(0);
+
+    // Section numerals must still start at 01, rather than leaving a gap
+    // where a hidden section used to be.
+    const photographs = page
+      .locator("main p", { hasText: /photographs/i })
+      .first();
+    await expect(photographs).toContainText("01");
+  });
+
+  test("an unknown project slug is a real 404", async ({ request }) => {
+    const response = await request.get("/projects/not-a-real-project");
+    expect(response.status()).toBe(404);
+  });
+
+  test("homepage project cards link to projects, not services", async ({
+    page,
+  }) => {
+    await page.goto("/");
+
+    const grid = page.locator("section", { has: page.getByText("Recent works") });
+    const hrefs = await grid
+      .locator('a[href^="/projects/"], a[href^="/services/"]')
+      .evaluateAll((links) =>
+        links.map((link) => link.getAttribute("href") ?? ""),
+      );
+
+    expect(hrefs.length).toBeGreaterThan(0);
+    expect(hrefs.filter((href) => href.startsWith("/services/"))).toEqual([]);
+  });
+
+  test("project URLs are in the sitemap, without duplicates", async ({
+    request,
+  }) => {
+    const sitemap = await (await request.get("/sitemap.xml")).text();
+    const urls = [
+      ...sitemap.matchAll(/<loc>[^<]*(\/projects\/[a-z0-9-]+)<\/loc>/g),
+    ].map((match) => match[1]);
+
+    expect(urls.length).toBeGreaterThan(0);
+    expect(urls.length).toBe(new Set(urls).size);
+
+    for (const url of urls) {
+      expect((await request.get(url)).status()).toBe(200);
+    }
+  });
+});

@@ -66,6 +66,11 @@ export async function FeaturedProject() {
   const serviceCategory =
     selected?.serviceCategory ?? featuredProject.serviceCategory;
 
+  // Goes to the JOB, not to /portfolio and not to a service page. The
+  // fallback names the project its own photograph came from, so the link
+  // is still specific when nothing is selected in Studio.
+  const projectSlug = selected?.slug ?? featuredProject.projectSlug;
+
   return (
     <section
       data-ground="dark"
@@ -100,8 +105,8 @@ export async function FeaturedProject() {
               {featuredProject.body}
             </p>
 
-            <ArrowLink href={"/portfolio"} ground="dark" className="mt-8">
-              View projects
+            <ArrowLink href={`/projects/${projectSlug}`} ground="dark" className="mt-8">
+              View project
             </ArrowLink>
           </Reveal>
 

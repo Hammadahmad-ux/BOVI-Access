@@ -21,24 +21,37 @@ export const metadata: Metadata = buildMetadata({
 });
 
 /**
- * Projects.
+ * Projects — a gallery of completed work.
  *
- * Proof of work, not a blog and not a case-study catalogue.
+ * REBUILT at the client's request. It used to show six loose photographs
+ * labelled with a service category, each linking to the SERVICE page: "it
+ * redirects to the service pages rather than actually showing photos of
+ * completed work. I'd prefer it to work more like a simple project
+ * gallery/case study section." He also noticed two Lightning Protection
+ * entries, which was the same fault seen from the front — the list was
+ * images grouped by category, not jobs.
  *
- * Every card shows the SERVICE CATEGORY and the photograph, and links to
- * the service page. No project name, client, location or date is shown
- * because none has been verified — see CONTENT-RULES.md §2 and the note at
- * the top of src/lib/content/projects.ts.
+ * Now every card is one job: its own photographs, its own short
+ * description of what those photographs show, and its own page at
+ * /projects/<slug>. No card links to a service page any more.
  *
- * There are deliberately NO filters. Filters imply a catalogue deep enough
- * to need them; with six verified images they would be theatre. They
- * arrive with the Sanity project records in Phase 4.
+ * Still no project names, clients, locations or dates, because none has
+ * been verified. The titles say what the work WAS — see the note at the
+ * top of src/lib/content/projects.ts.
+ *
+ * There are deliberately NO filters. Six projects do not need them, and
+ * filters imply a catalogue deep enough to justify the chrome.
  */
 export const revalidate = 3600;
 
 export default async function PortfolioPage() {
   const projects = await getProjects();
-  const [featured, ...rest] = projects;
+
+  // The lead item is chosen by the `featured` flag, not by array position,
+  // so re-ordering the list — or Renan ticking a different project in
+  // Studio — cannot silently change which one leads the page.
+  const featured = projects.find((project) => project.featured) ?? projects[0];
+  const rest = projects.filter((project) => project.id !== featured?.id);
 
   return (
     <>
@@ -80,24 +93,24 @@ export default async function PortfolioPage() {
             </Reveal>
 
             <Reveal delay={STAGGER} className="lg:col-span-4">
-              <p className="eyebrow flex items-center gap-2.5 text-green-bright">
+              <p
+                data-project-category
+                className="eyebrow flex items-center gap-2.5 text-green-bright"
+              >
                 <span aria-hidden="true" className="size-1.5 bg-green-bright" />
                 {featured.serviceCategory}
               </p>
-              <h2 className="mt-5 max-w-[16ch] text-h3">
-                Full-height elevation access, without scaffold.
-              </h2>
+              {/* The project's own title and description, not a stock line
+                  about rope access. The heading here used to read "without
+                  scaffold", which is an absolute claim about a job nobody
+                  has verified the constraints of. */}
+              <h2 className="mt-5 max-w-[16ch] text-h3">{featured.title}</h2>
               <p className="mt-5 max-w-[44ch] text-body text-mist">
-                Rope access reaches every level of an elevation from the roof
-                down, so glazing, masonry and roofline works can be completed
-                on an occupied building.
+                {featured.summary}
               </p>
               <div className="mt-7">
-                <ArrowLink
-                  href={`/services/${featured.serviceSlug}`}
-                  ground="dark"
-                >
-                  About this service
+                <ArrowLink href={`/projects/${featured.slug}`} ground="dark">
+                  View project
                 </ArrowLink>
               </div>
             </Reveal>
@@ -128,8 +141,12 @@ export default async function PortfolioPage() {
                 delay={Math.min(i * STAGGER, 0.24)}
                 className={i % 3 === 1 ? "lg:mt-16" : undefined}
               >
+                {/* The destination is the PROJECT, never the service
+                    page. That redirect was the client's actual complaint:
+                    a visitor who clicked a photograph of finished work was
+                    taken to a sales page about the service instead. */}
                 <Link
-                  href={`/services/${project.serviceSlug}`}
+                  href={`/projects/${project.slug}`}
                   className="group flex flex-col gap-5"
                 >
                   <span
@@ -141,24 +158,43 @@ export default async function PortfolioPage() {
                   >
                     <Image
                       src={project.image.src}
-                      /* Decorative: the card link is named by the service
-                         category below it. */
+                      /* Decorative: the card link is named by the project
+                         title below it. */
                       alt=""
                       fill
                       sizes="(min-width: 1024px) 30vw, (min-width: 640px) 46vw, 100vw"
                       quality={72}
                       className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.03] group-focus-visible:scale-[1.03]"
                     />
+
+                    {/* Only when there is genuinely more to see. */}
+                    {project.gallery.length > 0 ? (
+                      <span className="eyebrow absolute right-3 bottom-3 rounded-xs bg-ink/80 px-2.5 py-1.5 text-bone backdrop-blur-sm">
+                        {project.gallery.length + 1} photos
+                      </span>
+                    ) : null}
                   </span>
 
-                  <span className="flex items-start justify-between gap-4 border-t border-hairline-light pt-4">
-                    <span className="font-display text-h5 font-semibold transition-colors group-hover:text-green">
+                  <span className="flex flex-col gap-3 border-t border-hairline-light pt-4">
+                    <span data-project-category className="eyebrow text-moss">
                       {project.serviceCategory}
                     </span>
-                    <ArrowUpRight
-                      aria-hidden="true"
-                      className="mt-0.5 size-5 shrink-0 text-moss transition-transform duration-200 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-green"
-                    />
+
+                    <span className="flex items-start justify-between gap-4">
+                      <span className="font-display text-h5 font-semibold transition-colors group-hover:text-green">
+                        {project.title}
+                      </span>
+                      <ArrowUpRight
+                        aria-hidden="true"
+                        className="mt-0.5 size-5 shrink-0 text-moss transition-transform duration-200 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-green"
+                      />
+                    </span>
+
+                    {/* Clamped, not truncated in the data: the card gives
+                        the gist, the project page gives the whole thing. */}
+                    <span className="line-clamp-3 text-body text-moss">
+                      {project.summary}
+                    </span>
                   </span>
                 </Link>
               </Reveal>
@@ -166,7 +202,7 @@ export default async function PortfolioPage() {
           </ul>
 
           <p className="mt-14 max-w-[56ch] text-body text-moss">
-            Project names, locations and dates are not published here. If you
+            Client names, addresses and dates are not published here. If you
             need references for a specific type of building or works, ask and
             we will provide what the client has agreed we can share.
           </p>

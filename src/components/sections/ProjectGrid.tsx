@@ -99,6 +99,20 @@ export async function ProjectGrid() {
 
   const projects = selected.length > 0 ? selected : localProjects;
 
+  /*
+    The composition is a landscape anchor plus two stepped portraits —
+    6 + 3 + 3 of twelve columns. That only adds up when the set actually
+    contains a landscape frame, and it will not always: the library is
+    portrait-heavy, and Renan now picks these projects himself in Studio.
+    Without a landscape lead the row used to come out 3 + 3 + 3, leaving a
+    quarter of the grid empty.
+
+    So the anchored layout is used when the set can carry it, and three
+    equal columns when it cannot. The stepped offsets do the work of
+    breaking the baseline either way.
+  */
+  const anchored = projects.length === 3 && projects[0]?.span === "wide";
+
   return (
     <section className="bg-bone text-ink">
       <Container className="py-20 lg:py-28">
@@ -117,12 +131,14 @@ export async function ProjectGrid() {
                 as="li"
                 y={18}
                 delay={index * STAGGER}
-                className={cn(shape.column, OFFSET[index % OFFSET.length])}
+                className={cn(
+                  anchored ? shape.column : "lg:col-span-4",
+                  OFFSET[index % OFFSET.length],
+                )}
               >
-                <Link
-                  href={`/services/${project.serviceSlug}`}
-                  className="group block"
-                >
+                {/* The PROJECT, not the service page. A visitor clicking a
+                    photograph of finished work expects to see that job. */}
+                <Link href={`/projects/${project.slug}`} className="group block">
                   <div
                     className={cn(
                       "relative w-full overflow-hidden rounded-sm bg-ink/5",
@@ -133,12 +149,16 @@ export async function ProjectGrid() {
                       src={project.image.src}
                       // Decorative here: the image is inside the card
                       // link, whose accessible name is already the
-                      // service category. A verbatim alt would be
-                      // prepended to that name and read twice.
+                      // project title. A verbatim alt would be prepended
+                      // to that name and read twice.
                       alt=""
                       fill
                       quality={72}
-                      sizes={shape.sizes}
+                      sizes={
+                        anchored
+                          ? shape.sizes
+                          : "(min-width: 1024px) 31vw, (min-width: 640px) 45vw, 100vw"
+                      }
                       className={cn(
                         "object-cover object-center transition-transform duration-700 ease-out",
                         "group-hover:scale-[1.03] group-focus-visible:scale-[1.03]",
@@ -149,7 +169,12 @@ export async function ProjectGrid() {
                   {/* Hairline, then the category — the same rule language
                       the rest of the page uses to separate, rather than a
                       caption box under the image. */}
-                  <div className="mt-5 flex items-start justify-between gap-6 border-t border-hairline-light pt-4">
+                  <div className="mt-5 border-t border-hairline-light pt-4">
+                    <p className="eyebrow text-moss">
+                      {project.serviceCategory}
+                    </p>
+                  </div>
+                  <div className="mt-3 flex items-start justify-between gap-6">
                     <h3
                       className={cn(
                         "text-h5 leading-[1.2] tracking-[-0.01em]",
@@ -157,7 +182,7 @@ export async function ProjectGrid() {
                         "group-hover:translate-x-1 group-focus-visible:translate-x-1",
                       )}
                     >
-                      {project.serviceCategory}
+                      {project.title}
                     </h3>
                     <ArrowUpRight
                       aria-hidden="true"

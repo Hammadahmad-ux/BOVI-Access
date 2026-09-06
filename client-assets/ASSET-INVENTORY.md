@@ -387,6 +387,47 @@ Candidates only — not yet cut into derivatives.
 
 ---
 
+### Project groupings
+
+Added when the Projects page was rebuilt as a completed-work gallery. The
+client asked for photographs of real jobs with a short description each,
+rather than category tiles linking to service pages — and pointed out the
+symptom, two Lightning Protection entries on one page.
+
+**Every group below was verified by eye as a contact sheet**, not taken on
+trust from the folder name. One job = one project = one page.
+
+| Project | Source set | Frames | What confirms it is one job |
+| --- | --- | --- | --- |
+| External Pipe Repair | `05/PHOTO-2024-12-27` + `IMG_5859/5860/5861` | 4 | Same cream glazed-brick lightwell, same black cast iron stacks, in every frame |
+| Gutter & Downpipe Clearance | `03/IMG_0706/0707/0710/0711` | 4 | Consecutive camera numbering; the same buff-and-red brick block and estate context |
+| Brickwork Repointing | `03/IMG_1722/1718/1745/1698` | 4 | Same weathered stock brick, same orange rope and rigging, same roof |
+| Lightning Protection Works | `04/7c7e3f8d` + `4c19f2c3/cf652e84/dc4aec95` | 4 | All eleven frames in the folder are the same red brick block |
+| Mastic & Sealant Renewal | `07/IMG_9969/9966` | 2 | See the warning below |
+| Commercial Glazing Clean | `06/IMG_4045/4063/4037/4097` | 4 | Whole folder is one apartment block, same cladding and balconies |
+
+> **The sealant project was nearly wrong.** `07/IMG_9892` and `IMG_9896`
+> were originally grouped with `9966/9969` as one job. They are not: 9892
+> and 9896 are a rendered elevation beside a railway line, 9966 and 9969
+> are a brick-and-panel block. Two buildings, two jobs. Presenting them as
+> one would have been exactly the fabrication CONTENT-RULES.md §2 forbids,
+> so the project is the brick-and-panel site only — the one where the
+> sealant gun and the bead in the joint are both visible. That leaves it
+> with two photographs instead of four, which is the honest number.
+
+**Only ONE distinct external-pipework job exists in the library.** The
+client has said his first two jobs were drainage and pipe repairs; the
+`05-Drainage-Pipes` folder holds that one pipework job plus a separate
+gutter-clearance job on a different building (`IMG_6272-6275`, orange
+brick, used as service imagery). If the second of those two jobs is one of
+the gutter sets, Renan can say so and the label changes — but nothing here
+guesses at it.
+
+**No project carries a client, address, location, date or value**, because
+none has been verified. Titles say what the work was.
+
+---
+
 ## 7. Gaps — client action needed
 
 1. **No Pressure Washing / DOFF imagery.** This is one of the two services
@@ -411,9 +452,12 @@ Candidates only — not yet cut into derivatives.
    until it is, CLAUDE.md §1 condition 4 is only partly true for the
    homepage. Service pages and projects are unaffected: those read
    through the provider correctly.
-4. **No verified project metadata.** Photographs exist; titles, clients,
-   locations, dates and scopes do not. Until they are supplied, no project
-   can be published (`CONTENT-RULES.md` §1).
+4. **No verified project metadata.** Six projects are now published as a
+   completed-work gallery using service-led titles that are true of the
+   photographs. What is still missing is anything that would let a project
+   name a **client, address, location, date or scope** — supply any of
+   those and the page shows them; leave them and it shows nothing rather
+   than a guess.
 5. **Coverage vs Liverpool.** A meaningful part of the library is from
    Liverpool, while approved coverage is "London & the South East". Worth
    clarifying with Renan before these images anchor a project page.

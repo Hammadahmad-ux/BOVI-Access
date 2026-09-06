@@ -281,6 +281,9 @@ type SanityProject = {
   heroImage?: SanityImage;
   gallery?: SanityImage[];
   scope?: string[];
+  seoTitle?: string;
+  seoDescription?: string;
+  ogImage?: SanityImage;
   featured?: boolean;
   completionDate?: string;
 };
@@ -297,7 +300,10 @@ const PROJECT_QUERY = `*[_type == "project"] | order(featured desc, completionDa
   gallery,
   scope,
   featured,
-  completionDate
+  completionDate,
+  "seoTitle": seo.seoTitle,
+  "seoDescription": seo.seoDescription,
+  "ogImage": seo.ogImage
 }`;
 
 function mapProject(doc: SanityProject): ProjectRecord | null {
@@ -311,21 +317,42 @@ function mapProject(doc: SanityProject): ProjectRecord | null {
   )?.slug;
   if (!serviceSlug) return null;
 
+  // Title and slug are required by the schema, but a document can still
+  // reach here mid-edit without them. A project card with no name and no
+  // destination is not something to render — better to omit it until it
+  // is finished than to publish a nameless tile linking nowhere.
+  const title = doc.title?.trim();
+  const slug = doc.slug?.trim();
+  if (!title || !slug) return null;
+
+  const serviceCategory =
+    doc.serviceName ??
+    serviceIndex.find((s) => s.slug === serviceSlug)?.name ??
+    "";
+
   return {
     id: doc._id,
-    serviceCategory:
-      doc.serviceName ??
-      serviceIndex.find((s) => s.slug === serviceSlug)?.name ??
-      "",
+    title,
+    slug,
+    serviceCategory,
     serviceSlug,
     span: image.width >= image.height ? "wide" : "tall",
     image,
-    title: doc.title,
-    slug: doc.slug,
+    gallery: (doc.gallery ?? [])
+      .map((entry) => imageAssetFrom(entry))
+      .filter((asset): asset is ImageAsset => asset !== null),
+    // Falls back to the service category rather than to an empty card.
+    // Never invents anything: the category is verified, the summary is
+    // simply not written yet.
+    summary:
+      doc.summary?.trim() ||
+      `${serviceCategory} carried out by rope access on a commercial building.`,
     location: doc.location,
-    summary: doc.summary,
     scope: doc.scope,
     completionDate: doc.completionDate,
+    seoTitle: doc.seoTitle?.trim() || undefined,
+    seoDescription: doc.seoDescription?.trim() || undefined,
+    ogImage: imageAssetFrom(doc.ogImage) ?? undefined,
   };
 }
 

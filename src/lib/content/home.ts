@@ -154,6 +154,12 @@ export function getServiceContent(slug: string): ServiceContent | undefined {
  */
 export const featuredProject = {
   serviceCategory: "Commercial Window Cleaning",
+  /**
+   * The project these photographs actually come from, so the block links
+   * to that job rather than to the services page. Same building, same
+   * visit as /images/projects/commercial-glazing-clean/*.
+   */
+  projectSlug: "commercial-glazing-clean",
   heading: "Full-height elevation access, without scaffold.",
   body: "Rope access allows every level of an elevation to be reached from the roof down, so glazing, masonry and roofline works can be completed on an occupied building without a scaffold licence or a road closure.",
   image: {

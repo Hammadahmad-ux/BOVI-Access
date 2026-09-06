@@ -105,24 +105,43 @@ Every field listed here genuinely changes the live site.
 
 This is the one you will use most.
 
+The Projects page is now a gallery of completed work: each project is
+**one job**, with its own photographs, its own short description, and its
+own page at `/projects/<name>`.
+
 **To add a project:**
 
-1. Click **Projects**, then the pencil/plus icon to create a new one.
-2. Fill in the **Project title** and the **URL slug** (the slug fills in
-   automatically from the title — leave it alone unless you have a reason).
-3. Add the **Main photograph**. **Alt text is required** — write one short
-   sentence describing what is in the photo. It is what a blind visitor
-   hears and what Google reads.
-4. Choose the **Service** it relates to.
-5. Everything else is optional: **Location**, **Summary**, **Scope of
-   works**, **Completed** date. **Leave anything blank that you are not
-   sure about.** The website simply will not show that line. Never guess.
-6. Tick **Feature on the homepage** if you want it near the top.
-7. Click **Publish**.
+1. Click **Projects**, then the **+** icon to create a new one.
+2. **Project title** — what the work was, e.g. `External Pipe Repair`.
+   Only use a client name, building name or address if that client has
+   agreed you can publish it.
+3. **Web address** — fills in from the title. **Leave it alone.**
+4. **Service** — which service the job was. This is what appears above the
+   title and links the project to the right service page.
+5. **Short description** — two or three sentences on what the photographs
+   show and what the work involved. This appears on the Projects page
+   under the project, so keep it factual: what was done, on what, and how
+   it was reached.
+6. **Main photograph** — the one used on the card and at the top of the
+   project's page. **Alt text is required**: one sentence describing what
+   is in the photo. Use the crop tool on the important part.
+7. **More photographs from this job** — two to four is usually right. Pick
+   shots that show something different: the access, the problem, the work,
+   the result. **They must all be from the same job.**
+8. **Location**, **Completed** date and **Scope of works** are OPTIONAL.
+   Leave anything blank you are not sure of — the page shows nothing
+   rather than a guess, and there is no empty gap where it would have been.
+9. Tick **Feature this project** to make it the large lead item at the top
+   of the Projects page. Tick it on one project only.
+10. Click **Publish**.
 
-Right now the website shows your photographs grouped by service, because
-no project has a confirmed name yet. As soon as you publish real projects
-here, they take over.
+The project appears on the Projects page, gets its own page, and joins the
+sitemap Google reads — within about a minute.
+
+> **Only add work BOVI has actually completed.** These photographs are the
+> proof a property manager judges you on. Do not mix photos from two
+> different buildings into one project, and do not add a photo of a job
+> that is not yours.
 
 ### Services
 
@@ -236,6 +255,17 @@ in the footer and privacy policy automatically.
 1. Open the document
 2. Edit the field
 3. **Publish**
+
+### Add a project
+
+1. **Projects** → **+**
+2. Title — what the work was
+3. Choose the **Service**
+4. Short description
+5. Main photograph + alt text
+6. A few more photographs from the same job
+7. Location and date are optional — leave blank if unsure
+8. **Publish**
 
 ### Add a whole new service page
 
