@@ -31,9 +31,39 @@ import { STAGGER } from "@/lib/animations/motion";
  * `mx`, so the lg reset (`lg:ml-0`) cannot collide with the persisting right
  * bleed — two different properties, no cascade-order dependency.
  *
- * Desktop keeps the source's native 3:4 so the full-height rope lines are
- * never cropped. Below lg the frame is squarer, because a full-bleed 3:4 at
- * tablet width would stand taller than the viewport.
+ * HEIGHT IS CAPPED, NOT JUST WIDTH.
+ *
+ * Narrowing the column to 45/55 fixed the width the client asked about
+ * and left the height exactly where it was: at 727px wide, 3:4 is 969px
+ * tall, against a 750-800px laptop viewport. The photograph ran 121-129%
+ * of the screen and could not be seen in one piece — the half of "too
+ * dominant" that a ratio cannot reach.
+ *
+ * 820px trims it by 15% and keeps it portrait. A ceiling low enough to
+ * fit a short laptop outright would crop a 3:4 frame past square into
+ * landscape, and this photograph is a lightwell with pipes running its
+ * full height under a heading that reads "Full-height elevation access,
+ * from the roof down" — a landscape crop would argue with the sentence
+ * beside it.
+ *
+ * TWO PROPERTIES MAKE IT WORK, and both are load-bearing:
+ *
+ *   w-[calc(100%+gutter)]  aspect-ratio with only a max-height resolves
+ *                          the box's WIDTH from the clamped height — it
+ *                          shrank to 444px and took the 45/55 balance
+ *                          with it. A definite width makes the ceiling
+ *                          crop the frame instead of resizing it. Plain
+ *                          `w-full` would do that too, but it measures
+ *                          the track alone and drops the bleed (727 to
+ *                          687), so the width carries the gutter itself.
+ *
+ *   max-h                  the crop. Vertical and centred; the
+ *                          technician sits mid-frame and survives it,
+ *                          checked against the rendered photograph.
+ *
+ * Below lg the frame is squarer and uncapped: a full-bleed 3:4 at tablet
+ * width would stand taller than the viewport, and the client did not
+ * raise the phone layout.
  *
  * No column span: the grid below is two explicit tracks from lg, so the
  * figure takes the second one by source order.
@@ -42,7 +72,8 @@ const mediaFrame =
   "relative aspect-[4/5] overflow-hidden bg-ink " +
   "-ml-(--spacing-gutter) -mr-(--spacing-gutter) " +
   "md:-ml-(--spacing-gutter-lg) md:-mr-(--spacing-gutter-lg) " +
-  "lg:ml-0 lg:aspect-[3/4]";
+  "lg:ml-0 lg:aspect-[3/4] lg:max-h-[820px] " +
+  "lg:w-[calc(100%+var(--spacing-gutter-lg))]";
 
 export async function FeaturedProject() {
   const [home, projects] = await Promise.all([getHomepage(), getProjects()]);
