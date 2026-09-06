@@ -27,7 +27,10 @@ test.describe("homepage structure", () => {
     expect(flat).toContain("access"); // Hero h1
     expect(flat).toContain("traditional methods fall short"); // Introduction
     expect(flat).toContain("delivered at height"); // Services
-    expect(flat).toContain("without scaffold"); // Featured project
+    // The Featured Project heading used to read "…without scaffold",
+    // which the client asked us to drop: what a job needs depends on the
+    // site, so the copy must not promise otherwise (CONTENT-RULES.md §7a).
+    expect(flat).toContain("from the roof down"); // Featured project
     expect(flat).toContain("qualified, insured and planned properly"); // Why BOVI
     expect(flat).toContain("property teams actually procure"); // Audiences
     expect(flat).toContain("recent works"); // Projects

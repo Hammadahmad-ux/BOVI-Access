@@ -135,11 +135,57 @@ The eight services are confirmed. Descriptions must stay at the level of
 *what the work is*, not *how well BOVI does it*, until the client supplies
 approved copy.
 
-Acceptable: "Brickwork and repointing delivered by rope access, without
-scaffolding or powered access, on occupied commercial buildings."
+Acceptable: "Brickwork and repointing delivered by rope access on occupied
+commercial buildings, reducing the need for full scaffold."
 
 Not acceptable: "Our expert IRATA-certified team has repointed over 300
 buildings across London."
+
+### 7a. Never make absolute access or logistics claims
+
+**What a job actually needs depends on the building, the site and the
+access conditions — so the copy must never promise otherwise.**
+
+The client raised this himself: "avoid absolute statements such as 'no
+road to close' [...] because requirements depend on each individual site
+and access conditions."
+
+Never write, for the business in general:
+
+- "no road closure" / "no road to close" / "without a road closure"
+- "no scaffolding required" / "without scaffolding"
+- "no scaffold licence"
+- "zero disruption" / "no disruption"
+- "no access equipment needed"
+- guaranteed cost or programme savings
+
+These are only ever publishable about a **specific completed project**
+where that fact was verified for that job — and even then, only if the
+client confirms it.
+
+Write instead, varying the phrasing so it does not read as a formula:
+
+- "reducing the need for scaffolding, road closures and associated disruption"
+- "can reduce reliance on…"
+- "may reduce the need for…"
+- "where the scope allows…"
+- "depending on site and access requirements"
+- "on many buildings this means…"
+
+A softened "without" is acceptable where it is plainly conditional — "an
+individual joint can **often** be reached without scaffolding the whole
+elevation" states a tendency, not a promise. A bare "without scaffolding"
+does not.
+
+Do not overcorrect into legalese. The copy should still read as confident
+commercial writing; it just must not guarantee an outcome that belongs to
+the site rather than to BOVI.
+
+**This applies to Sanity too.** The service documents are seeded from the
+local content and the provider merges CMS values *over* it, so unsafe
+wording fixed only in code still ships from the CMS. `npm run
+cms:fix-wording` reconciles them; it only rewrites fields that still
+contain retired wording, so it never overwrites an edit Renan has made.
 
 ---
 

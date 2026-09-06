@@ -43,8 +43,8 @@ export default async function ServicesPage() {
     <>
       <PageHero
         eyebrow="Services"
-        title={["External building works.", "Without the access limits."]}
-        lead="BOVI Access combines specialist rope access with practical external maintenance, so works at height can be surveyed, priced and completed without scaffold or powered access."
+        title={["External building works.", "Access without limits."]}
+        lead="BOVI Access combines specialist rope access with practical external maintenance, so works at height can be surveyed, priced and completed with less reliance on scaffold or powered access."
         height="standard"
       />
 

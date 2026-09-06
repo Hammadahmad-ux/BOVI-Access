@@ -100,7 +100,7 @@ const content: readonly ServicePageContent[] = [
     eyebrow: "Service 01",
     heroTitle: "Commercial Window Cleaning",
     intro:
-      "Scheduled and reactive glazing cleans to high-rise and hard-to-reach elevations, delivered by rope access without scaffold or powered access.",
+      "Scheduled and reactive glazing cleans to high-rise and hard-to-reach elevations, delivered by rope access with less reliance on scaffold or powered access.",
     heroMedia: {
       src: "/images/services/commercial-window-cleaning.jpg",
       alt: "Three BOVI Access technicians descending the glazed facade of a high-rise tower on ropes",
@@ -128,8 +128,8 @@ const content: readonly ServicePageContent[] = [
       },
     ],
     overview: [
-      "Glazing on tall or awkward elevations is often the hardest part of a building to keep clean. Cradles are not always available, scaffold is disproportionate for a clean, and powered access needs ground space that a city site rarely has.",
-      "Rope access reaches the full height of an elevation from anchor points at roof level, so glazing can be cleaned on an occupied building without closing a road or booking a scaffold licence.",
+      "Glazing on tall or awkward elevations is often the hardest part of a building to keep clean. Cradles are not always available, scaffold is often disproportionate for a clean, and powered access needs ground space that a city site rarely has.",
+      "Rope access reaches the full height of an elevation from anchor points at roof level, so glazing on an occupied building can often be cleaned with much less ground-level disruption than scaffold or powered access would involve.",
     ],
     commonWorks: [
       "High-level and high-rise window cleaning",
@@ -157,7 +157,7 @@ const content: readonly ServicePageContent[] = [
       "gutter-cleaning",
     ],
     seoDescription:
-      "Commercial window cleaning by rope access — high-rise glazing, curtain walling and facade cleaning on occupied buildings, without scaffold.",
+      "Commercial window cleaning by rope access — high-rise glazing, curtain walling and facade cleaning on occupied buildings, with less reliance on scaffold.",
   },
 
   /* ------------------------------------------------------------------ */
@@ -194,8 +194,8 @@ const content: readonly ServicePageContent[] = [
       },
     ],
     overview: [
-      "Failed pointing is usually localised — a chimney stack, a parapet, a band of weathered mortar on one elevation. Scaffolding a whole building to reach it is slow and expensive.",
-      "Rope access lets the affected area be reached directly, so a defect can be surveyed and repaired in the same visit without the programme and cost of a full scaffold.",
+      "Failed pointing is usually localised — a chimney stack, a parapet, a band of weathered mortar on one elevation. Scaffolding a whole building to reach it can be slow and expensive.",
+      "Rope access lets the affected area be reached directly, so where the scope allows a defect can be surveyed and repaired in the same visit, often avoiding the programme and cost of a full scaffold.",
     ],
     commonWorks: [
       "Localised repointing to elevations and parapets",
@@ -222,7 +222,7 @@ const content: readonly ServicePageContent[] = [
       "roof-roofline-repairs",
     ],
     seoDescription:
-      "Localised brickwork repair and repointing at height by rope access — elevations, parapets and chimney stacks, without full scaffold.",
+      "Localised brickwork repair and repointing at height by rope access — elevations, parapets and chimney stacks, reducing the need for full scaffold.",
   },
 
   /* ------------------------------------------------------------------ */
@@ -260,7 +260,7 @@ const content: readonly ServicePageContent[] = [
     ],
     overview: [
       "A blocked gutter is a small problem that becomes an expensive one. Water backs up over the fascia, tracks down the elevation, and shows up inside as staining long after the cause started.",
-      "Clearing at roof level is straightforward when the roofline can be reached safely. Rope access reaches gutter runs on tall or awkward buildings without towers or a cherry picker.",
+      "Clearing at roof level is straightforward when the roofline can be reached safely. Rope access reaches gutter runs on tall or awkward buildings where towers or a cherry picker would be difficult to position.",
     ],
     commonWorks: [
       "Clearance of gutters, valleys and hoppers",
@@ -396,7 +396,7 @@ const content: readonly ServicePageContent[] = [
     ],
     overview: [
       "Sealant is the part of a facade that fails first and is noticed last. Joints around windows, panel interfaces and movement joints all have a service life shorter than the building around them.",
-      "Renewing them is straightforward work made difficult only by height. Rope access reaches a single failing joint on the eighth floor without treating it as a scaffold job.",
+      "Renewing them is straightforward work made difficult only by height. Rope access can reach a single failing joint on the eighth floor, so an isolated repair need not become a scaffold job.",
     ],
     commonWorks: [
       "Renewal of perimeter joints around windows and doors",
@@ -409,7 +409,7 @@ const content: readonly ServicePageContent[] = [
     delivery: [
       "Existing sealant is cut out rather than sealed over, so the new joint bonds to a sound substrate.",
       "Joints are inspected at close range first — sealant is often blamed for ingress that has another cause.",
-      "Works are carried out from rope, so single joints can be reached without scaffolding an elevation.",
+      "Works are carried out from rope, so an individual joint can often be reached without scaffolding the whole elevation.",
     ],
     suitableFor: [
       "Curtain-walled and panelled commercial buildings",
@@ -580,7 +580,7 @@ const content: readonly ServicePageContent[] = [
     ],
     overview: [
       "A lightning protection system runs the full height of a building, which makes almost every part of it a working-at-height problem.",
-      "BOVI Access provides the access. Conductor tape, down conductors, fixings and roof-level components can all be reached by rope, so the system can be inspected, maintained or reinstated without scaffolding the elevation.",
+      "BOVI Access provides the access. Conductor tape, down conductors, fixings and roof-level components can all be reached by rope, so the system can often be inspected, maintained or reinstated without scaffolding the elevation.",
       "Where testing, certification or design sits with a specialist lightning protection engineer, BOVI works alongside them rather than in place of them.",
     ],
     commonWorks: [

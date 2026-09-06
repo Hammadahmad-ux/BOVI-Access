@@ -48,8 +48,8 @@ export const introduction = {
   eyebrow: "BOVI Access",
   heading: "Professional access where traditional methods fall short.",
   body: [
-    "BOVI Access provides specialist high-level access, repair and maintenance solutions for commercial buildings, using rope-access methods to reach difficult areas efficiently and with minimal disruption.",
-    "Facades, rooflines and other elevations are reached without scaffolding or extended road closures — reducing programme time, cost and disruption to tenants and building operations.",
+    "BOVI Access provides specialist high-level access, repair and maintenance solutions for commercial buildings, using rope-access methods to reach difficult areas efficiently and safely.",
+    "Rope-access methods can reduce the need for scaffolding, road closures and associated disruption, depending on the building, site conditions and access requirements.",
   ],
   image: {
     src: "/images/home/introduction.jpg",
@@ -84,7 +84,7 @@ export const serviceContent: readonly ServiceContent[] = [
   {
     slug: "brickwork-repointing",
     description:
-      "Localised masonry repair and repointing to elevations, without scaffold.",
+      "Localised masonry repair and repointing to elevations, reached from rope.",
     image: {
       src: "/images/services/brickwork-repointing.jpg",
       alt: "Rope lines rigged to a brick chimney stack against a clear sky",
@@ -160,8 +160,8 @@ export const featuredProject = {
    * visit as /images/projects/commercial-glazing-clean/*.
    */
   projectSlug: "commercial-glazing-clean",
-  heading: "Full-height elevation access, without scaffold.",
-  body: "Rope access allows every level of an elevation to be reached from the roof down, so glazing, masonry and roofline works can be completed on an occupied building without a scaffold licence or a road closure.",
+  heading: "Full-height elevation access, from the roof down.",
+  body: "Rope access allows every level of an elevation to be reached from anchor points at roof level, so glazing, masonry and roofline works can be carried out on an occupied building with a smaller site footprint than scaffold or powered access usually needs.",
   image: {
     src: "/images/home/featured-project.jpg",
     alt: "Rope lines running the full height of a modern apartment building elevation",
@@ -200,7 +200,7 @@ export const whyBovi = {
     {
       index: "04",
       title: "Minimal Disruption",
-      body: "No scaffold and a smaller site footprint, so buildings stay operational throughout.",
+      body: "A smaller site footprint than scaffold or powered access usually needs, so buildings can stay operational while works are carried out.",
     },
     {
       index: "05",

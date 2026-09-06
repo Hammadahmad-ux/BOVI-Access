@@ -41,7 +41,7 @@ const stages = [
   {
     index: "03",
     title: "Access",
-    body: "Technicians reach the work on rope from anchor points at roof level — no scaffold to erect, no platform to position, no road to close.",
+    body: "Technicians reach the work on rope from anchor points at roof level, which on many buildings means far less to erect at street level than a scaffold or a powered platform would need.",
   },
   {
     index: "04",
