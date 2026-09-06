@@ -6,6 +6,7 @@ import { visionTool } from "@sanity/vision";
 import type { SchemaTypeDefinition } from "sanity";
 
 import { sanityConfig } from "@/lib/config/env";
+import { services } from "@/lib/config/site";
 import { schemaTypes } from "./sanity/schemaTypes";
 import { structure } from "./sanity/structure";
 
@@ -44,13 +45,39 @@ export default defineConfig({
   ],
 
   document: {
-    // Singletons must not be duplicated — a second Homepage document
-    // would make the site's query ambiguous.
-    actions: (prev, context) =>
-      ["homepage", "siteSettings"].includes(context.schemaType)
-        ? prev.filter(
-            ({ action }) => action && !["duplicate", "delete"].includes(action),
-          )
-        : prev,
+    /**
+     * Two protections, both about damage that cannot be undone from the
+     * Studio.
+     *
+     * SINGLETONS must not be duplicated — a second Homepage document
+     * would make the site's query ambiguous.
+     *
+     * THE ORIGINAL EIGHT SERVICES must not be deleted. Their URLs are a
+     * contract: they are in Google's index and two of them are the target
+     * of a redirect from the old Wix site. Deleting one would not remove
+     * the page (the slug still exists in code and the local copy still
+     * renders) but it WOULD silently discard every edit Renan has made to
+     * it, with no warning and no undo in the UI. Services he creates
+     * himself stay fully deletable — those are his to remove.
+     */
+    actions: (prev, context) => {
+      if (["homepage", "siteSettings"].includes(context.schemaType)) {
+        return prev.filter(
+          ({ action }) => action && !["duplicate", "delete"].includes(action),
+        );
+      }
+
+      const isCoreService =
+        context.schemaType === "service" &&
+        services.some(
+          (service) =>
+            context.documentId === `service-${service.slug}` ||
+            context.documentId === `drafts.service-${service.slug}`,
+        );
+
+      return isCoreService
+        ? prev.filter(({ action }) => action !== "delete")
+        : prev;
+    },
   },
 });

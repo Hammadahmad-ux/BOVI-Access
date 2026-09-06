@@ -97,36 +97,69 @@ export const service = {
       name: "name",
       title: "Service name",
       type: "string",
+      description:
+        "How this service is listed across the site - the Services page, the footer, and related-service links. Keep it short.",
       validation: required,
     },
     {
       name: "slug",
-      title: "URL slug",
+      title: "Web address",
       type: "slug",
-      options: { source: "name", maxLength: 96 },
+      options: {
+        source: "name",
+        maxLength: 96,
+        /*
+          Lowercase, hyphenated, nothing else. Left to Sanity's default a
+          name like "Bird Netting & Proofing" becomes a slug with an
+          ampersand in it, which makes a fragile URL.
+        */
+        slugify: (input: string) =>
+          input
+            .toLowerCase()
+            .replace(/&/g, "and")
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "")
+            .slice(0, 96),
+      },
       description:
-        "Changing this changes the page web address and can lose Google rankings. Only change it if you are sure.",
-      validation: required,
+        "The end of the page address: /services/THIS-BIT. It fills in automatically from the service name, so for a NEW service just leave it alone. WARNING: on a service that is already live, changing this changes its address - Google forgets the old one and every existing link to it breaks. Ask your developer first.",
+      validation: (rule: Rule) =>
+        rule.required().custom((value: { current?: string } | undefined) => {
+          const current = value?.current;
+          if (!current) return "A web address is required.";
+          if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(current)) {
+            return "Use lowercase letters, numbers and hyphens only - for example bird-netting.";
+          }
+          return true;
+        }),
     },
     {
       name: "order",
       title: "Display order",
       type: "number",
       description:
-        "Controls the position in the numbered service list (01, 02, 03 and so on).",
+        "Lower numbers appear first on the Services page. The eight original services keep their fixed positions 01-08; this orders any NEW services you add, which follow after them.",
     },
     {
       name: "legacyUrl",
       title: "Old website address",
       type: "string",
       description:
-        "The address this service had on the old Wix site, if any. Used to redirect old links. Leave blank if unsure.",
+        "Only for services that existed on the old Wix site. Leave blank for anything new.",
     },
-    { name: "eyebrow", title: "Eyebrow label", type: "string" },
+    {
+      name: "eyebrow",
+      title: "Small label above the heading",
+      type: "string",
+      description:
+        'Optional. For example "Service 09". Leave blank and it simply reads "Service".',
+    },
     {
       name: "heroTitle",
       title: "Page heading",
       type: "string",
+      description:
+        "The large heading at the top of the page. Usually the same as the service name.",
       validation: required,
     },
     {
@@ -134,48 +167,56 @@ export const service = {
       title: "Introduction",
       type: "text",
       rows: 4,
-      description: "One or two sentences shown directly under the heading.",
+      description:
+        "One or two sentences under the heading. Also used as the Google description when the SEO fields below are left blank, so keep it a plain, honest summary.",
     },
     {
       name: "heroMedia",
-      title: "Main image",
+      title: "Main photograph",
       type: "image",
       options: { hotspot: true },
       description:
-        "The large image at the top of the page. Use the hotspot tool to set which part must stay visible when the image is cropped.",
+        "The large photograph at the top of the page. Click the crop icon and drag the circle over the part that must stay visible when it is cropped on a phone - usually a person or the building. Optional: leave it empty and the page opens on a plain dark heading, which is better than a photograph that does not show this service.",
     },
     {
       name: "overview",
       title: "Overview",
       type: "array",
       of: [{ type: "block" }],
-      description: "The main body copy for this service.",
+      description:
+        "The main description of the service, in a few short paragraphs. Plain paragraphs only - the page design ignores headings and bold.",
     },
     {
       name: "commonWorks",
       title: "Common works",
       type: "array",
       of: [{ type: "string" }],
-      description: "A short list of the typical jobs covered by this service.",
+      description:
+        'The "Typical scope of works" list. One short line per job, for example "Movement joint sealant replacement".',
     },
     {
       name: "deliveryContent",
       title: "How we deliver it",
       type: "array",
       of: [{ type: "block" }],
+      description:
+        'The "How the work gets done" list. One short paragraph per point.',
     },
     {
       name: "gallery",
-      title: "Photo gallery",
+      title: "More photographs",
       type: "array",
       of: [{ type: "galleryImage" }],
+      description:
+        "Extra photographs further down the page. ORDER MATTERS - drag to reorder. The 1st is the large image beside the delivery section; the 2nd and 3rd sit side by side under the introduction. Add three for the full layout, or just one for the large image only. The page is built to look right either way, so only add photographs that genuinely show this service.",
     },
     {
       name: "suitableFor",
       title: "Suitable for",
       type: "array",
       of: [{ type: "string" }],
-      description: "For example: Property Managers, Facilities Managers.",
+      description:
+        'The "Where this service fits" list, for example "Managed residential blocks".',
     },
     {
       name: "faq",
@@ -191,18 +232,27 @@ export const service = {
         },
       ],
       description:
-        "Only add questions you are genuinely asked. These are published to Google as structured data.",
+        "Optional. Only add questions you are genuinely asked - these are published to Google as structured data, so an invented answer becomes an invented Google result. Leave it empty and the section is simply not shown.",
     },
     {
       name: "relatedServices",
       title: "Related services",
       type: "array",
       of: [{ type: "reference", to: [{ type: "service" }] }],
+      description:
+        "Up to three services shown at the bottom of this page. Leave it empty and the site picks sensible ones for you.",
       validation: maxLength(3),
     },
     seoFields,
   ],
-  preview: { select: { title: "name", media: "heroMedia" } },
+  preview: {
+    select: { title: "name", slug: "slug.current", media: "heroMedia" },
+    prepare: ({ title, slug, media }: Record<string, unknown>) => ({
+      title: (title as string) || "Untitled service",
+      subtitle: slug ? "/services/" + (slug as string) : "No web address yet",
+      media: media as never,
+    }),
+  },
 };
 
 /* ------------------------------------------------------------------ */
@@ -367,14 +417,24 @@ export const homepage = {
    * Only the content slots below are editable. Section ORDER, layout,
    * typography and motion are fixed in code — there is deliberately no
    * page-builder array here.
+   *
+   * EVERY FIELD HERE IS WIRED. That was not true before this revision:
+   * `getHomepage()` existed but was called from nowhere, so all of these
+   * could be edited in Studio and nothing on the site would change. A
+   * control that does nothing is worse than no control, so if a field is
+   * ever added back here without a consumer, remove it instead.
+   *
+   * Each field falls back to the verified local content when left blank,
+   * which is why an empty Homepage document renders exactly as the site
+   * ships today.
    */
   fields: [
     {
       name: "heroVideoUrl",
-      title: "Hero background video URL",
+      title: "Hero background video address",
       type: "url",
       description:
-        "Paste the web address of the hero background video. Leave blank to show the photograph instead. This is the only place the hero video needs to change.",
+        "Paste the web address of a hero background video to replace the one built in. Leave blank to keep the current BOVI footage. This is the only place the hero video ever needs to change.",
     },
     {
       name: "heroPoster",
@@ -396,38 +456,57 @@ export const homepage = {
       title: "Hero supporting text",
       type: "text",
       rows: 3,
+      description:
+        "The short paragraph under ACCESS WITHOUT LIMITS. The headline itself, the buttons and the three claims beneath them are fixed in the design.",
     },
-    { name: "introCopy", title: "Introduction text", type: "text", rows: 5 },
+    {
+      name: "introCopy",
+      title: "Introduction text",
+      type: "text",
+      rows: 6,
+      description:
+        "The paragraphs in the first section below the hero. Leave a BLANK LINE between paragraphs and each becomes its own paragraph. The heading above them is fixed in the design.",
+    },
     {
       name: "introImage",
-      title: "Introduction image",
+      title: "Introduction photograph",
       type: "image",
       options: { hotspot: true },
+      description:
+        "The tall photograph beside that text. Click the crop icon and drag the circle over the part that must stay visible.",
     },
     {
       name: "featuredProject",
       title: "Featured project",
       type: "reference",
       to: [{ type: "project" }],
+      description:
+        "Which project's photograph carries the Featured Project block. Only the photograph and the service name are taken from it - the heading and paragraph beside it are fixed in the design. Leave blank to keep the current photograph.",
     },
     {
       name: "selectedProjects",
       title: "Projects shown on the homepage",
       type: "array",
       of: [{ type: "reference", to: [{ type: "project" }] }],
-      validation: maxLength(6),
+      description:
+        "The Recent Works row. The design holds exactly THREE photographs - one wide and two tall - so the first three you pick are the ones shown. Leave empty to keep the current three.",
+      validation: maxLength(3),
     },
     {
       name: "serviceAreaCopy",
       title: "Service area text",
       type: "text",
       rows: 3,
+      description:
+        'The sentence in the "London & The South East" section. Those two headline lines are fixed - the approved coverage wording is not editable.',
     },
     {
       name: "finalCtaCopy",
       title: "Closing call-to-action text",
       type: "text",
       rows: 3,
+      description:
+        'The sentence under "NEED SAFE ACCESS AT HEIGHT?". Note: this block closes EVERY page on the site, not just the homepage, so changing it changes all of them.',
     },
     seoFields,
   ],

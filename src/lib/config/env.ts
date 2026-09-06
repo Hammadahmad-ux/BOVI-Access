@@ -26,6 +26,17 @@ export const sanityConfig = {
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET?.trim() || "production",
   apiVersion: "2026-09-04",
   /**
+   * Override the Sanity API origin. Empty in every real deployment.
+   *
+   * Exists so the CMS behaviour can be exercised against a fixture
+   * without writing test documents into the client's live dataset — see
+   * scripts/sanity-stub-server.cjs. `apiHost` is a documented option on
+   * the Sanity client, not a hook added to application logic, and it is
+   * read at runtime rather than inlined, so a production build cannot
+   * carry one by accident.
+   */
+  apiHost: process.env.SANITY_API_HOST?.trim() || undefined,
+  /**
    * The single switch between CMS mode and local-content mode. Every
    * content provider checks this; nothing else should branch on env.
    */

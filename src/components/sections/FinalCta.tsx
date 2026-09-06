@@ -1,5 +1,6 @@
 import { Phone } from "lucide-react";
 import { business } from "@/lib/config/site";
+import { getHomepage } from "@/lib/content/provider";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
@@ -32,7 +33,11 @@ import { STAGGER } from "@/lib/animations/motion";
  * is as likely to call as to fill in a form; a faint text link would
  * misrepresent how this business is actually contacted.
  */
-export function FinalCta() {
+export async function FinalCta() {
+  // This block closes every page, not just the Homepage, so editing it in
+  // Studio changes it site-wide. The Studio field says so.
+  const { finalCtaCopy } = await getHomepage();
+
   return (
     <section
       data-ground="dark"
@@ -52,9 +57,7 @@ export function FinalCta() {
           delay={STAGGER}
           className="mt-14 grid gap-y-10 lg:mt-20 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-x-16"
         >
-          <p className="max-w-[44ch] text-body-lg text-mist">
-            Tell us about the building, works required and access challenges.
-          </p>
+          <p className="max-w-[44ch] text-body-lg text-mist">{finalCtaCopy}</p>
 
           <div className="border-t border-hairline-dark pt-10 lg:w-[22rem] lg:border-t-0 lg:border-l lg:pt-0 lg:pl-12">
             <div className="flex flex-col items-stretch gap-3">

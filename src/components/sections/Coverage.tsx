@@ -1,4 +1,5 @@
 import { coverage } from "@/lib/content/home";
+import { getHomepage } from "@/lib/content/provider";
 import { ArrowLink } from "@/components/ui/ArrowLink";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
@@ -34,7 +35,12 @@ import { cn } from "@/lib/utils/cn";
  * renders a block element, and a block element inside an <h2> is invalid
  * markup; the stagger lives between the beats instead.
  */
-export function Coverage() {
+export async function Coverage() {
+  // The two hard-broken headline lines stay in code — they are a
+  // typographic composition, and CLAUDE.md §2 pins the approved coverage
+  // wording. Only the supporting sentence is editable.
+  const { serviceAreaCopy } = await getHomepage();
+
   return (
     <section
       data-ground="dark"
@@ -95,7 +101,7 @@ export function Coverage() {
         >
           <div className="lg:grid lg:grid-cols-12 lg:gap-x-10">
             <p className="max-w-[46ch] text-body-lg text-mist lg:col-span-7">
-              {coverage.body}
+              {serviceAreaCopy}
             </p>
             <div className="mt-8 lg:col-span-5 lg:mt-0 lg:justify-self-end lg:self-start">
               <ArrowLink href="/service-areas" ground="dark">

@@ -103,6 +103,15 @@ is the only instruction Renan sees inside Studio.
 
 ## 3. `service` (document)
 
+> **A `service` document with a slug the codebase has never seen renders
+> a full page at `/services/<slug>`, joins `/services` and the sitemap,
+> and disappears from all three when unpublished.** Renan can add service
+> pages without a developer. The eight original slugs remain a URL
+> contract owned by `src/lib/config/site.ts`; the CMS supplies content for
+> a known slug and can also introduce new ones, but it cannot move or
+> delete the eight. See ROUTES.md §2.
+
+
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `name` | string | Yes | |
@@ -182,16 +191,28 @@ can never break when the display format is edited.
 | `heroVideoUrl` | url | **The one place the hero video changes** |
 | `heroPoster` | image (hotspot) | Shown while video loads |
 | `heroFallback` | image (hotspot) | Phones + video failure |
-| `heroSupportingCopy` | text | |
-| `introCopy` | text | |
-| `introImage` | image (hotspot) | |
-| `featuredProject` | reference → project | |
-| `selectedProjects` | reference[] → project | Max 6 |
-| `serviceAreaCopy` | text | |
-| `finalCtaCopy` | text | |
+| `heroSupportingCopy` | text | → `HeroContent` |
+| `introCopy` | text | → `Introduction`. Blank line = new paragraph |
+| `introImage` | image (hotspot) | → `Introduction` |
+| `featuredProject` | reference → project | → `FeaturedProject`. Photograph + service name only |
+| `selectedProjects` | reference[] → project | → `ProjectGrid`. **Max 3** — the grid holds three frames |
+| `serviceAreaCopy` | text | → `Coverage` |
+| `finalCtaCopy` | text | → `FinalCta`, which appears on **every** page |
 | `seo` | seo object | |
 
-Layout, section order, typography and motion remain in code.
+**Every field above is wired to a rendered section.** That was not true
+before the client-editability revision: `getHomepage()` existed but was
+called from nowhere, so all of these could be edited in Studio and nothing
+would change on the site. If a field is ever added here without a
+consumer, remove it instead — a control that does nothing is worse than no
+control.
+
+Each falls back to the verified local content when blank, which is why an
+empty Homepage document renders exactly as the site ships.
+
+Layout, section order, typography and motion remain in code. So does
+which services appear in the Homepage service index — that block is a
+curated design of six, not a list.
 
 ---
 

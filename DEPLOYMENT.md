@@ -121,6 +121,27 @@ Without the secret the endpoint refuses every request — an
 unauthenticated cache-purge endpoint is a free denial-of-service lever, so
 it fails closed on purpose.
 
+**STATUS: this webhook still has to be created by hand.** It cannot be
+set up from the codebase, and nothing here can confirm whether it exists
+in the Sanity project. Until it does, publishing still reaches the live
+site — it just takes up to an hour rather than seconds.
+
+**This is what makes new service pages appear.** When Renan publishes a
+service, `revalidateTag("service")` purges the cached Sanity read, which
+in turn refreshes `/services`, the sitemap, and every service page. A
+brand new slug needs no purge at all: it was never cached, so it renders
+on demand the first time anyone asks for it. An unpublished one re-renders
+and then 404s.
+
+### SANITY_API_HOST — testing only
+
+`npm run verify:cms` sets this to point the Sanity client at a local
+fixture server (`scripts/sanity-stub-server.cjs`) so the CMS behaviour can
+be exercised without writing test documents into the client's live
+dataset. **It must never be set in a real deployment.** It is read at
+runtime rather than inlined at build, so a production build cannot carry
+one by accident.
+
 ---
 
 ## 5. Enquiry email

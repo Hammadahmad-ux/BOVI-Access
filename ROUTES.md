@@ -44,8 +44,33 @@ at a non-existent page is a **compile error**.
 | 07 | Roof & Roofline Repairs | `/services/roof-roofline-repairs` |
 | 08 | Lightning Protection | `/services/lightning-protection` |
 
-Slugs are lowercase, hyphenated, ampersand-free. **They are now a
-contract** — changing one breaks the redirect map and loses rankings.
+Slugs are lowercase, hyphenated, ampersand-free. **These eight are a
+contract** — changing one breaks the redirect map and loses rankings, so
+they live in `src/lib/config/site.ts` where no CMS edit can reach them,
+and Studio hides the Delete action on their documents.
+
+### New services are added from Sanity, not from code
+
+`/services/[slug]` resolves against the CONTENT PROVIDER, not the local
+list. `generateStaticParams` pre-renders every service the provider knows
+about, and `dynamicParams` stays on, so a service published after the last
+build renders on demand and is cached from then on. Renan does not need a
+developer, a commit or a redeploy to add one.
+
+| Behaviour | Result |
+| --- | --- |
+| Sanity service published with a new slug | Page renders at `/services/<slug>`, joins `/services` and the sitemap |
+| Slug matches no service | Real 404 |
+| Sanity service unpublished | Page 404s, drops out of `/services` and the sitemap |
+| One of the eight | Unchanged — local copy is the baseline, CMS merges over it field by field |
+
+New services are numbered from 09 upward and are never inserted into the
+fixed 01-08 sequence, and they never join the curated Homepage service
+index. Both are design decisions, not limitations of the data.
+
+Proven end to end by `npm run verify:cms`, which builds the site twice
+against a fixture Sanity API — once with a service the codebase has never
+seen, once without it — and never touches the real dataset.
 
 ---
 

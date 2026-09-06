@@ -19,6 +19,14 @@ const client = sanityConfig.isConfigured
       useCdn: false,
       perspective: "published",
       token: sanityReadToken(),
+      /*
+        Only ever set when pointing at a fixture server. Sanity normally
+        derives the origin as https://<projectId>.api.sanity.io, so an
+        override also has to turn that subdomain construction off.
+      */
+      ...(sanityConfig.apiHost
+        ? { apiHost: sanityConfig.apiHost, useProjectHostname: false }
+        : {}),
     })
   : null;
 

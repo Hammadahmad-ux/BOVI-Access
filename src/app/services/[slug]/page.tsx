@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { servicePages } from "@/lib/content/services";
-import { getService } from "@/lib/content/provider";
+import { getService, getServices } from "@/lib/content/provider";
 import { buildMetadata } from "@/lib/seo/metadata";
 import {
   JsonLd,
@@ -18,13 +17,25 @@ import { RelatedServices } from "@/components/service/RelatedServices";
 type Params = { slug: string };
 
 /**
- * Params come from the LOCAL service index, not the CMS. Service slugs
- * are a URL contract that drives the legacy Wix redirect map, so a
- * content edit must never be able to add or remove a public route.
- * Sanity supplies the content for these slugs. See ROUTES.md §2.
+ * Which service pages are pre-rendered at build time: every service the
+ * provider knows about, local and Sanity alike.
+ *
+ * This used to read the LOCAL list only, on the reasoning that slugs are
+ * a URL contract. The contract part is still true and still enforced —
+ * the eight original slugs live in src/lib/config/site.ts and drive the
+ * legacy Wix redirect map, and no CMS edit can move or remove them. But
+ * treating the local list as the ONLY source meant a service Renan
+ * created in Studio had no route at all, which is the capability he
+ * actually asked for.
+ *
+ * `dynamicParams` stays at its default of true, so a service published
+ * AFTER the last build still resolves: the slug is rendered on demand,
+ * cached, and revalidated by the publish webhook. Renan does not need a
+ * redeploy. A slug that matches no service still calls notFound().
  */
-export function generateStaticParams(): Params[] {
-  return servicePages.map((service) => ({ slug: service.slug }));
+export async function generateStaticParams(): Promise<Params[]> {
+  const services = await getServices();
+  return services.map((service) => ({ slug: service.slug }));
 }
 
 /** Rebuild service pages hourly, or on demand via the Sanity webhook. */
@@ -40,10 +51,14 @@ export async function generateMetadata({
   if (!service) return {};
 
   return buildMetadata({
-    title: service.heroTitle,
+    // Renan can override the search-result title per service. Blank falls
+    // back to the page heading rather than to anything generated.
+    title: service.seoTitle || service.heroTitle,
     description: service.seoDescription,
     path: `/services/${service.slug}`,
-    ogImage: service.heroMedia.src,
+    // Explicit social image, else the page's own photograph, else the
+    // site default that buildMetadata supplies.
+    ogImage: service.ogImage?.src ?? service.heroMedia?.src,
   });
 }
 
@@ -65,7 +80,10 @@ export default async function ServicePage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const service = await getService(slug);
+  const [service, allServices] = await Promise.all([
+    getService(slug),
+    getServices(),
+  ]);
 
   if (!service) notFound();
 
@@ -94,6 +112,7 @@ export default async function ServicePage({
       <RelatedServices
         currentSlug={service.slug}
         slugs={service.relatedServices}
+        all={allServices}
       />
 
       <FinalCta />

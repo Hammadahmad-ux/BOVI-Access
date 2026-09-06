@@ -30,7 +30,18 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
 
       S.documentTypeListItem("project").title("Projects"),
-      S.documentTypeListItem("service").title("Services"),
+
+      // Ordered the way the website orders them, so the list Renan sees
+      // matches the page he is editing. The default ordering is by
+      // creation date, which matches nothing.
+      S.listItem()
+        .title("Services")
+        .id("services")
+        .child(
+          S.documentTypeList("service")
+            .title("Services")
+            .defaultOrdering([{ field: "order", direction: "asc" }]),
+        ),
 
       S.divider(),
 

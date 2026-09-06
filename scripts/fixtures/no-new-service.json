@@ -1,0 +1,7 @@
+{
+  "_comment": "TEST FIXTURE ONLY. The same CMS with the test service unpublished, used to prove that removing a service removes its page, its listing and its sitemap entry.",
+  "services": [],
+  "projects": [],
+  "homepage": null,
+  "siteSettings": null
+}

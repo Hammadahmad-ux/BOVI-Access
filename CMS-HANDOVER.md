@@ -51,11 +51,13 @@ Log in with the Sanity account you created. Bookmark it.
 
 | You control | You do not control |
 | --- | --- |
-| Projects and project photographs | Page layout and section order |
-| Service text and service images | Fonts, colours and spacing |
-| Homepage hero video and images | Animations |
-| Selected homepage text | How the site looks on mobile |
-| FAQs on service pages | The design |
+| **Adding whole new service pages** | Page layout and section order |
+| Projects and project photographs | Fonts, colours and spacing |
+| Service text and service photographs | Animations |
+| Homepage hero video and images | How the site looks on mobile |
+| Homepage introduction, service area and closing text | The design |
+| Which project is featured, and which three are shown | Which services appear on the homepage list |
+| FAQs on service pages | |
 | Phone, email, address | |
 | Google/search wording (SEO) | |
 
@@ -73,16 +75,31 @@ When you log in you will see four items in the left-hand menu.
 One page. Everything on it is optional — **leave a field blank and the
 website keeps showing what is there now.** It never goes blank.
 
+Every field listed here genuinely changes the live site.
+
 - **Hero background video URL** — paste a web address for a video and it
   plays behind the big "ACCESS WITHOUT LIMITS" heading. Leave it empty and
   the photograph shows instead. Both look right; the photograph is not a
   fallback you need to feel bad about.
 - **Hero poster / fallback image** — the photograph shown while the video
   loads, on phones, and if the video cannot play.
-- **Introduction text and image**
-- **Featured project** — pick one of your projects to feature.
-- **Projects shown on the homepage** — pick up to six.
-- **Service area text** and **closing call-to-action text**
+- **Hero supporting text** — the paragraph under ACCESS WITHOUT LIMITS.
+  The headline itself, the buttons and the three claims under them are
+  part of the design and are not editable.
+- **Introduction text and photograph** — the first section below the hero.
+  Leave a blank line between paragraphs and each becomes its own
+  paragraph.
+- **Featured project** — pick one of your projects. Only its photograph
+  and service name are used; the heading and paragraph beside it are part
+  of the design.
+- **Projects shown on the homepage** — pick three. The design holds
+  exactly three frames, one wide and two tall, so the first three you
+  choose are the ones shown.
+- **Service area text** — the sentence under "London & The South East".
+  Those two headline lines are fixed.
+- **Closing call-to-action text** — the sentence under "NEED SAFE ACCESS
+  AT HEIGHT?". **Note:** that block closes every page on the site, so
+  changing it changes all of them.
 
 ### Projects
 
@@ -128,10 +145,63 @@ There are eight, already written and live. You can edit any of them.
   Google result.
 - **Related services** — up to three, shown at the bottom of the page.
 
-> **Do not change the URL slug on a service.** Those web addresses are
-> linked from Google and from the old website. Changing one loses the
-> ranking and breaks incoming links. If a service genuinely needs renaming,
-> tell your developer so the old address can be redirected.
+> **Do not change the Web address of a service that is already live.**
+> Those addresses are in Google's index, and two of them are the target of
+> a redirect from the old Wix site. Changing one loses the ranking and
+> breaks every existing link to it. If a service genuinely needs renaming,
+> tell your developer so the old address can be redirected to the new one.
+>
+> For a service you are creating from scratch this does not apply — the
+> address fills in automatically from the name, and you should just leave
+> it alone.
+
+> **The eight original services cannot be deleted from Studio.** The
+> Delete button is hidden on them deliberately. Deleting one would not
+> remove the page from the website, but it would silently throw away every
+> edit you had made to it, with no undo. Services you create yourself can
+> be deleted normally.
+
+### Adding a brand new service page
+
+**You can do this yourself. No developer, no code, no waiting.**
+
+Say you start offering bird netting. Here is the whole job:
+
+1. Click **Services**, then the **+** icon to create a new one.
+2. **Service name** — e.g. `Bird Netting`.
+3. **Web address** — fills in by itself as `bird-netting`. **Leave it alone.**
+4. **Page heading** — usually the same as the name.
+5. **Introduction** — one or two sentences. This is also what Google shows
+   if you leave the SEO fields empty, so keep it plain and honest.
+6. **Overview** — a few short paragraphs describing the work.
+7. **Main photograph** — optional. Add one if you have a genuine photo of
+   that work; if you do not, leave it empty and the page opens on a clean
+   dark heading instead. **Do not borrow a photo of a different service.**
+8. Anything else — common works, how we deliver it, more photographs,
+   suitable for, FAQs, related services — is optional. Fill in what you
+   genuinely have.
+9. Click **Publish**.
+
+The page is live at:
+
+```
+https://www.boviaccess.co.uk/services/bird-netting
+```
+
+It also appears automatically on the **Services** page, in the footer
+service list, and in the sitemap that Google reads. Within about a minute.
+
+**What it does NOT do automatically:** it will not appear in the big
+numbered service list on the homepage. That block is a fixed design of six
+services and is deliberately curated — if you want a new service promoted
+there, ask your developer. Everything else is yours.
+
+**To remove a service you added:** open it and use **⋯ → Delete**, or
+unpublish it. The page, the listing and the Google sitemap entry all
+disappear together. The eight original services cannot be deleted from
+Studio on purpose — see the warning under Services above.
+
+---
 
 ### Site settings
 
@@ -149,6 +219,39 @@ in the footer and privacy policy automatically.
 
 ---
 
+## The three things you will do most
+
+### Change a photograph
+
+1. Go to **https://www.boviaccess.co.uk/studio**
+2. **Services** (or **Projects**, or **Homepage**)
+3. Open the item
+4. Click the existing photograph, choose **Upload**, pick the new file
+5. Write the **alt text** — one sentence describing what is in it
+6. Click the **crop** icon and drag the circle over the important part
+7. **Publish**
+
+### Change some text
+
+1. Open the document
+2. Edit the field
+3. **Publish**
+
+### Add a whole new service page
+
+1. **Services** → **+**
+2. Service name, e.g. `Bird Netting`
+3. Leave the **Web address** as it fills itself in
+4. Page heading, introduction, overview
+5. Photographs — only genuine ones, and only if you have them
+6. SEO fields are optional
+7. **Publish**
+8. The page is live at `/services/bird-netting`
+
+The change appears on the live site within about a minute.
+
+---
+
 ## How to replace a photograph
 
 1. Open the item (a service, a project, or the Homepage).
@@ -162,6 +265,29 @@ in the footer and privacy policy automatically.
 
 Photographs straight from a phone are fine. The website resizes and
 compresses them automatically.
+
+### Adding or removing the extra photographs on a service page
+
+Open the service and find **More photographs**.
+
+- **Order matters** — drag to reorder. The 1st is the large image beside
+  "How the work gets done"; the 2nd and 3rd sit side by side under the
+  introduction.
+- Add **three** for the full layout, or just **one** for the large image
+  only. Both look right — the page is built for either.
+- Remove one with the **⋯** menu beside it.
+- Every photograph needs alt text.
+
+Only add photographs that genuinely show that service. A page with two
+honest photographs beats a page with four borrowed ones.
+
+### Changing the homepage photographs
+
+Open **Homepage**. The **Introduction photograph** is the tall image in
+the first section. The hero uses **Hero poster image** and **Hero fallback
+photograph**, and the moving footage behind it comes from **Hero
+background video address** — leave that blank to keep the current BOVI
+footage.
 
 ---
 

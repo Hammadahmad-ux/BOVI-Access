@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
-import { projects } from "@/lib/content/home";
+import { projects as localProjects } from "@/lib/content/home";
+import { getHomepage, getProjects } from "@/lib/content/provider";
 import { ArrowLink } from "@/components/ui/ArrowLink";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
@@ -40,7 +41,7 @@ import { cn } from "@/lib/utils/cn";
  */
 
 /** Union comes from the content module, so a new span there fails here. */
-type ProjectSpan = (typeof projects)[number]["span"];
+type ProjectSpan = (typeof localProjects)[number]["span"];
 
 /**
  * Frame shape is driven by the content module's `span`, not by position.
@@ -78,7 +79,26 @@ const OFFSET = [
   "sm:mt-12 lg:mt-32",
 ];
 
-export function ProjectGrid() {
+export async function ProjectGrid() {
+  const [home, all] = await Promise.all([getHomepage(), getProjects()]);
+
+  /*
+    Renan chooses which projects appear here, in Studio, in his own order.
+    The composition expects THREE frames — one landscape anchor and two
+    stepped portraits — so the selection is capped at three rather than
+    allowed to reflow the grid into something it was not designed for.
+    Choosing more in Studio simply means the first three show.
+
+    An empty or unresolvable selection falls back to the verified local
+    set, which is what renders today.
+  */
+  const selected = home.selectedProjectIds
+    .map((id) => all.find((project) => project.id === id))
+    .filter((project): project is (typeof all)[number] => Boolean(project))
+    .slice(0, 3);
+
+  const projects = selected.length > 0 ? selected : localProjects;
+
   return (
     <section className="bg-bone text-ink">
       <Container className="py-20 lg:py-28">

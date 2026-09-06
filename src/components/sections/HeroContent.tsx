@@ -118,7 +118,17 @@ function MaskLine({ children, delay, reduced }: MaskLineProps) {
   );
 }
 
-export function HeroContent() {
+type HeroContentProps = {
+  /**
+   * The paragraph under the H1, from Studio. Everything else in this
+   * block — the eyebrow, the three masked H1 lines, the CTA labels and
+   * the trust rail — is LOCKED in code (CLAUDE.md §9) and is not
+   * editable, deliberately.
+   */
+  supportingCopy: string;
+};
+
+export function HeroContent({ supportingCopy }: HeroContentProps) {
   const reduced = useMediaQuery("(prefers-reduced-motion: reduce)");
 
   return (
@@ -175,8 +185,7 @@ export function HeroContent() {
            footage and 5.8:1 over the desktop composition. */
         className="mt-4 max-w-[46ch] text-body-lg text-bone lg:text-mist"
       >
-        Professional access, repair and maintenance solutions for commercial
-        buildings across {business.coverage}.
+        {supportingCopy}
       </Entrance>
 
       <Entrance

@@ -62,7 +62,18 @@ for (const route of ROUTES) {
       });
       page.on("pageerror", (error) => errors.push(error.message));
       await page.goto(route);
-      await page.waitForLoadState("networkidle");
+      /*
+        `load`, not `networkidle`. The hero video streams continuously
+        while it loops, so the network never goes idle on "/" — Playwright
+        simply waited out its own timeout. It was passing at 26.7s against
+        a 30s limit before the client's new footage doubled the file size,
+        which is a flake waiting to happen rather than a real signal.
+
+        A short settle after load is what this test actually needs: enough
+        for hydration to run and throw, if it is going to.
+      */
+      await page.waitForLoadState("load");
+      await page.waitForTimeout(800);
       expect(errors).toEqual([]);
     });
   });

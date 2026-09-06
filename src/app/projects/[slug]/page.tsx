@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getProject, getPublishedProjects } from "@/lib/content/provider";
-import { getServicePage } from "@/lib/content/services";
+import {
+  getProject,
+  getPublishedProjects,
+  getServices,
+} from "@/lib/content/provider";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { JsonLd, breadcrumbSchema } from "@/lib/seo/structured-data";
 import { PageHero } from "@/components/sections/PageHero";
@@ -70,7 +73,8 @@ export default async function ProjectPage({
 
   if (!project) notFound();
 
-  const service = getServicePage(project.serviceSlug);
+  const allServices = await getServices();
+  const service = allServices.find((s) => s.slug === project.serviceSlug);
 
   return (
     <>
@@ -146,6 +150,7 @@ export default async function ProjectPage({
         <RelatedServices
           currentSlug=""
           slugs={[service.slug, ...service.relatedServices].slice(0, 3)}
+          all={allServices}
         />
       ) : null}
 

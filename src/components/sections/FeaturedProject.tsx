@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { featuredProject } from "@/lib/content/home";
+import { getHomepage, getProjects } from "@/lib/content/provider";
 import { ArrowLink } from "@/components/ui/ArrowLink";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
@@ -40,8 +41,30 @@ const mediaFrame =
   "md:-ml-(--spacing-gutter-lg) md:-mr-(--spacing-gutter-lg) " +
   "lg:col-span-7 lg:ml-0 lg:aspect-[3/4]";
 
-export function FeaturedProject() {
-  const { image } = featuredProject;
+export async function FeaturedProject() {
+  const [home, projects] = await Promise.all([getHomepage(), getProjects()]);
+
+  /*
+    Renan picks the featured project in Studio. Only its PHOTOGRAPH and
+    SERVICE CATEGORY are taken from it — the heading and the supporting
+    paragraph stay in code, because they are the section's designed argument
+    rather than project metadata.
+
+    That restraint is the same one the section was built around: no project
+    name, client, location, value or date is shown, because none has been
+    verified (CONTENT-RULES.md §2). Selecting a project here does not change
+    that; it changes which photograph carries the block.
+
+    Nothing selected, or a selection that no longer resolves, falls back to
+    the verified local frame.
+  */
+  const selected = home.featuredProjectId
+    ? projects.find((project) => project.id === home.featuredProjectId)
+    : undefined;
+
+  const image = selected?.image ?? featuredProject.image;
+  const serviceCategory =
+    selected?.serviceCategory ?? featuredProject.serviceCategory;
 
   return (
     <section
@@ -63,7 +86,7 @@ export function FeaturedProject() {
                 aria-hidden="true"
                 className="size-1.5 shrink-0 bg-green-bright"
               />
-              {featuredProject.serviceCategory}
+              {serviceCategory}
             </p>
 
             {/* Measure capped at 20ch so the heading still breaks

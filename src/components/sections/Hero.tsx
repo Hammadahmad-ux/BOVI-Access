@@ -53,7 +53,7 @@ export async function Hero() {
       <HeroMedia media={media} overlay="strong" />
 
       <Container className="relative z-10 pt-28 pb-14 lg:pt-36 lg:pb-20">
-        <HeroContent />
+        <HeroContent supportingCopy={home.heroSupportingCopy} />
       </Container>
     </section>
   );

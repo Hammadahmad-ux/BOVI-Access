@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { introduction } from "@/lib/content/home";
+import { getHomepage } from "@/lib/content/provider";
 
 /**
  * Homepage section 01 — the positioning statement that follows the hero.
@@ -38,7 +39,14 @@ import { introduction } from "@/lib/content/home";
  * The figure uses the source's own 3:4 ratio, so the frame is shown
  * WHOLE. The previous 16:10 box cropped most of the picture away.
  */
-export function Introduction() {
+export async function Introduction() {
+  // Copy and photograph come from Studio; the heading, eyebrow, link and
+  // the whole composition stay in code. Both fields fall back to the
+  // verified local content, so an empty CMS renders exactly as before.
+  const home = await getHomepage();
+  const body = home.introCopy;
+  const image = home.introImage;
+
   return (
     <section className="bg-bone text-ink">
       <Container className="py-20 lg:py-28">
@@ -59,7 +67,7 @@ export function Introduction() {
                 step of hierarchy inside the copy block, without a second
                 heading. */}
             <div className="mt-10 max-w-[46ch] space-y-5 lg:mt-12">
-              {introduction.body.map((paragraph, index) => (
+              {body.map((paragraph, index) => (
                 <p
                   key={paragraph}
                   className={
@@ -87,8 +95,8 @@ export function Introduction() {
             className="relative aspect-[3/4] w-full overflow-hidden rounded-sm lg:col-span-5 lg:col-start-8 lg:self-start"
           >
             <Image
-              src={introduction.image.src}
-              alt={introduction.image.alt}
+              src={image.src}
+              alt={image.alt}
               fill
               quality={72}
               sizes="(min-width: 1024px) 40vw, 100vw"

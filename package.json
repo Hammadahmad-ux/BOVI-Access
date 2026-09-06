@@ -13,7 +13,8 @@
     "assets:brand": "node scripts/generate-brand-assets.mjs",
     "assets:images": "node scripts/generate-web-images.mjs",
     "cms:migrate": "sanity exec scripts/migrate-to-sanity.ts --with-user-token",
-    "assets:video": "node scripts/generate-hero-video.mjs"
+    "assets:video": "node scripts/generate-hero-video.mjs",
+    "verify:cms": "node scripts/verify-cms-service.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
@@ -49,5 +50,5 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-  "description": "BOVI Access — commercial rope access and external building maintenance."
+  "description": "BOVI Access \u2014 commercial rope access and external building maintenance."
 }

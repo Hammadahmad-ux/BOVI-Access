@@ -68,16 +68,22 @@ export default async function ServicesPage() {
                           : "relative block aspect-[4/3] overflow-hidden rounded-sm bg-ink-raised lg:col-span-6 lg:col-start-1 lg:aspect-[5/4]"
                       }
                     >
-                      <Image
-                        src={service.heroMedia.src}
-                        /* Decorative: the row link is named by the service
-                           title, so a verbatim alt would be read twice. */
-                        alt=""
-                        fill
-                        sizes="(min-width: 1024px) 46vw, 100vw"
-                        quality={72}
-                        className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.03] group-focus-visible:scale-[1.03]"
-                      />
+                      {/* A service created in Studio may not have a
+                          photograph yet. The frame already carries an ink
+                          ground, so omitting the image leaves a clean
+                          block rather than a broken one. */}
+                      {service.heroMedia ? (
+                        <Image
+                          src={service.heroMedia.src}
+                          /* Decorative: the row link is named by the service
+                             title, so a verbatim alt would be read twice. */
+                          alt=""
+                          fill
+                          sizes="(min-width: 1024px) 46vw, 100vw"
+                          quality={72}
+                          className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.03] group-focus-visible:scale-[1.03]"
+                        />
+                      ) : null}
                     </span>
 
                     <span

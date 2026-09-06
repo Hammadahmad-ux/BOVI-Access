@@ -1,0 +1,25 @@
+{
+  "_comment": "TEST FIXTURE ONLY. Simulates a service Renan creates in Studio that the codebase has never seen. Never written to any Sanity dataset; consumed only by scripts/sanity-stub.cjs. The content is deliberately obvious placeholder QA text so it can never be mistaken for real BOVI copy.",
+  "services": [
+    {
+      "slug": "qa-temporary-test-service",
+      "name": "QA Temporary Test Service",
+      "order": 20,
+      "heroTitle": "QA Temporary Test Service",
+      "intro": "Temporary QA fixture used to prove that a service created in the CMS renders its own page. Not a real BOVI service.",
+      "overview": [
+        "This document exists only inside an automated test fixture.",
+        "It proves the route, the overview section and the service listing all render from CMS data alone."
+      ],
+      "commonWorks": ["First fixture work item", "Second fixture work item"],
+      "delivery": ["Fixture delivery note."],
+      "suitableFor": ["Fixture audience"],
+      "faq": [],
+      "relatedServices": ["gutter-cleaning"],
+      "seoDescription": "Temporary QA fixture service used to verify CMS-driven routing."
+    }
+  ],
+  "projects": [],
+  "homepage": null,
+  "siteSettings": null
+}

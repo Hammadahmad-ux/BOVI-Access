@@ -45,7 +45,14 @@ export type ServicePageContent = {
   heroTitle: string;
   /** One or two sentences under the H1. */
   intro: string;
-  heroMedia: ImageAsset;
+  /**
+   * OPTIONAL. All eight local services have one, but a service Renan
+   * creates in Studio may not yet — and a page with real copy and no
+   * photograph is far better than no page. PageHero falls back to flat
+   * ink, and ServiceBody omits the media row entirely rather than
+   * reserving an empty frame.
+   */
+  heroMedia?: ImageAsset;
   /**
    * True when heroMedia is a general BOVI rope-access photograph rather
    * than one that demonstrably shows this service. Keeps the gap visible
@@ -79,7 +86,11 @@ export type ServicePageContent = {
   faq: readonly ServiceFaq[];
   /** Slugs. 2–3, deliberately varied per service. */
   relatedServices: readonly string[];
+  /** Overrides the page title in search results. Optional. */
+  seoTitle?: string;
   seoDescription: string;
+  /** Social share image. Falls back to heroMedia, then the site default. */
+  ogImage?: ImageAsset;
 };
 
 const content: readonly ServicePageContent[] = [

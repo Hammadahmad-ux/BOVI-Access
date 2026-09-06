@@ -39,6 +39,7 @@ export function ServiceBody({ service }: { service: ServicePage }) {
   const flip = Number(service.index) % 2 === 0;
 
   const gallery = service.gallery ?? [];
+  // May be undefined for a service created in Studio with no imagery yet.
   const deliveryMedia = gallery[0] ?? service.heroMedia;
   const pair = gallery[1] && gallery[2] ? [gallery[1], gallery[2]] : null;
 
@@ -156,29 +157,36 @@ export function ServiceBody({ service }: { service: ServicePage }) {
       <section data-ground="dark" className="bg-ink-raised text-bone">
         <Container className="py-20 lg:py-28">
           <div className="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-16">
-            <Reveal
-              as="figure"
-              className={
-                flip
-                  ? "relative aspect-[4/5] overflow-hidden rounded-sm lg:col-span-6 lg:col-start-7"
-                  : "relative aspect-[4/5] overflow-hidden rounded-sm lg:col-span-6 lg:col-start-1"
-              }
-            >
-              <Image
-                src={deliveryMedia.src}
-                alt={deliveryMedia.alt}
-                fill
-                sizes="(min-width: 1024px) 46vw, 100vw"
-                quality={72}
-                className="object-cover object-center"
-              />
-            </Reveal>
+            {/* No photograph is a legitimate state, not a broken one: the
+                copy simply takes the width instead of sitting beside a
+                reserved empty frame. */}
+            {deliveryMedia ? (
+              <Reveal
+                as="figure"
+                className={
+                  flip
+                    ? "relative aspect-[4/5] overflow-hidden rounded-sm lg:col-span-6 lg:col-start-7"
+                    : "relative aspect-[4/5] overflow-hidden rounded-sm lg:col-span-6 lg:col-start-1"
+                }
+              >
+                <Image
+                  src={deliveryMedia.src}
+                  alt={deliveryMedia.alt}
+                  fill
+                  sizes="(min-width: 1024px) 46vw, 100vw"
+                  quality={72}
+                  className="object-cover object-center"
+                />
+              </Reveal>
+            ) : null}
 
             <div
               className={
-                flip
-                  ? "lg:col-span-5 lg:col-start-1 lg:row-start-1"
-                  : "lg:col-span-5 lg:col-start-8 lg:row-start-1"
+                !deliveryMedia
+                  ? "lg:col-span-8 lg:col-start-1 lg:row-start-1"
+                  : flip
+                    ? "lg:col-span-5 lg:col-start-1 lg:row-start-1"
+                    : "lg:col-span-5 lg:col-start-8 lg:row-start-1"
               }
             >
               <SectionLabel index="03" ground="dark">
