@@ -139,12 +139,16 @@ test.describe("projects gallery", () => {
       await page.getByRole("heading", { name: /details/i }).count(),
     ).toBe(0);
 
-    // Section numerals must still start at 01, rather than leaving a gap
-    // where a hidden section used to be.
+    // The Photographs band still opens the page on its own. This used
+    // to assert it was numbered "01" — that the running numeral closed
+    // up when the metadata bands were absent. The numerals are gone, so
+    // what is left to guard is that the label is still there and still
+    // carries no numeral.
     const photographs = page
       .locator("main p", { hasText: /photographs/i })
       .first();
-    await expect(photographs).toContainText("01");
+    await expect(photographs).toBeVisible();
+    await expect(photographs).toHaveText(/^\s*Photographs\s*$/i);
   });
 
   test("an unknown project slug is a real 404", async ({ request }) => {

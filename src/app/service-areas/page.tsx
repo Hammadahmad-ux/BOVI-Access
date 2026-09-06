@@ -97,7 +97,7 @@ export default function ServiceAreasPage() {
 
         <Container className="relative z-10 py-20 lg:py-28">
           <Reveal>
-            <SectionLabel index="01" ground="dark">
+            <SectionLabel ground="dark">
               Coverage
             </SectionLabel>
           </Reveal>
@@ -136,7 +136,7 @@ export default function ServiceAreasPage() {
       <section className="bg-bone">
         <Container className="py-20 lg:py-28">
           <Reveal>
-            <SectionLabel index="02">Property types</SectionLabel>
+            <SectionLabel>Property types</SectionLabel>
             <h2 className="mt-6 max-w-[18ch] text-h2">
               The buildings we work on.
             </h2>
@@ -165,7 +165,7 @@ export default function ServiceAreasPage() {
         <Container className="py-20 lg:py-28">
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <Reveal className="lg:col-span-4">
-              <SectionLabel index="03" ground="dark">
+              <SectionLabel ground="dark">
                 Assessment
               </SectionLabel>
               <h2 className="mt-6 max-w-[14ch] text-h2">
@@ -204,7 +204,7 @@ export default function ServiceAreasPage() {
       <section className="bg-bone">
         <Container className="py-20 lg:py-24">
           <Reveal>
-            <SectionLabel index="04">Enquiries</SectionLabel>
+            <SectionLabel>Enquiries</SectionLabel>
             <h2 className="mt-6 max-w-[20ch] text-h3">
               Most enquiries reach us from one of these four.
             </h2>

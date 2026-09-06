@@ -25,7 +25,7 @@ export function AudienceSection() {
     <section data-ground="dark" className="bg-ink-raised text-bone">
       <Container className="py-20 lg:py-28">
         <Reveal>
-          <SectionLabel index="05" ground="dark">
+          <SectionLabel ground="dark">
             Clients
           </SectionLabel>
           <h2 className="mt-6 max-w-[20ch]">{audiences.heading}</h2>

@@ -38,7 +38,7 @@ export function WhyBovi() {
         <Reveal>
           <div className="grid gap-8 lg:grid-cols-12 lg:gap-x-10">
             <div className="lg:col-span-7">
-              <SectionLabel index="04">Why BOVI</SectionLabel>
+              <SectionLabel>Why BOVI</SectionLabel>
               <h2 className="mt-6 max-w-[15ch]">{whyBovi.heading}</h2>
             </div>
             {/* Sits on the heading's baseline edge on desktop, so the two

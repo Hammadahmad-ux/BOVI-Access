@@ -117,7 +117,7 @@ export default function AboutPage() {
         <Container className="py-20 lg:py-28">
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <Reveal className="lg:col-span-5">
-              <SectionLabel index="01">Who we are</SectionLabel>
+              <SectionLabel>Who we are</SectionLabel>
               <h2 className="mt-6 max-w-[14ch] text-h2">
                 Specialist access for difficult buildings.
               </h2>
@@ -192,7 +192,7 @@ export default function AboutPage() {
       <section data-ground="dark" className="bg-ink text-bone">
         <Container className="py-20 lg:py-28">
           <Reveal>
-            <SectionLabel index="02" ground="dark">
+            <SectionLabel ground="dark">
               How we work
             </SectionLabel>
             <h2 className="mt-6 max-w-[18ch] text-h2">
@@ -224,7 +224,7 @@ export default function AboutPage() {
         <Container className="py-20 lg:py-28">
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
             <Reveal className="lg:col-span-5">
-              <SectionLabel index="03">Safety</SectionLabel>
+              <SectionLabel>Safety</SectionLabel>
               <h2 className="mt-6 max-w-[15ch] text-h2">
                 Safety starts before anyone leaves the ground.
               </h2>
@@ -263,7 +263,7 @@ export default function AboutPage() {
       <section data-ground="dark" className="bg-ink-raised text-bone">
         <Container className="py-20 lg:py-28">
           <Reveal>
-            <SectionLabel index="04" ground="dark">
+            <SectionLabel ground="dark">
               Why rope access
             </SectionLabel>
             <h2 className="mt-6 max-w-[20ch] text-h2">
@@ -298,7 +298,7 @@ export default function AboutPage() {
       <section className="bg-bone">
         <Container className="py-20 lg:py-24">
           <Reveal>
-            <SectionLabel index="05">Who we support</SectionLabel>
+            <SectionLabel>Who we support</SectionLabel>
             <h2 className="mt-6 max-w-[18ch] text-h3">
               The people responsible for the building.
             </h2>

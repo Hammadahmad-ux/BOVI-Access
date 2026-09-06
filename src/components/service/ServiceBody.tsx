@@ -99,7 +99,7 @@ export function ServiceBody({ service }: { service: ServicePage }) {
                 to, which reads wrong even though the DOM order was right.
                 Alternation is carried by the media block below instead. */}
             <Reveal className="lg:col-span-5 lg:col-start-1 lg:row-start-1">
-              <SectionLabel index="01">Overview</SectionLabel>
+              <SectionLabel>Overview</SectionLabel>
               <h2 className="mt-6 max-w-[16ch] text-h3">
                 {service.name}, delivered at height.
               </h2>
@@ -170,7 +170,7 @@ export function ServiceBody({ service }: { service: ServicePage }) {
       <section data-ground="dark" className="bg-ink text-bone">
         <Container className="py-20 lg:py-28">
           <Reveal>
-            <SectionLabel index="02" ground="dark">
+            <SectionLabel ground="dark">
               What we deliver
             </SectionLabel>
             <h2 className="mt-6 max-w-[18ch] text-h3">
@@ -236,7 +236,7 @@ export function ServiceBody({ service }: { service: ServicePage }) {
                     : "lg:col-span-5 lg:col-start-8 lg:row-start-1"
               }
             >
-              <SectionLabel index="03" ground="dark">
+              <SectionLabel ground="dark">
                 Access and delivery
               </SectionLabel>
               <h2 className="mt-6 max-w-[16ch] text-h3">
@@ -262,7 +262,7 @@ export function ServiceBody({ service }: { service: ServicePage }) {
         <Container className="py-20 lg:py-24">
           <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
             <Reveal className="lg:col-span-4">
-              <SectionLabel index="04">Suitable for</SectionLabel>
+              <SectionLabel>Suitable for</SectionLabel>
               <h2 className="mt-6 max-w-[14ch] text-h3">
                 Where this service fits.
               </h2>

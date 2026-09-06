@@ -48,7 +48,7 @@ export function ServiceIndex() {
     <section data-ground="dark" className="bg-ink text-bone">
       <Container className="py-20 lg:py-32">
         <Reveal>
-          <SectionLabel index="02" ground="dark">
+          <SectionLabel ground="dark">
             Services
           </SectionLabel>
 

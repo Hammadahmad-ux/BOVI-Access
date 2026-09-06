@@ -65,7 +65,7 @@ export async function Coverage() {
       {/* Tallest rhythm on the page: one statement earns the whole frame. */}
       <Container className="py-24 lg:py-32">
         <Reveal>
-          <SectionLabel index="07" ground="dark">
+          <SectionLabel ground="dark">
             Coverage
           </SectionLabel>
         </Reveal>

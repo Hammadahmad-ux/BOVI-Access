@@ -108,7 +108,7 @@ export async function ProjectGrid() {
     <section className="bg-bone text-ink">
       <Container className="py-20 lg:py-28">
         <Reveal>
-          <SectionLabel index="06">Projects</SectionLabel>
+          <SectionLabel>Projects</SectionLabel>
           <h2 className="mt-6">Recent works</h2>
         </Reveal>
 

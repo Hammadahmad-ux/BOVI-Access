@@ -96,18 +96,13 @@ export default async function ProjectPage({
   const service = allServices.find((s) => s.slug === project.serviceSlug);
 
   /*
-    Section numerals are assigned to the sections that actually render.
-    Hard-coding "01 Details / 02 Photographs" would leave a page that
-    starts at 02 as soon as a project has no verified metadata, which is
-    every project today.
+    Which bands render at all. There used to be a running numeral
+    assigned here as well, so a page whose metadata is empty — which is
+    every project today — still opened at 01 rather than 02. The numerals
+    are gone from the section labels, so only the presence checks remain.
   */
   const hasDetails = Boolean(project.location || project.completionDate);
   const hasScope = Boolean(project.scope?.length);
-  let sectionNumber = 0;
-  const nextIndex = () => String(++sectionNumber).padStart(2, "0");
-  const detailsIndex = hasDetails ? nextIndex() : "";
-  const scopeIndex = hasScope ? nextIndex() : "";
-  const photographsIndex = project.gallery.length > 0 ? nextIndex() : "";
 
   return (
     <>
@@ -138,7 +133,7 @@ export default async function ProjectPage({
             {hasDetails ? (
               <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
                 <Reveal className="lg:col-span-4">
-                  <SectionLabel index={detailsIndex}>Details</SectionLabel>
+                  <SectionLabel>Details</SectionLabel>
                 </Reveal>
 
                 {/* Every row renders only when the field actually has a
@@ -164,7 +159,7 @@ export default async function ProjectPage({
                 }
               >
                 <Reveal className="lg:col-span-4">
-                  <SectionLabel index={scopeIndex}>Scope</SectionLabel>
+                  <SectionLabel>Scope</SectionLabel>
                 </Reveal>
                 <ul className="lg:col-span-7 lg:col-start-6">
                   {project.scope?.map((item) => (
@@ -202,7 +197,7 @@ export default async function ProjectPage({
             }
           >
             <Reveal>
-              <SectionLabel index={photographsIndex}>
+              <SectionLabel>
                 Photographs
               </SectionLabel>
             </Reveal>

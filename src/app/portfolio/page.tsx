@@ -73,7 +73,7 @@ export default async function PortfolioPage() {
       <section data-ground="dark" className="bg-ink text-bone">
         <Container className="py-20 lg:py-28">
           <Reveal>
-            <SectionLabel index="01" ground="dark">
+            <SectionLabel ground="dark">
               Featured
             </SectionLabel>
           </Reveal>
@@ -136,7 +136,7 @@ export default async function PortfolioPage() {
       <section className="bg-bone">
         <Container className="py-20 lg:py-28">
           <Reveal>
-            <SectionLabel index="02">Recent works</SectionLabel>
+            <SectionLabel>Recent works</SectionLabel>
             <h2 className="mt-6 max-w-[20ch] text-h3">
               Access, repair and maintenance across commercial buildings.
             </h2>

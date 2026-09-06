@@ -18,7 +18,7 @@ export function ServiceFaqSection({ faq }: { faq: readonly ServiceFaq[] }) {
     <section className="bg-bone">
       <Container className="py-20 lg:py-28">
         <Reveal>
-          <SectionLabel index="05">Questions</SectionLabel>
+          <SectionLabel>Questions</SectionLabel>
           <h2 className="mt-6 max-w-[16ch] text-h3">Common questions.</h2>
         </Reveal>
 

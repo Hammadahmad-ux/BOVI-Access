@@ -35,6 +35,32 @@ const ROUTES = [
 
 for (const route of ROUTES) {
   test.describe(`${route}`, () => {
+    test("carries no 01/02 section numbering", async ({ page }) => {
+      /*
+        The client asked for the running section numerals to come off —
+        he liked the device but wanted the headings and photographs to
+        carry the sections on their own. Swept per route rather than
+        asserted once, because the numeral was a prop on a shared
+        component and could return on a single section without anyone
+        noticing.
+
+        "Service 02" in a service hero is deliberately NOT caught: that
+        is the order of the service list, which the client set himself.
+        The pattern below only matches a label that OPENS with a numeral.
+      */
+      await page.goto(route);
+
+      const numbered = await page
+        .locator("main p, main span")
+        .evaluateAll((nodes) =>
+          nodes
+            .map((n) => (n.textContent ?? "").trim())
+            .filter((text) => /^\d{2}\s*[—–-]/.test(text)),
+        );
+
+      expect(numbered, `numbered labels on ${route}`).toEqual([]);
+    });
+
     test("has no horizontal overflow", async ({ page }) => {
       await page.goto(route);
       // QA #1 / #16. Compares the document's scrollable width against the

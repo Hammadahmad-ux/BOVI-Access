@@ -112,7 +112,7 @@ export async function FeaturedProject() {
       className="border-t border-hairline-dark bg-ink-raised text-bone"
     >
       <Container className="py-20 lg:py-28">
-        <SectionLabel index="03" ground="dark">
+        <SectionLabel ground="dark">
           Featured Project
         </SectionLabel>
 

@@ -57,7 +57,7 @@ export async function Introduction() {
               cell for the media row to sit beside. */}
           <div className="lg:col-span-6 lg:col-start-1">
             <Reveal>
-              <SectionLabel index="01">{introduction.eyebrow}</SectionLabel>
+              <SectionLabel>{introduction.eyebrow}</SectionLabel>
               <h2 className="mt-6 max-w-[18ch] lg:mt-8">
                 {introduction.heading}
               </h2>
