@@ -128,6 +128,11 @@ own page at `/projects/<name>`.
 7. **More photographs from this job** — two to four is usually right. Pick
    shots that show something different: the access, the problem, the work,
    the result. **They must all be from the same job.**
+
+   These appear under **Photographs** on the project's own page, at the
+   same tidy size as the ones on a service page, and **each one opens
+   full size when a visitor clicks it**. Anything you add gets that
+   automatically — there is nothing to switch on.
 8. **Location**, **Completed** date and **Scope of works** are OPTIONAL.
    Leave anything blank you are not sure of — the page shows nothing
    rather than a guess, and there is no empty gap where it would have been.

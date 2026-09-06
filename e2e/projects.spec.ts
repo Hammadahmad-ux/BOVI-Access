@@ -102,7 +102,9 @@ test.describe("projects gallery", () => {
     await page.goto(href as string);
 
     // The whole point of the rebuild: more than one photograph of the job.
-    const figures = page.locator("main section ul li figure img");
+    const figures = page.locator(
+      'main section ul li button[aria-label^="View larger"] img',
+    );
     await expect(figures.first()).toBeVisible();
     expect(await figures.count()).toBeGreaterThanOrEqual(1);
 
@@ -350,6 +352,75 @@ test.describe("projects grid and lightbox", () => {
     await expect(page.locator("h1")).toHaveCount(1);
     // Opening a project must not have left a dialog behind.
     await expect(page.getByRole("dialog")).toHaveCount(0);
+  });
+
+  test("a project page's photographs are capped and identical", async ({
+    page,
+    viewport,
+  }) => {
+    /*
+      The client's complaint, in one assertion: a photograph inside a
+      project ran the full column, so at 1440 each frame was 664x830 and
+      one filled the screen. It must never exceed the 400px a service
+      page uses, and every frame in the set must be the same size.
+    */
+    await page.goto("/projects/lightning-protection-works");
+
+    const frames = page.locator(
+      'main section ul li button[aria-label^="View larger"]',
+    );
+    expect(await frames.count()).toBeGreaterThan(1);
+
+    const boxes = await frames.evaluateAll((nodes) =>
+      nodes.map((node) => {
+        const rect = node.getBoundingClientRect();
+        return { w: Math.round(rect.width), h: Math.round(rect.height) };
+      }),
+    );
+
+    const first = boxes[0];
+    for (const box of boxes) {
+      // 1px of tolerance: a fractional grid track rounds either way.
+      expect(Math.abs(box.w - first.w)).toBeLessThanOrEqual(1);
+      expect(Math.abs(box.h - first.h)).toBeLessThanOrEqual(1);
+    }
+
+    const width = viewport?.width ?? 0;
+    if (width >= 640) {
+      expect(first.w).toBeLessThanOrEqual(400);
+    }
+    // 4:5, the same frame the service pages and the grid use.
+    expect(first.h / first.w).toBeGreaterThan(1.2);
+    expect(first.h / first.w).toBeLessThan(1.3);
+  });
+
+  test("a project page's photographs open larger too", async ({ page }) => {
+    // Smaller frames are only acceptable because the detail is still
+    // reachable. Same component as the grid, exercised where the client
+    // found the problem.
+    await page.goto("/projects/lightning-protection-works");
+
+    const trigger = page
+      .locator('main section ul li button[aria-label^="View larger"]')
+      .first();
+    const label = await trigger.getAttribute("aria-label");
+
+    await trigger.click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator("img").first()).toHaveCSS(
+      "object-fit",
+      "contain",
+    );
+
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(page.locator("body")).not.toHaveCSS("overflow", "hidden");
+    await expect
+      .poll(() =>
+        page.evaluate(() => document.activeElement?.getAttribute("aria-label")),
+      )
+      .toBe(label);
   });
 
   test("the homepage projects section is untouched", async ({ page }) => {

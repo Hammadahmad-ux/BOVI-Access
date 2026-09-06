@@ -448,7 +448,9 @@ none has been verified. Titles say what the work was.
    CONTENT-RULES.md §6 forbids, and labelling one as pressure washing
    would be a fabricated claim. Renan has CMS access and has said he will
    supply both — the slots are editable in Studio and any photograph he
-   adds inherits the sizing, framing and click-to-enlarge automatically.
+   adds inherits the sizing, framing and click-to-enlarge automatically —
+   as does any photograph he adds to a project's gallery, which is now
+   framed and capped the same way.
 2. ~~No Mastic & Sealant imagery.~~ **Resolved** — see § Service imagery
    honesty. Four genuine joint-sealing frames were found in the unsorted
    general folder.

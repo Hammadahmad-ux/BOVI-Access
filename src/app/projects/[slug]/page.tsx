@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import {
   getProject,
@@ -14,6 +13,7 @@ import { RelatedServices } from "@/components/service/RelatedServices";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { ZoomableImage } from "@/components/ui/ZoomableImage";
 import { STAGGER } from "@/lib/animations/motion";
 
 type Params = { slug: string };
@@ -38,6 +38,25 @@ type Params = { slug: string };
  * ---------------------------------------------------------------------
  */
 export const revalidate = 3600;
+
+/*
+  THE SAME PHOTOGRAPH FRAME AS A SERVICE PAGE.
+
+  The client opened a project and found the photographs "too big" — the
+  same complaint he made about the service pages, and the same fix. This
+  gallery ran the full content width in two columns, so at 1440 each
+  frame rendered 664x830: nearly as tall as the viewport, one photograph
+  per screen.
+
+  The cap goes on the GRID, not on each cell: capping cells would strand
+  every photograph at the left of a 664px column with 264px of dead
+  space beside it. 1264px is three 400px columns plus two 2rem gaps, so
+  a service photograph and a project photograph are the same 400x500 on
+  a 1440 laptop, and the cap is inert below that.
+*/
+const GALLERY_PHOTO_FRAME = "aspect-[4/5]";
+const GALLERY_PHOTO_SIZES =
+  "(min-width: 1024px) 400px, (min-width: 640px) 46vw, 100vw";
 
 export async function generateStaticParams(): Promise<Params[]> {
   const published = await getPublishedProjects();
@@ -189,29 +208,32 @@ export default async function ProjectPage({
             </Reveal>
 
             {/*
-              Two columns, not three. The library is portrait phone
-              photography and most of these sets are two or three frames;
-              a three-up grid would leave a hole in the last row, and at
-              two-up each photograph is still large enough to read the
-              work in it.
+              Three columns once the frames are capped, where the old
+              full-width layout ran two. Every one of these sets is three
+              photographs, so two columns now leaves the third alone in
+              its own row with two thirds of the band empty beside it —
+              tolerable when a cell WAS the column, glaring once a cell
+              is 400px in a 1344px field.
+
+              Click-to-enlarge comes with the smaller frame rather than
+              after it: shrinking a photograph of a repair to 400px only
+              works if the detail behind it is still reachable. Same
+              component as the service pages and the projects grid.
             */}
-            <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:mt-12 lg:gap-8">
+            <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:mt-12 lg:max-w-[1264px] lg:grid-cols-3 lg:gap-8">
               {project.gallery.map((photo, i) => (
                 <Reveal
                   as="li"
                   key={photo.src}
                   delay={Math.min(i * STAGGER, 0.24)}
                 >
-                  <figure className="relative aspect-[4/5] overflow-hidden rounded-sm bg-ink-raised">
-                    <Image
-                      src={photo.src}
-                      alt={photo.alt}
-                      fill
-                      sizes="(min-width: 640px) 46vw, 100vw"
-                      quality={72}
-                      className="object-cover object-center"
-                    />
-                  </figure>
+                  <ZoomableImage
+                    image={photo}
+                    label={`${project.title}, photograph ${i + 1}`}
+                    frameClassName={GALLERY_PHOTO_FRAME}
+                    sizes={GALLERY_PHOTO_SIZES}
+                    caption={<span className="text-bone">{project.title}</span>}
+                  />
                 </Reveal>
               ))}
             </ul>
