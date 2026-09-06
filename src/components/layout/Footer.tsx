@@ -9,8 +9,15 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer data-ground="dark" className="bg-ink text-bone">
-      <Container className="py-16 lg:py-20">
+    <footer data-site-chrome data-ground="dark" className="bg-ink text-bone">
+      {/*
+        Extra bottom padding below lg, so the floating WhatsApp button
+        cannot sit on the build credit. Measured at 768 before this: the
+        button's top edge cleared the credit text by 3px, which is a
+        collision in everything but name once a shadow is involved. At lg
+        the button clears it on its own and the padding returns to 20.
+      */}
+      <Container className="pt-16 pb-24 lg:py-20">
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr] lg:gap-16">
           <div>
             <Logo ground="dark" className="h-12 w-auto lg:h-14" />

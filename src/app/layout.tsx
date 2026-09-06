@@ -5,6 +5,7 @@ import "./globals.css";
 import { business, siteUrl } from "@/lib/config/site";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { JsonLd, organizationSchema } from "@/lib/seo/structured-data";
 
 /**
@@ -68,7 +69,17 @@ export default function RootLayout({
           <style>{`[data-reveal]{opacity:1!important;transform:none!important}`}</style>
         </noscript>
 
-        <a href="#main" className="sr-only-focusable bg-ink px-4 py-3 text-bone">
+        {/*
+          `data-site-chrome` marks the public-site furniture that /studio
+          strips. One attribute rather than a list of selectors, so a
+          future floating element cannot be forgotten and end up sitting
+          over the editor.
+        */}
+        <a
+          data-site-chrome
+          href="#main"
+          className="sr-only-focusable bg-ink px-4 py-3 text-bone"
+        >
           Skip to main content
         </a>
 
@@ -81,6 +92,10 @@ export default function RootLayout({
         </main>
 
         <Footer />
+
+        {/* Mounted here so every public route gets it, including any
+            route added later. Secondary to "Request a Quote" by design. */}
+        <WhatsAppButton />
 
         <JsonLd data={organizationSchema()} />
       </body>

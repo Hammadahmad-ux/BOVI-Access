@@ -54,6 +54,16 @@ export const business = {
   phoneDisplay: "07990 377780",
   /** E.164 form — the ONLY value permitted in a tel: href. */
   phoneHref: "tel:+447990377780",
+  /**
+   * WhatsApp deep link for the floating contact button.
+   *
+   * `wa.me` takes the number in international form with NO plus sign, no
+   * spaces and no leading zero — the digits of `phoneHref` above. Keep
+   * the two in step: e2e/whatsapp.spec.ts asserts the rendered href
+   * matches this exactly, so a number changed in one place and not the
+   * other fails the suite rather than silently sending enquiries nowhere.
+   */
+  whatsappHref: "https://wa.me/447990377780",
   emailDisplay: "info@boviaccess.co.uk",
   emailHref: "mailto:info@boviaccess.co.uk",
   /** Coverage as approved by the client. Do not narrow to named boroughs. */

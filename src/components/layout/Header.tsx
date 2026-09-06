@@ -76,6 +76,7 @@ export function Header() {
   return (
     <>
       <header
+        data-site-chrome
         data-ground="dark"
         data-scrolled={scrolled}
         className={cn(

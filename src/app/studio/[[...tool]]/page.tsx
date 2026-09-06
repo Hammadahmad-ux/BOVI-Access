@@ -55,13 +55,19 @@ export default async function StudioPage() {
         the tab order, so a keyboard user could tab into navigation hidden
         behind the editor. `display: none` takes them out of both.
 
+        Matched by ATTRIBUTE, not by an enumerated list of tags. The list
+        version silently stopped covering everything the moment a floating
+        WhatsApp button was added to the layout; anything marked
+        `data-site-chrome` is now stripped whether or not anyone
+        remembered to come back to this file.
+
         Done here rather than by moving the chrome into a route group:
         that was tried and reverted, because with the root route inside a
         group Next stops resolving the custom 404 for unmatched URLs and
         silently serves its built-in one. A working 404 is a hard QA
         requirement; tidying an internal tool is not worth losing it.
       */}
-      <style>{`body > header, body > footer, body > a[href="#main"] { display: none !important; }`}</style>
+      <style>{`body > [data-site-chrome] { display: none !important; }`}</style>
       <div className="fixed inset-0 z-100 bg-pure">
         <NextStudio config={config} />
       </div>
