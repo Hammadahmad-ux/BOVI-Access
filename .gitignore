@@ -56,6 +56,8 @@ next-env.d.ts
 # committed; the source is not.
 /client-assets/*.MP4
 /client-assets/*.mp4
+/client-assets/*.MOV
+/client-assets/*.mov
 # client-assets/selected/ IS tracked — it is the curated shortlist.
 
 # Playwright

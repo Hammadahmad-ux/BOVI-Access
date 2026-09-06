@@ -260,6 +260,40 @@ test.describe("hero video", () => {
       .toEqual({ opacity: 1, playing: true });
   });
 
+  test("loads only the encode that matches the viewport", async ({
+    page,
+    viewport,
+  }) => {
+    // The client's footage is portrait, so there are two encodes: a 16:9
+    // composition for wide viewports and the portrait frame for narrow
+    // ones. Requesting both would mean downloading several megabytes the
+    // visitor never sees, which is exactly why the source is chosen
+    // after hydration rather than server rendered.
+    const requested: string[] = [];
+    page.on("request", (request) => {
+      const url = request.url();
+      if (url.endsWith(".mp4")) requested.push(url.split("/").pop() ?? url);
+    });
+
+    await page.goto("/");
+    const video = page.locator("section video").first();
+    await expect(video).toBeAttached();
+
+    const expected =
+      (viewport?.width ?? 0) >= 1024
+        ? "bovi-hero-desktop.mp4"
+        : "bovi-hero-mobile.mp4";
+
+    await expect
+      .poll(() => video.evaluate((el: HTMLVideoElement) => el.currentSrc))
+      .toContain(expected);
+
+    // Whatever was fetched, it must all be the one file.
+    const distinct = [...new Set(requested)];
+    expect(distinct.length).toBeLessThanOrEqual(1);
+    if (distinct.length === 1) expect(distinct[0]).toBe(expected);
+  });
+
   test("the hero still is always present as poster and fallback", async ({
     page,
   }) => {

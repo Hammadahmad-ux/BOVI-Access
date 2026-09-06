@@ -127,7 +127,20 @@ export function HeroContent() {
         as="p"
         delay={HERO_TIMELINE.eyebrow}
         reduced={reduced}
-        className="eyebrow text-green-bright"
+        /*
+          CONTRAST, not decoration. Measured against the new client
+          footage frame by frame: green-bright (#4caf45) is a MIDTONE, so
+          it needs a near-ink background to clear AA. The desktop encode
+          bakes in a left-hand gradient dark enough for that, and it
+          measures 6.7:1 there. The mobile encode is the raw footage
+          full-bleed and the same label measured 3.4:1 at 375px — a fail
+          at 12px. Darkening the mobile scrim far enough to rescue the
+          green would have meant roughly 85% black over the whole frame,
+          which is the one thing this revision must not do to the
+          client's video. Bone at 8.9:1 costs an accent on small screens
+          and keeps the footage visible.
+        */
+        className="eyebrow text-bone lg:text-green-bright"
       >
         {business.name}
       </Entrance>
@@ -158,7 +171,9 @@ export function HeroContent() {
         as="p"
         delay={HERO_TIMELINE.body}
         reduced={reduced}
-        className="mt-4 max-w-[46ch] text-body-lg text-mist"
+        /* Same measurement, same reason: mist is 3.2:1 over the mobile
+           footage and 5.8:1 over the desktop composition. */
+        className="mt-4 max-w-[46ch] text-body-lg text-bone lg:text-mist"
       >
         Professional access, repair and maintenance solutions for commercial
         buildings across {business.coverage}.
