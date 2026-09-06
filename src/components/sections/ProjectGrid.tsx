@@ -25,15 +25,20 @@ import { cn } from "@/lib/utils/cn";
  * verified project data, so the service page is the honest — and useful —
  * destination for someone who just recognised their own building problem.
  *
- * COMPOSITION: one landscape (6 of 12 columns) and two portraits (3 each),
- * with the portraits stepped progressively down the page. Three equal
- * cards would read as a template, and the uneven widths let the one
- * genuine landscape frame dominate as the section's anchor.
+ * COMPOSITION: three frames on one row, aligned along a single top
+ * edge. They used to be stepped 64px and 128px down the page — an
+ * editorial device to break the baseline — and the client asked for them
+ * level, on the grounds that the same symmetry reads as professional.
+ * He is right about this section in particular: with every project
+ * currently `tall` the three frames are identical in size, so the steps
+ * read as three cards that failed to line up rather than as a
+ * composition.
  *
- * The landscape is 6 columns rather than the 7–8 a two-row arrangement
- * would want: keeping all three frames on one row means the whole set is
- * seen at once and there is no dead quadrant left over from an odd item
- * count. The offsets, not a second row, are what break the baseline.
+ * The widths still vary when the set can carry it: a `wide` lead takes 6
+ * of 12 columns against 3 each for the portraits beside it. That is what
+ * keeps the row from reading as a template now that the offsets are
+ * gone, and `items-start` holds the top edge whether or not the frames
+ * end up the same height.
  *
  * MOTION: hover and focus states are pure CSS on the link's `group`, so
  * this stays a Server Component — no client bundle is shipped for a 3%
@@ -64,20 +69,6 @@ const SHAPE: Record<ProjectSpan, Shape> = {
       "(min-width: 1440px) 322px, (min-width: 1024px) 23vw, (min-width: 640px) 45vw, 100vw",
   },
 };
-
-/**
- * The vertical stagger. Position-keyed rather than data-keyed because it
- * is a composition decision, not a property of the project. Wrapped with
- * a modulo so a fourth entry from the CMS rejoins the rhythm instead of
- * landing flush.
- */
-const OFFSET = [
-  "",
-  "lg:mt-16",
-  // A smaller step at `sm` too, so the two portraits never read as a
-  // matched pair on tablet.
-  "sm:mt-12 lg:mt-32",
-];
 
 export async function ProjectGrid() {
   const [home, all] = await Promise.all([getHomepage(), getProjects()]);
@@ -129,12 +120,16 @@ export async function ProjectGrid() {
               <Reveal
                 key={project.id}
                 as="li"
-                y={18}
+                /*
+                  A fade, not a rise — the same reason the /portfolio grid
+                  uses one. Travel plus a per-card delay means the row
+                  climbs into place as a staircase for most of a second,
+                  which is the very thing this section was just levelled
+                  to stop showing.
+                */
+                y={0}
                 delay={index * STAGGER}
-                className={cn(
-                  anchored ? shape.column : "lg:col-span-4",
-                  OFFSET[index % OFFSET.length],
-                )}
+                className={anchored ? shape.column : "lg:col-span-4"}
               >
                 {/* The PROJECT, not the service page. A visitor clicking a
                     photograph of finished work expects to see that job. */}

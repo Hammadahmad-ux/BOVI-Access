@@ -297,6 +297,52 @@ test.describe("hero video", () => {
     if (distinct.length === 1) expect(distinct[0]).toBe(expected);
   });
 
+  test("the recent works frames share one top edge", async ({
+    page,
+    viewport,
+  }) => {
+    /*
+      This row used to be stepped 64px and 128px down the page on
+      purpose. The client asked for it level — with every project
+      currently the same shape, the steps read as three cards that failed
+      to line up.
+
+      Sampled THROUGH the entrance, not after it: a per-card delay with
+      any vertical travel would put the row back on a staircase for most
+      of a second, which is what a visitor actually sees.
+    */
+    test.skip(!isDesktop(viewport?.width), "One column below lg.");
+    await page.goto("/");
+
+    const readTops = () =>
+      page.evaluate(() => {
+        const heading = [...document.querySelectorAll("h2")].find(
+          (h) => h.textContent?.trim() === "Recent works",
+        )!;
+        const ul = heading.closest("section")!.querySelector("ul")!;
+        return [...ul.children].map(
+          (li) => li.querySelector("div")!.getBoundingClientRect().top,
+        );
+      });
+
+    await page.evaluate(() => {
+      const heading = [...document.querySelectorAll("h2")].find(
+        (h) => h.textContent?.trim() === "Recent works",
+      )!;
+      heading
+        .closest("section")!
+        .scrollIntoView({ block: "center", behavior: "instant" });
+    });
+
+    for (let i = 0; i < 12; i++) {
+      const tops = await readTops();
+      expect(tops.length).toBeGreaterThan(1);
+      const spread = Math.max(...tops) - Math.min(...tops);
+      expect(spread, `sample ${i}, tops: ${tops.join(", ")}`).toBeLessThanOrEqual(1);
+      await page.waitForTimeout(80);
+    }
+  });
+
   test("the featured project gives the copy 45% of the row", async ({
     page,
     viewport,
