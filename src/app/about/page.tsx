@@ -153,11 +153,38 @@ export default function AboutPage() {
       >
         <Image
           src="/images/about/elevation.jpg"
-          alt="A tall glazed commercial tower photographed from street level against a clear sky"
+          alt="A tall glazed commercial tower photographed from street level, with rope access technicians working at the crown"
           fill
           sizes="100vw"
           quality={74}
-          className="object-cover object-center"
+          /*
+            THE FOCAL POINT IS THE TOP OF THE TOWER, NOT ITS MIDDLE.
+
+            The source is a 3:4 portrait frame with the technicians on the
+            crown at roughly 20-27% of its height. The frame here gets
+            progressively wider with the viewport, and `cover` keeps the
+            width — so the taller the source is relative to the frame, the
+            less of it survives:
+
+              below sm   4:5   shows 94% of the photograph
+              sm         16:10 shows 47%
+              lg         21:9  shows 32%
+
+            Centred, the widescreen crop showed 34%-66% — the middle of
+            the building, with the technicians cut off above it. That is
+            exactly what the client reported: correct on a phone, wrong on
+            a desktop.
+
+            Biasing the position upward moves the visible band over the
+            crown: 12%-44% at lg, 13%-60% at sm. Both were checked against
+            renders of the real photograph rather than picked by feel; 12%
+            left an expanse of empty sky and 25% pressed the crown against
+            the top edge.
+
+            Mobile is untouched. At 94% visible there is almost nothing to
+            crop, and its framing was already right.
+          */
+          className="object-cover object-center sm:object-[50%_25%] lg:object-[50%_18%]"
         />
       </Reveal>
 
