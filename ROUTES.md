@@ -36,13 +36,18 @@ at a non-existent page is a **compile error**.
 | # | Service | New route |
 | --- | --- | --- |
 | 01 | Commercial Window Cleaning | `/services/commercial-window-cleaning` |
-| 02 | Brickwork & Repointing | `/services/brickwork-repointing` |
+| 02 | Drainage & External Pipe Repairs | `/services/drainage-external-pipe-repairs` |
 | 03 | Gutter Cleaning | `/services/gutter-cleaning` |
-| 04 | Drainage & External Pipe Repairs | `/services/drainage-external-pipe-repairs` |
+| 04 | Brickwork & Repointing | `/services/brickwork-repointing` |
 | 05 | Mastic & Sealant | `/services/mastic-sealant` |
 | 06 | Pressure Washing / DOFF Cleaning | `/services/pressure-washing-doff-cleaning` |
 | 07 | Roof & Roofline Repairs | `/services/roof-roofline-repairs` |
 | 08 | Lightning Protection | `/services/lightning-protection` |
+
+Drainage and Brickwork swapped positions at the client's request. The
+NUMBER is presentation and lives in `src/lib/config/site.ts`; the SLUG is
+the contract and did not move, so no URL, redirect or sitemap entry
+changed.
 
 Slugs are lowercase, hyphenated, ampersand-free. **These eight are a
 contract** — changing one breaks the redirect map and loses rankings, so

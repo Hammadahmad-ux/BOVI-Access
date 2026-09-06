@@ -163,7 +163,7 @@ const content: readonly ServicePageContent[] = [
   /* ------------------------------------------------------------------ */
   {
     slug: "brickwork-repointing",
-    eyebrow: "Service 02",
+    eyebrow: "Service 04",
     heroTitle: "Brickwork & Repointing",
     intro:
       "Localised masonry repair and repointing to elevations, chimney stacks and parapets, reached by rope access rather than scaffold.",
@@ -294,7 +294,7 @@ const content: readonly ServicePageContent[] = [
   /* ------------------------------------------------------------------ */
   {
     slug: "drainage-external-pipe-repairs",
-    eyebrow: "Service 04",
+    eyebrow: "Service 02",
     heroTitle: "Drainage & External Pipe Repairs",
     intro:
       "External pipe repairs to soil stacks, waste and rainwater pipework — repair, replacement and clearing on elevations and lightwells that are difficult to reach.",

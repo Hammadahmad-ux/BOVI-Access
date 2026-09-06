@@ -140,9 +140,9 @@ client, project or place.
 | Hero still / poster / fallback / default OG | `06-Window-Cleaning-Liverpool/IMG_4045.jpg` | `hero/hero-still.jpg` 1800×2400 | 722KB |
 | Introduction | `07-General-Rope-Access/IMG_4184.jpg` | `home/introduction.jpg` 1200×1600 | 154KB |
 | Service 01 — Commercial Window Cleaning | `02-Window-Cleaning/ca095fda-…jpg` | `services/commercial-window-cleaning.jpg` | 193KB |
-| Service 02 — Brickwork & Repointing | `03-Brickwork-Repointing/IMG_1722.jpg` | `services/brickwork-repointing.jpg` | 129KB |
+| Service 04 — Brickwork & Repointing | `03-Brickwork-Repointing/IMG_1722.jpg` | `services/brickwork-repointing.jpg` | 129KB |
 | Service 03 — Gutter Cleaning | `05-Drainage-Pipes/IMG_6272.jpg` | `services/gutter-cleaning.jpg` | 203KB |
-| Service 04 — Drainage & External Pipe Repairs | `05-Drainage-Pipes/IMG_5861.jpg` | `services/drainage-external-pipe-repairs.jpg` | 171KB |
+| Service 02 — Drainage & External Pipe Repairs | `05-Drainage-Pipes/IMG_5861.jpg` | `services/drainage-external-pipe-repairs.jpg` | 171KB |
 | Service 05 — Mastic & Sealant | `07-General-Rope-Access/IMG_9969.jpg` | `services/mastic-sealant.jpg` | 376KB |
 | Service 06 — Pressure Washing / DOFF | `07-General-Rope-Access/IMG_9398.jpg` | `services/pressure-washing-doff-cleaning.jpg` | 227KB |
 | ~~Featured project~~ | ~~`06-Window-Cleaning-Liverpool/IMG_4077.jpg`~~ | **Retired.** The homepage Featured Project block now leads with the External Pipe Repair job, which is the project flagged `featured` on /portfolio, so the derivative it used to show is unreferenced and no longer generated. | |
@@ -430,9 +430,25 @@ none has been verified. Titles say what the work was.
 
 ## 7. Gaps — client action needed
 
-1. **No Pressure Washing / DOFF imagery.** This is one of the two services
-   with a confirmed legacy Wix URL, so it matters for SEO continuity.
-   It is now the ONLY service still in this position.
+1. **No Pressure Washing / DOFF imagery, and no roof-REPAIR imagery.**
+   Both raised by the client, and neither can be fixed from this library:
+
+   - **Pressure Washing / DOFF** has no photograph of the process at all.
+     `IMG_9398` (a technician descending weathered masonry) stands in and
+     is flagged `mediaIsGeneric: true`. It matters for SEO continuity
+     because this is one of the two services with a confirmed legacy Wix
+     URL.
+   - **Roof & Roofline Repairs** has roof ACCESS — a slate roof and
+     spire, a technician at a ridge, another at the eaves — but nothing
+     showing a repair being carried out. The images are honest about what
+     they show; they just do not show the work.
+
+   Nothing was substituted for either. Moving an unrelated rope-access
+   photograph into these slots to fill space is exactly what
+   CONTENT-RULES.md §6 forbids, and labelling one as pressure washing
+   would be a fabricated claim. Renan has CMS access and has said he will
+   supply both — the slots are editable in Studio and any photograph he
+   adds inherits the sizing, framing and click-to-enlarge automatically.
 2. ~~No Mastic & Sealant imagery.~~ **Resolved** — see § Service imagery
    honesty. Four genuine joint-sealing frames were found in the unsorted
    general folder.

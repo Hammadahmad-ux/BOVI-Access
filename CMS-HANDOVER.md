@@ -159,6 +159,11 @@ There are eight, already written and live. You can edit any of them.
   one.** The page is built to look right either way, so only add photos
   that genuinely show that service — a page with two honest photographs
   beats a page with four borrowed ones.
+
+  Every photograph on a service page is shown at the same tidy size and
+  **opens full size when a visitor clicks it**, so the page stays clean
+  and the work can still be looked at properly. Anything you add gets
+  that automatically — there is nothing to switch on.
 - **FAQs** — only add questions you are genuinely asked. These get sent
   to Google as structured data, so an invented answer becomes an invented
   Google result.

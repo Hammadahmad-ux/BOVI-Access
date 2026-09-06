@@ -124,8 +124,11 @@ export const services = [
     legacyUrl: "/CommercialWindowCleaning-FacadeCleaning/",
   },
   {
-    slug: "brickwork-repointing",
-    name: "Brickwork & Repointing",
+    // Moved to 02 at the client's request — his first jobs were drainage
+    // and pipe repairs, so it leads the list ahead of brickwork. The SLUG
+    // is untouched: this is a presentation order, not a URL change.
+    slug: "drainage-external-pipe-repairs",
+    name: "Drainage & External Pipe Repairs",
     index: "02",
     primary: true,
     legacyUrl: null,
@@ -138,8 +141,8 @@ export const services = [
     legacyUrl: null,
   },
   {
-    slug: "drainage-external-pipe-repairs",
-    name: "Drainage & External Pipe Repairs",
+    slug: "brickwork-repointing",
+    name: "Brickwork & Repointing",
     index: "04",
     primary: true,
     legacyUrl: null,

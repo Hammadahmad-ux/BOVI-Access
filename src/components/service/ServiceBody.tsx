@@ -1,4 +1,5 @@
-import Image from "next/image";
+import { ZoomableImage } from "@/components/ui/ZoomableImage";
+import { cn } from "@/lib/utils/cn";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionLabel } from "@/components/ui/SectionLabel";
@@ -35,6 +36,46 @@ import type { ServicePage } from "@/lib/content/services";
  * so every service page showed the same photograph twice. gallery[0]
  * replaces it where one exists.
  */
+/*
+  ONE FRAME FOR EVERY SERVICE PHOTOGRAPH.
+
+  The client: the photographs "look good on phone" but are "too large on
+  laptop/desktop" and "should preferably be the same size". They were
+  neither. At 1440 this page rendered three figures at 780x1040, 548x685
+  and 648x810 — three different sizes, the largest taller than the
+  viewport.
+
+  Now all of them share a ratio and a ceiling: 4:5, capped at 400px wide
+  from `sm` up, so every photograph on a service page is 400x500 on a
+  laptop or desktop no matter which slot it occupies or how many there
+  are. Below `sm` the cap does not apply and the images stay full-bleed,
+  because that is the presentation he said already works.
+
+  4:5 rather than anything wider for the reason the projects grid found
+  the hard way: the library is portrait phone photography, and a
+  landscape crop cuts the technician out of the frame entirely.
+
+  A future gallery image added in Studio lands in the same slots and
+  inherits all of this without any code change.
+*/
+const SERVICE_PHOTO_FRAME = "aspect-[4/5]";
+const SERVICE_PHOTO_SIZES = "(min-width: 640px) 400px, 100vw";
+
+/**
+ * The pair already sits in a two-column grid, so its cells are narrower
+ * than the cap until the viewport is wide enough for the cap to bite.
+ */
+const PAIR_PHOTO_WIDTH = "sm:max-w-[400px]";
+
+/**
+ * The delivery photograph sits in a single-column grid until `lg`, so
+ * without the half-width rule it rendered 400px wide at 768 next to a
+ * pair of 332px ones — same page, three photographs, two sizes. Matching
+ * a pair cell (half the container, less half the 1.5rem gap) keeps every
+ * service photograph identical at every width from `sm` up.
+ */
+const DELIVERY_PHOTO_WIDTH = "sm:max-w-[calc(50%-0.75rem)] lg:max-w-[400px]";
+
 export function ServiceBody({ service }: { service: ServicePage }) {
   const flip = Number(service.index) % 2 === 0;
 
@@ -88,35 +129,29 @@ export function ServiceBody({ service }: { service: ServicePage }) {
             box has to throw away most of the frame (DESIGN.md §6).
           */}
           {pair ? (
-            <div className="mt-16 grid gap-6 sm:grid-cols-12 lg:mt-24 lg:gap-8">
-              <Reveal
-                as="figure"
-                className="relative aspect-[3/4] overflow-hidden rounded-sm sm:col-span-7"
-              >
-                <Image
-                  src={pair[0].src}
-                  alt={pair[0].alt}
-                  fill
-                  sizes="(min-width: 640px) 46vw, 100vw"
-                  quality={72}
-                  className="object-cover object-center"
-                />
-              </Reveal>
-
-              <Reveal
-                as="figure"
-                delay={STAGGER}
-                className="relative aspect-[4/5] overflow-hidden rounded-sm sm:col-span-5 sm:mt-16 lg:mt-24"
-              >
-                <Image
-                  src={pair[1].src}
-                  alt={pair[1].alt}
-                  fill
-                  sizes="(min-width: 640px) 33vw, 100vw"
-                  quality={72}
-                  className="object-cover object-center"
-                />
-              </Reveal>
+            <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:mt-24 lg:gap-8">
+              {pair.map((photo, i) => (
+                <Reveal
+                  key={photo.src}
+                  delay={i * STAGGER}
+                  /* The second frame still steps down the page — that is
+                     the section's rhythm and the client did not object to
+                     it. What changed is that both frames are now the same
+                     SIZE, which he did. */
+                  className={i === 1 ? "sm:mt-16 lg:mt-24" : undefined}
+                >
+                  <ZoomableImage
+                    image={photo}
+                    label={`${service.name}, photograph ${i + 1}`}
+                    frameClassName={SERVICE_PHOTO_FRAME}
+                    className={PAIR_PHOTO_WIDTH}
+                    sizes={SERVICE_PHOTO_SIZES}
+                    caption={
+                      <span className="text-bone">{service.name}</span>
+                    }
+                  />
+                </Reveal>
+              ))}
             </div>
           ) : null}
         </Container>
@@ -162,20 +197,22 @@ export function ServiceBody({ service }: { service: ServicePage }) {
                 reserved empty frame. */}
             {deliveryMedia ? (
               <Reveal
-                as="figure"
                 className={
                   flip
-                    ? "relative aspect-[4/5] overflow-hidden rounded-sm lg:col-span-6 lg:col-start-7"
-                    : "relative aspect-[4/5] overflow-hidden rounded-sm lg:col-span-6 lg:col-start-1"
+                    ? "lg:col-span-6 lg:col-start-7"
+                    : "lg:col-span-6 lg:col-start-1"
                 }
               >
-                <Image
-                  src={deliveryMedia.src}
-                  alt={deliveryMedia.alt}
-                  fill
-                  sizes="(min-width: 1024px) 46vw, 100vw"
-                  quality={72}
-                  className="object-cover object-center"
+                <ZoomableImage
+                  image={deliveryMedia}
+                  label={`${service.name}, access and delivery`}
+                  frameClassName={SERVICE_PHOTO_FRAME}
+                  /* Pushed to the outer edge when it sits on the right, so
+                     capping the width leaves the gap beside the copy
+                     rather than a hole in the middle of the row. */
+                  className={cn(DELIVERY_PHOTO_WIDTH, flip && "lg:ml-auto")}
+                  sizes={SERVICE_PHOTO_SIZES}
+                  caption={<span className="text-bone">{service.name}</span>}
                 />
               </Reveal>
             ) : null}
