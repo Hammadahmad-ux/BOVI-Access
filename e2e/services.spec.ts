@@ -187,6 +187,38 @@ test.describe("service lightbox", () => {
   });
 });
 
+test.describe("service photo placement", () => {
+  test("every photograph is centred in its column", async ({
+    page,
+    viewport,
+  }) => {
+    /*
+      The client, on a service page: "move it a little bit to the right,
+      and you can centralise all photos on the website." The delivery
+      photograph was pinned to the outer edge of its half of the row, so
+      capping it at 400px put all 256px of the slack in one place —
+      between the photograph and the copy.
+    */
+    test.skip((viewport?.width ?? 0) < 640, "Full-bleed on a phone.");
+    await page.goto("/services/gutter-cleaning");
+
+    const offsets = await page
+      .locator('main button[aria-label^="View larger"]')
+      .evaluateAll((frames) =>
+        frames.map((frame) => {
+          const box = frame.getBoundingClientRect();
+          const cell = frame.parentElement!.getBoundingClientRect();
+          return Math.round(box.left - cell.left - (cell.right - box.right));
+        }),
+      );
+
+    expect(offsets.length).toBeGreaterThan(0);
+    for (const offset of offsets) {
+      expect(Math.abs(offset)).toBeLessThanOrEqual(1);
+    }
+  });
+});
+
 test.describe("service order", () => {
   test.skip(
     ({ viewport }) => viewport?.width !== 1440,

@@ -34,12 +34,15 @@ import { STAGGER } from "@/lib/animations/motion";
  * Desktop keeps the source's native 3:4 so the full-height rope lines are
  * never cropped. Below lg the frame is squarer, because a full-bleed 3:4 at
  * tablet width would stand taller than the viewport.
+ *
+ * No column span: the grid below is two explicit tracks from lg, so the
+ * figure takes the second one by source order.
  */
 const mediaFrame =
   "relative aspect-[4/5] overflow-hidden bg-ink " +
   "-ml-(--spacing-gutter) -mr-(--spacing-gutter) " +
   "md:-ml-(--spacing-gutter-lg) md:-mr-(--spacing-gutter-lg) " +
-  "lg:col-span-7 lg:ml-0 lg:aspect-[3/4]";
+  "lg:ml-0 lg:aspect-[3/4]";
 
 export async function FeaturedProject() {
   const [home, projects] = await Promise.all([getHomepage(), getProjects()]);
@@ -82,8 +85,25 @@ export async function FeaturedProject() {
           Featured Project
         </SectionLabel>
 
-        <div className="mt-6 grid gap-12 border-t border-hairline-dark pt-12 lg:mt-8 lg:grid-cols-12 lg:items-center lg:gap-x-16 lg:pt-16">
-          <Reveal className="lg:col-span-5">
+        {/*
+          47/53 TRACKS, WHICH READS AS 45/55.
+
+          The client: "the image feels a bit too dominant compared to the
+          text… maybe around a 45/55 text-to-image balance." It was
+          measurably worse than the 5/7 columns implied — 39.6/60.4 at
+          1440 — because the photograph also bleeds one gutter past the
+          container's right edge, and that bleed is counted by the eye
+          but not by the grid.
+
+          So the tracks are set slightly wider than the target on the
+          text side to absorb it: 47/53 of the track space plus a 40px
+          bleed lands at 45.0–45.6 text across 1024, 1280 and 1440.
+          Twelve columns cannot express this — 45/55 of twelve is 5.4
+          columns — which is why this is two explicit tracks rather than
+          a span change.
+        */}
+        <div className="mt-6 grid gap-12 border-t border-hairline-dark pt-12 lg:mt-8 lg:grid-cols-[47fr_53fr] lg:items-center lg:gap-x-16 lg:pt-16">
+          <Reveal>
             {/* Green marker echoes the hero trust rail. green-bright, not
                 green: this is small text on a dark ground. */}
             <p className="eyebrow flex items-center gap-2.5 text-green-bright">
@@ -101,7 +121,11 @@ export async function FeaturedProject() {
               {featuredProject.heading}
             </h2>
 
-            <p className="mt-7 max-w-[46ch] text-body-lg text-mist">
+            {/* The measure opens up with the column rather than leaving
+                the new width empty beside it — but only to 52ch, because
+                a supporting paragraph set to the full 60ch column would
+                be a harder read than the squeezed one it replaced. */}
+            <p className="mt-7 max-w-[46ch] text-body-lg text-mist lg:max-w-[52ch]">
               {featuredProject.body}
             </p>
 
@@ -115,7 +139,7 @@ export async function FeaturedProject() {
               src={image.src}
               alt={image.alt}
               fill
-              sizes="(min-width: 1024px) 60vw, 100vw"
+              sizes="(min-width: 1024px) 55vw, 100vw"
               quality={72}
               className="object-cover"
             />

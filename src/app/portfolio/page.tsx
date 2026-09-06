@@ -93,7 +93,20 @@ export default async function PortfolioPage() {
               />
             </Reveal>
 
-            <Reveal delay={STAGGER} className="lg:col-span-5">
+            {/*
+              Bottom-aligned to the photograph, then lifted 48px off that
+              baseline. The client: "there's a little too much empty space
+              above it… maybe around 40–60px higher." At 1440 the copy sat
+              265px below the top of the image, and the row is set
+              `items-end` so the slack all collects above it.
+
+              A margin rather than a translate, so the lift is part of the
+              layout: the text block is shorter than the photograph at
+              every desktop width, so the row height does not change and
+              nothing below moves. Full centring would have lifted it
+              130px, which is past what he asked for.
+            */}
+            <Reveal delay={STAGGER} className="lg:col-span-5 lg:mb-12">
               <p
                 data-project-category
                 className="eyebrow flex items-center gap-2.5 text-green-bright"
@@ -150,6 +163,25 @@ export default async function PortfolioPage() {
                 as="li"
                 key={project.id}
                 delay={Math.min(i * STAGGER, 0.24)}
+                /*
+                  A FADE, NOT A RISE.
+
+                  The client: "the project cards/images are starting at
+                  different heights on desktop. Is this intentional as
+                  part of the design?" At rest they were already exact —
+                  every card in row one sits at the same pixel, on the
+                  deployed site as well as locally. The offset was the
+                  ENTRANCE: Reveal's default 22px travel, staggered 80ms
+                  per card, so for the first ~800ms a row climbs into
+                  place as a visible staircase. That is what he saw, and
+                  a staircase held for most of a second reads as layout,
+                  not as animation.
+
+                  The stagger stays — the cards still arrive in sequence
+                  — but as opacity alone, so no card is ever vertically
+                  offset from the one beside it.
+                */
+                y={0}
                 className="flex flex-col gap-5"
               >
                 {/* The photograph opens the photograph. */}

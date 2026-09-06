@@ -1,5 +1,4 @@
 import { ZoomableImage } from "@/components/ui/ZoomableImage";
-import { cn } from "@/lib/utils/cn";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionLabel } from "@/components/ui/SectionLabel";
@@ -64,8 +63,12 @@ const SERVICE_PHOTO_SIZES = "(min-width: 640px) 400px, 100vw";
 /**
  * The pair already sits in a two-column grid, so its cells are narrower
  * than the cap until the viewport is wide enough for the cap to bite.
+ *
+ * Centred in the cell once it does. Left-aligned, a 400px photograph in a
+ * 656px cell put all 256px of slack on one side, which is what the client
+ * saw as a photograph pushed hard against the edge with a hole beside it.
  */
-const PAIR_PHOTO_WIDTH = "sm:max-w-[400px]";
+const PAIR_PHOTO_WIDTH = "mx-auto sm:max-w-[400px]";
 
 /**
  * The delivery photograph sits in a single-column grid until `lg`, so
@@ -74,7 +77,8 @@ const PAIR_PHOTO_WIDTH = "sm:max-w-[400px]";
  * a pair cell (half the container, less half the 1.5rem gap) keeps every
  * service photograph identical at every width from `sm` up.
  */
-const DELIVERY_PHOTO_WIDTH = "sm:max-w-[calc(50%-0.75rem)] lg:max-w-[400px]";
+const DELIVERY_PHOTO_WIDTH =
+  "mx-auto sm:max-w-[calc(50%-0.75rem)] lg:max-w-[400px]";
 
 export function ServiceBody({ service }: { service: ServicePage }) {
   const flip = Number(service.index) % 2 === 0;
@@ -207,10 +211,11 @@ export function ServiceBody({ service }: { service: ServicePage }) {
                   image={deliveryMedia}
                   label={`${service.name}, access and delivery`}
                   frameClassName={SERVICE_PHOTO_FRAME}
-                  /* Pushed to the outer edge when it sits on the right, so
-                     capping the width leaves the gap beside the copy
-                     rather than a hole in the middle of the row. */
-                  className={cn(DELIVERY_PHOTO_WIDTH, flip && "lg:ml-auto")}
+                  /* Centred in its half of the row rather than pinned to
+                     the outer edge. Pinning put the whole 256px of slack
+                     between the photograph and the copy on the pages
+                     where the image leads. */
+                  className={DELIVERY_PHOTO_WIDTH}
                   sizes={SERVICE_PHOTO_SIZES}
                   caption={<span className="text-bone">{service.name}</span>}
                 />

@@ -219,34 +219,147 @@ test.describe("projects grid and lightbox", () => {
 
   test("cards in a row share a top edge and align their titles", async ({
     page,
+    viewport,
   }) => {
+    /*
+      Rows are derived from the COLUMN COUNT, not from the tops
+      themselves. The earlier version bucketed cards by their top and
+      then asserted one title position per bucket — so a staggered row
+      split into single-card buckets and passed. It could not fail on
+      the thing it was named for.
+    */
     await page.goto("/portfolio");
 
-    const rows = await page.locator("main ul > li").evaluateAll((items) => {
-      const cards = items.filter((li) =>
-        li.querySelector('button[aria-label^="View larger"]'),
-      );
-      const grouped = new Map<number, number[]>();
-      for (const card of cards) {
-        const top = Math.round(card.getBoundingClientRect().top);
-        const title = card.querySelector('a[href^="/projects/"]');
-        const titleTop = title
-          ? Math.round(title.getBoundingClientRect().top)
-          : -1;
-        const key = [...grouped.keys()].find((k) => Math.abs(k - top) < 4);
-        const bucket = key === undefined ? [] : grouped.get(key)!;
-        if (key === undefined) grouped.set(top, bucket);
-        bucket.push(titleTop);
+    const width = viewport?.width ?? 0;
+    const columns =
+      width >= 1280 ? 4 : width >= 1024 ? 3 : width >= 640 ? 2 : 1;
+
+    const cards = await page.locator("main ul > li").evaluateAll((items) =>
+      items
+        .filter((li) => li.querySelector('button[aria-label^="View larger"]'))
+        .map((li) => {
+          const title = li.querySelector('a[href^="/projects/"]');
+          return {
+            top: li.getBoundingClientRect().top,
+            titleTop: title ? title.getBoundingClientRect().top : -1,
+          };
+        }),
+    );
+
+    expect(cards.length).toBeGreaterThan(0);
+
+    for (let start = 0; start < cards.length; start += columns) {
+      const row = cards.slice(start, start + columns);
+      const first = row[0];
+      for (const card of row) {
+        expect(
+          Math.abs(card.top - first.top),
+          `row at index ${start}: tops ${row.map((c) => c.top).join(", ")}`,
+        ).toBeLessThanOrEqual(1);
+        // And nothing is pushed down by a longer title or description.
+        expect(Math.abs(card.titleTop - first.titleTop)).toBeLessThanOrEqual(1);
       }
-      return [...grouped.values()];
+    }
+  });
+
+  test("cards never stagger while they animate in", async ({
+    page,
+    viewport,
+  }) => {
+    /*
+      THE ACTUAL CLIENT-FACING BUG. At rest the grid was always exact —
+      it is the entrance that offset the cards: Reveal's 22px travel,
+      staggered 80ms apart, so for most of a second a row climbed into
+      place as a staircase. Sampling only after the animation settles is
+      how that shipped, so this samples THROUGH it.
+    */
+    test.skip((viewport?.width ?? 0) < 640, "One column: no row to stagger.");
+    await page.goto("/portfolio");
+
+    const width = viewport?.width ?? 0;
+    const columns = width >= 1280 ? 4 : width >= 1024 ? 3 : 2;
+
+    await page.evaluate(() => {
+      const ul = [...document.querySelectorAll("main ul")].find((u) =>
+        u.querySelector('button[aria-label^="View larger"]'),
+      );
+      ul?.scrollIntoView({ block: "center", behavior: "instant" });
     });
 
-    expect(rows.length).toBeGreaterThan(0);
-    for (const titleTops of rows) {
-      // One distinct title position per row: no card is pushed down by a
-      // longer title or a longer description.
-      expect(new Set(titleTops).size).toBe(1);
+    const readTops = () =>
+      page.locator("main ul > li").evaluateAll((items) =>
+        items
+          .filter((li) => li.querySelector('button[aria-label^="View larger"]'))
+          .map((li) => li.getBoundingClientRect().top),
+      );
+
+    // Through the whole 650ms entrance plus its 240ms of stagger.
+    for (let i = 0; i < 12; i++) {
+      const tops = await readTops();
+      for (let start = 0; start < tops.length; start += columns) {
+        const row = tops.slice(start, start + columns);
+        const spread = Math.max(...row) - Math.min(...row);
+        expect(
+          spread,
+          `sample ${i}, row tops: ${row.join(", ")}`,
+        ).toBeLessThanOrEqual(1);
+      }
+      await page.waitForTimeout(80);
     }
+  });
+
+  test("a card added later joins the same aligned row", async ({
+    page,
+    viewport,
+  }) => {
+    /*
+      Renan is going to keep adding projects. Alignment must come from
+      the grid, not from the current six entries — so this clones cards
+      into the list and checks every row still resolves flat.
+    */
+    test.skip((viewport?.width ?? 0) < 640, "One column: no row to stagger.");
+    await page.goto("/portfolio");
+
+    const width = viewport?.width ?? 0;
+    const columns = width >= 1280 ? 4 : width >= 1024 ? 3 : 2;
+
+    const spread = await page.evaluate((cols) => {
+      const ul = [...document.querySelectorAll("main ul")].find((u) =>
+        u.querySelector('button[aria-label^="View larger"]'),
+      )!;
+      const template = ul.querySelector("li")!;
+      for (let i = 0; i < 7; i++) ul.appendChild(template.cloneNode(true));
+
+      const tops = [...ul.children].map((li) => li.getBoundingClientRect().top);
+      let worst = 0;
+      for (let start = 0; start < tops.length; start += cols) {
+        const row = tops.slice(start, start + cols);
+        worst = Math.max(worst, Math.max(...row) - Math.min(...row));
+      }
+      return worst;
+    }, columns);
+
+    expect(spread).toBeLessThanOrEqual(1);
+  });
+
+  test("the portfolio lead copy is lifted off the image baseline", async ({
+    page,
+    viewport,
+  }) => {
+    // The client asked for the block "40-60px higher" — bottom-aligned,
+    // it left 265px of dead space above it at 1440.
+    test.skip((viewport?.width ?? 0) < 1024, "Stacks below lg.");
+    await page.goto("/portfolio");
+
+    const lift = await page.evaluate(() => {
+      const figure = document.querySelector("main figure")!;
+      const grid = figure.parentElement!;
+      const text = grid.children[1].getBoundingClientRect();
+      return figure.getBoundingClientRect().bottom - text.bottom;
+    });
+
+    expect(lift).toBeGreaterThanOrEqual(40);
+    expect(lift).toBeLessThanOrEqual(60);
   });
 
   test("the grid gains columns with the viewport", async ({

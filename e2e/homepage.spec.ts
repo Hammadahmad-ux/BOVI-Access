@@ -297,6 +297,55 @@ test.describe("hero video", () => {
     if (distinct.length === 1) expect(distinct[0]).toBe(expected);
   });
 
+  test("the featured project gives the copy 45% of the row", async ({
+    page,
+    viewport,
+  }) => {
+    /*
+      The client: "the image feels a bit too dominant compared to the
+      text… maybe around a 45/55 text-to-image balance." It was 39.6/60.4
+      at 1440, because the photograph bleeds a gutter past the container
+      and the grid does not count that.
+
+      Measured on the RENDERED boxes, bleed included, which is the only
+      version of the ratio a visitor can see.
+    */
+    test.skip(!isDesktop(viewport?.width), "Stacks below lg.");
+    await page.goto("/");
+
+    const share = await page.evaluate(() => {
+      const grid = document
+        .querySelector("#featured-project-heading")!
+        .closest("div.grid")!;
+      const text = grid.children[0].getBoundingClientRect();
+      const media = grid.children[1].getBoundingClientRect();
+      return (text.width / (text.width + media.width)) * 100;
+    });
+
+    expect(share).toBeGreaterThan(43);
+    expect(share).toBeLessThan(47);
+  });
+
+  test("the featured project still stacks on a phone", async ({
+    page,
+    viewport,
+  }) => {
+    test.skip(isDesktop(viewport?.width), "Two columns from lg.");
+    await page.goto("/");
+
+    const stacked = await page.evaluate(() => {
+      const grid = document
+        .querySelector("#featured-project-heading")!
+        .closest("div.grid")!;
+      const text = grid.children[0].getBoundingClientRect();
+      const media = grid.children[1].getBoundingClientRect();
+      // One column: the media starts below the copy, not beside it.
+      return media.top >= text.bottom - 1;
+    });
+
+    expect(stacked).toBe(true);
+  });
+
   test("the hero still is always present as poster and fallback", async ({
     page,
   }) => {
