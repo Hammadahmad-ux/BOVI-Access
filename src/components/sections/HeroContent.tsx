@@ -138,19 +138,25 @@ export function HeroContent({ supportingCopy }: HeroContentProps) {
         delay={HERO_TIMELINE.eyebrow}
         reduced={reduced}
         /*
-          CONTRAST, not decoration. Measured against the new client
-          footage frame by frame: green-bright (#4caf45) is a MIDTONE, so
-          it needs a near-ink background to clear AA. The desktop encode
-          bakes in a left-hand gradient dark enough for that, and it
-          measures 6.7:1 there. The mobile encode is the raw footage
-          full-bleed and the same label measured 3.4:1 at 375px — a fail
-          at 12px. Darkening the mobile scrim far enough to rescue the
-          green would have meant roughly 85% black over the whole frame,
-          which is the one thing this revision must not do to the
-          client's video. Bone at 8.9:1 costs an accent on small screens
-          and keeps the footage visible.
+          GREEN AT EVERY WIDTH — the client asked for the label to match
+          the brand on a phone as it already did on a laptop.
+
+          This was bone below lg on contrast grounds, and the note here
+          recorded 3.4:1 at 375px. Re-measured against the current mobile
+          encode, sampling the frame behind the label at twelve points
+          across the whole 36s clip, it is better than that but not
+          clean: 4.4-5.3:1 for most of the loop, dipping to 3.89:1 at 375
+          and 4.03:1 at 390 on the brightest frames. So the label clears
+          AA for small text most of the time and slips under it for a few
+          seconds of each pass.
+
+          The accent was asked for with that measurement stated. If
+          those seconds matter, the fix is a short scrim behind the top
+          strip of the hero only — the eyebrow sits in the first ~80px —
+          rather than darkening the whole frame, which is what the
+          earlier note ruled out.
         */
-        className="eyebrow text-bone lg:text-green-bright"
+        className="eyebrow text-green-bright"
       >
         {business.name}
       </Entrance>
