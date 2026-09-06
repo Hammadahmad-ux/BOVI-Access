@@ -91,7 +91,7 @@ export const projects: readonly ProjectRecord[] = [
     featured: true,
     span: "tall",
     summary:
-      "Cast iron soil and rainwater stacks running the full height of a narrow lightwell, reached on rope for inspection and repair. Access of this kind can reduce the need for scaffolding where a lightwell leaves little room to erect it.",
+      "Cast iron soil and rainwater stacks running the full height of a narrow lightwell, reached on rope for inspection and repair. Soil pipe repairs at this height can reduce the need for scaffolding where a lightwell leaves little room to erect it.",
     image: {
       src: "/images/projects/external-pipe-repair/main.jpg",
       alt: "A rope access technician working on cast iron soil pipework high in a narrow lightwell",

@@ -297,7 +297,7 @@ const content: readonly ServicePageContent[] = [
     eyebrow: "Service 04",
     heroTitle: "Drainage & External Pipe Repairs",
     intro:
-      "Repair, replacement and clearing of external pipework and soil stacks on elevations and lightwells that are difficult to reach.",
+      "External pipe repairs to soil stacks, waste and rainwater pipework — repair, replacement and clearing on elevations and lightwells that are difficult to reach.",
     heroMedia: {
       src: "/images/services/drainage-external-pipe-repairs.jpg",
       alt: "External soil stacks running the full height of a brick lightwell, seen from below",
@@ -327,6 +327,7 @@ const content: readonly ServicePageContent[] = [
     overview: [
       "External soil stacks and rainwater pipes often run the full height of a building, frequently down a lightwell or a tight rear elevation where there is no room for access equipment.",
       "Rope access reaches the whole run from the roof down, so a leaking joint or a blocked section can be reached at the point it has failed rather than from the nearest available platform.",
+      "The work is external and at height: soil pipe repairs to cracked or displaced joints, drainage and pipe repairs to high-level runs, and the brackets, clips and fittings that carry them. Underground drainage, internal plumbing and drain surveys sit with other trades.",
     ],
     commonWorks: [
       "Clearing blockages in external soil and rainwater stacks",
@@ -334,11 +335,11 @@ const content: readonly ServicePageContent[] = [
       "Renewing brackets, clips and fixings",
       "Sealing and making good pipe joints",
       "Replacing downpipe shoes and offsets",
-      "Close-up inspection of pipe runs and staining",
+      "Close-up inspection of soil pipe runs, joints and staining",
     ],
     delivery: [
       "The full run is inspected so the actual failure point is found, not just the visible symptom.",
-      "Works are carried out from rope, so lightwells and rear elevations do not need to be opened up for equipment.",
+      "Works are carried out from rope, which can avoid opening up a lightwell or rear elevation to bring equipment in.",
       "Where a defect is beyond the scope of a repair, it is reported rather than patched.",
     ],
     suitableFor: [
@@ -353,7 +354,7 @@ const content: readonly ServicePageContent[] = [
       "roof-roofline-repairs",
     ],
     seoDescription:
-      "External pipe and drainage repairs at height by rope access — soil stacks, rainwater goods and lightwell pipework on commercial buildings.",
+      "Rope-access external pipe repairs for commercial buildings — soil pipe repairs, soil stacks and lightwell pipework reached where access is difficult.",
   },
 
   /* ------------------------------------------------------------------ */

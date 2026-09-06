@@ -106,7 +106,7 @@ export const serviceContent: readonly ServiceContent[] = [
   {
     slug: "drainage-external-pipe-repairs",
     description:
-      "Repair, replacement and clearing of external pipework and soil stacks.",
+      "External pipe repairs and clearing to soil stacks and high-level rainwater pipework.",
     image: {
       src: "/images/services/drainage-external-pipe-repairs.jpg",
       alt: "External soil stacks running the full height of a brick lightwell, seen from below",
@@ -153,20 +153,29 @@ export function getServiceContent(slug: string): ServiceContent | undefined {
  * photograph's provenance. See CONTENT-RULES.md §2.
  */
 export const featuredProject = {
-  serviceCategory: "Commercial Window Cleaning",
+  /*
+   * The pipe-repair job, not the glazing one.
+   *
+   * It is the project flagged `featured` on the Projects page, so the
+   * homepage and /portfolio now lead with the same work rather than two
+   * different jobs — and it is the area the client has said his first two
+   * jobs were in. The heading and body below are unchanged design copy;
+   * only which job carries the block has moved.
+   */
+  serviceCategory: "Drainage & External Pipe Repairs",
   /**
    * The project these photographs actually come from, so the block links
    * to that job rather than to the services page. Same building, same
    * visit as /images/projects/commercial-glazing-clean/*.
    */
-  projectSlug: "commercial-glazing-clean",
+  projectSlug: "external-pipe-repair",
   heading: "Full-height elevation access, from the roof down.",
-  body: "Rope access allows every level of an elevation to be reached from anchor points at roof level, so glazing, masonry and roofline works can be carried out on an occupied building with a smaller site footprint than scaffold or powered access usually needs.",
+  body: "Rope access allows every level of an elevation to be reached from anchor points at roof level, so glazing, masonry, pipework and roofline works can be carried out on an occupied building with a smaller site footprint than scaffold or powered access usually needs.",
   image: {
-    src: "/images/home/featured-project.jpg",
-    alt: "Rope lines running the full height of a modern apartment building elevation",
-    width: 1500,
-    height: 2000,
+    src: "/images/projects/external-pipe-repair/main.jpg",
+    alt: "A rope access technician working on cast iron soil pipework high in a narrow lightwell",
+    width: 1200,
+    height: 1600,
   },
 } as const;
 

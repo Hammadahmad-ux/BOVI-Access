@@ -145,7 +145,7 @@ client, project or place.
 | Service 04 — Drainage & External Pipe Repairs | `05-Drainage-Pipes/IMG_5861.jpg` | `services/drainage-external-pipe-repairs.jpg` | 171KB |
 | Service 05 — Mastic & Sealant | `07-General-Rope-Access/IMG_9969.jpg` | `services/mastic-sealant.jpg` | 376KB |
 | Service 06 — Pressure Washing / DOFF | `07-General-Rope-Access/IMG_9398.jpg` | `services/pressure-washing-doff-cleaning.jpg` | 227KB |
-| Featured project | `06-Window-Cleaning-Liverpool/IMG_4077.jpg` | `home/featured-project.jpg` 1500×2000 | 330KB |
+| ~~Featured project~~ | ~~`06-Window-Cleaning-Liverpool/IMG_4077.jpg`~~ | **Retired.** The homepage Featured Project block now leads with the External Pipe Repair job, which is the project flagged `featured` on /portfolio, so the derivative it used to show is unreferenced and no longer generated. | |
 | Project 01 (landscape) | `02-Window-Cleaning/IMG_7448.jpg` | `home/project-01.jpg` 1600×1200 | 247KB |
 | Project 02 (portrait) | `03-Brickwork-Repointing/IMG_1693.jpg` | `home/project-02.jpg` 1000×1333 | 234KB |
 | Project 03 (portrait) | `04-Lightning-Protection/69a393a4-…jpg` | `home/project-03.jpg` 1200×1600 | 172KB |

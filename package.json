@@ -15,7 +15,8 @@
     "cms:migrate": "sanity exec scripts/migrate-to-sanity.ts --with-user-token",
     "assets:video": "node scripts/generate-hero-video.mjs",
     "verify:cms": "node scripts/verify-cms-service.mjs",
-    "cms:fix-wording": "sanity exec scripts/fix-access-wording.ts --with-user-token"
+    "cms:fix-wording": "sanity exec scripts/fix-access-wording.ts --with-user-token",
+    "cms:sync-drainage": "sanity exec scripts/sync-drainage-copy.ts --with-user-token"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

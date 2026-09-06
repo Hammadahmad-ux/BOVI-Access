@@ -91,14 +91,6 @@ const images = [
     quality: 74,
   },
 
-  /* ---------------- Featured project ---------------- */
-  {
-    src: `${SRC}/06-Window-Cleaning-Liverpool/IMG_4077.jpg`,
-    out: "public/images/home/featured-project.jpg",
-    width: 1500,
-    quality: 76,
-  },
-
   /* ---------------- Projects grid ----------------
    * Deliberately three different crops — see DESIGN.md § Project
    * composition. Widths differ because the rendered sizes differ.
