@@ -182,3 +182,182 @@ test.describe("projects gallery", () => {
     }
   });
 });
+
+/**
+ * Card geometry and the image lightbox.
+ *
+ * The client's second round of feedback: "some of the project cards are
+ * slightly misaligned and the project photos are quite large [...] make
+ * the images smaller by default and keep all the cards/photos aligned and
+ * consistent in size [...] visitors could then click on a photo to open
+ * it in a larger view."
+ *
+ * These run at every viewport, because that is where the alignment
+ * actually has to hold.
+ */
+test.describe("projects grid and lightbox", () => {
+  test("every card preview has identical dimensions", async ({ page }) => {
+    // The old grid switched between a 4:3 and a 3:4 frame depending on
+    // the source photograph's orientation, and staggered every second
+    // column down 64px. Both are what "misaligned" meant.
+    await page.goto("/portfolio");
+
+    const sizes = await page
+      .locator('main button[aria-label^="View larger"] span.block')
+      .evaluateAll((frames) =>
+        frames.map((frame) => {
+          const rect = frame.getBoundingClientRect();
+          return `${Math.round(rect.width)}x${Math.round(rect.height)}`;
+        }),
+      );
+
+    expect(sizes.length).toBeGreaterThanOrEqual(3);
+    expect(new Set(sizes).size, `frame sizes: ${sizes.join(", ")}`).toBe(1);
+  });
+
+  test("cards in a row share a top edge and align their titles", async ({
+    page,
+  }) => {
+    await page.goto("/portfolio");
+
+    const rows = await page.locator("main ul > li").evaluateAll((items) => {
+      const cards = items.filter((li) =>
+        li.querySelector('button[aria-label^="View larger"]'),
+      );
+      const grouped = new Map<number, number[]>();
+      for (const card of cards) {
+        const top = Math.round(card.getBoundingClientRect().top);
+        const title = card.querySelector('a[href^="/projects/"]');
+        const titleTop = title
+          ? Math.round(title.getBoundingClientRect().top)
+          : -1;
+        const key = [...grouped.keys()].find((k) => Math.abs(k - top) < 4);
+        const bucket = key === undefined ? [] : grouped.get(key)!;
+        if (key === undefined) grouped.set(top, bucket);
+        bucket.push(titleTop);
+      }
+      return [...grouped.values()];
+    });
+
+    expect(rows.length).toBeGreaterThan(0);
+    for (const titleTops of rows) {
+      // One distinct title position per row: no card is pushed down by a
+      // longer title or a longer description.
+      expect(new Set(titleTops).size).toBe(1);
+    }
+  });
+
+  test("the grid gains columns with the viewport", async ({
+    page,
+    viewport,
+  }) => {
+    await page.goto("/portfolio");
+
+    const columns = await page.locator("main ul").first().evaluate((ul) => {
+      const template = getComputedStyle(ul).gridTemplateColumns;
+      return template.split(" ").filter(Boolean).length;
+    });
+
+    const width = viewport?.width ?? 0;
+    const expected =
+      width >= 1280 ? 4 : width >= 1024 ? 3 : width >= 640 ? 2 : 1;
+    expect(columns).toBe(expected);
+  });
+
+  test("clicking a photograph opens it larger, and Escape closes it", async ({
+    page,
+  }) => {
+    await page.goto("/portfolio");
+
+    const trigger = page
+      .locator('main button[aria-label^="View larger"]')
+      .first();
+    const label = await trigger.getAttribute("aria-label");
+
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+
+    await trigger.click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+
+    // The large view must show the whole photograph, not another crop.
+    const image = dialog.locator("img").first();
+    await expect(image).toHaveCSS("object-fit", "contain");
+
+    const box = await image.boundingBox();
+    expect(box!.width).toBeLessThanOrEqual((page.viewportSize()?.width ?? 0) + 1);
+    expect(box!.height).toBeLessThanOrEqual(
+      (page.viewportSize()?.height ?? 0) + 1,
+    );
+
+    // Background must not scroll behind the dialog.
+    expect(
+      await page.evaluate(() => document.body.style.overflow),
+    ).toBe("hidden");
+
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+
+    /*
+      Polled, not asserted instantly. Closing a <dialog> is synchronous,
+      but the scroll lock is released by a React effect cleanup, which
+      lands on the next tick — reading it immediately raced the framework
+      rather than testing the behaviour.
+    */
+    await expect
+      .poll(() => page.evaluate(() => document.body.style.overflow))
+      .not.toBe("hidden");
+
+    // Focus handed back to the photograph that opened it.
+    await expect
+      .poll(() =>
+        page.evaluate(() =>
+          document.activeElement?.getAttribute("aria-label"),
+        ),
+      )
+      .toBe(label);
+  });
+
+  test("the close button and the backdrop both dismiss the lightbox", async ({
+    page,
+  }) => {
+    await page.goto("/portfolio");
+    const trigger = page
+      .locator('main button[aria-label^="View larger"]')
+      .first();
+
+    await trigger.click();
+    await page.getByRole("dialog").getByLabel("Close image").click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+
+    await trigger.click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+    // Top-left corner is backdrop on every viewport.
+    await page.mouse.click(5, 5);
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+  });
+
+  test("the title still opens the project page", async ({ page }) => {
+    // Two destinations from one card: the photograph opens the image, the
+    // title opens the job. Neither may swallow the other.
+    await page.goto("/portfolio");
+
+    const link = page.locator('main a[href^="/projects/"]').last();
+    const href = await link.getAttribute("href");
+    await link.click();
+
+    await expect(page).toHaveURL(new RegExp(`${href}$`));
+    await expect(page.locator("h1")).toHaveCount(1);
+    // Opening a project must not have left a dialog behind.
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+  });
+
+  test("the homepage projects section is untouched", async ({ page }) => {
+    // The compact portfolio card is deliberately NOT the homepage
+    // treatment; that section has its own editorial composition.
+    await page.goto("/");
+    await expect(
+      page.locator('main button[aria-label^="View larger"]'),
+    ).toHaveCount(0);
+  });
+});

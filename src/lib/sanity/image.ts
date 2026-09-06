@@ -74,5 +74,14 @@ export function imageAssetFrom(
     alt: image.alt.trim(),
     width: cappedWidth,
     height: cappedHeight,
+    /*
+      The hotspot Renan sets in Studio, carried through as a focal point.
+      The URL is built with `fit("max")` — no server-side crop — because
+      the layout crops with CSS, so without this the hotspot he drags over
+      a technician's head would have no effect anywhere on the site.
+    */
+    focalPoint: image.hotspot
+      ? { x: image.hotspot.x, y: image.hotspot.y }
+      : undefined,
   };
 }

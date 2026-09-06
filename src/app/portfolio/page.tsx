@@ -6,6 +6,7 @@ import { business } from "@/lib/config/site";
 import { getProjects } from "@/lib/content/provider";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { PageHero } from "@/components/sections/PageHero";
+import { ProjectPreview } from "@/components/projects/ProjectPreview";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
@@ -80,19 +81,19 @@ export default async function PortfolioPage() {
           <div className="mt-10 grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-16">
             <Reveal
               as="figure"
-              className="relative aspect-[4/3] overflow-hidden rounded-sm lg:col-span-8"
+              className="relative aspect-[4/3] overflow-hidden rounded-sm lg:col-span-7"
             >
               <Image
                 src={featured.image.src}
                 alt={featured.image.alt}
                 fill
-                sizes="(min-width: 1024px) 62vw, 100vw"
+                sizes="(min-width: 1024px) 55vw, 100vw"
                 quality={74}
                 className="object-cover object-center"
               />
             </Reveal>
 
-            <Reveal delay={STAGGER} className="lg:col-span-4">
+            <Reveal delay={STAGGER} className="lg:col-span-5">
               <p
                 data-project-category
                 className="eyebrow flex items-center gap-2.5 text-green-bright"
@@ -129,74 +130,68 @@ export default async function PortfolioPage() {
           </Reveal>
 
           {/*
-            Uneven by design — the source library is portrait-heavy and a
-            uniform grid would waste it. The offset on the second column is
-            a composition device, not data.
+            ALIGNED, uniform, and sized to grow.
+
+            This grid used to stagger every second column down 64px and
+            switch each card between a 4:3 and a 3:4 frame depending on
+            the source photograph's orientation. Both were deliberate —
+            and both are exactly what the client saw: "some of the project
+            cards are slightly misaligned and the project photos are quite
+            large."
+
+            So: one ratio for every card, no offsets, and four columns at
+            xl instead of three, which is what makes the previews smaller
+            without cropping them harder. He plans to add more projects,
+            and this holds its shape at 6, 12 or 18.
           */}
-          <ul className="mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-10">
+          <ul className="mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-10 xl:grid-cols-4">
             {rest.map((project, i) => (
               <Reveal
                 as="li"
                 key={project.id}
                 delay={Math.min(i * STAGGER, 0.24)}
-                className={i % 3 === 1 ? "lg:mt-16" : undefined}
+                className="flex flex-col gap-5"
               >
-                {/* The destination is the PROJECT, never the service
-                    page. That redirect was the client's actual complaint:
-                    a visitor who clicked a photograph of finished work was
-                    taken to a sales page about the service instead. */}
-                <Link
-                  href={`/projects/${project.slug}`}
-                  className="group flex flex-col gap-5"
-                >
-                  <span
-                    className={
-                      project.span === "wide"
-                        ? "relative block aspect-[4/3] overflow-hidden rounded-sm bg-ink-raised"
-                        : "relative block aspect-[3/4] overflow-hidden rounded-sm bg-ink-raised"
-                    }
+                {/* The photograph opens the photograph. */}
+                <ProjectPreview
+                  image={project.image}
+                  title={project.title}
+                  category={project.serviceCategory}
+                  photoCount={project.gallery.length + 1}
+                />
+
+                {/*
+                  Fixed vertical rhythm so cards line up across a row: the
+                  title is held at two lines whether it needs one or two,
+                  and the summary is clamped. Without both, a long title
+                  pushes its neighbour's description out of line — the
+                  other half of the misalignment.
+                */}
+                <div className="flex flex-col gap-2.5 border-t border-hairline-light pt-4">
+                  <span data-project-category className="eyebrow text-moss">
+                    {project.serviceCategory}
+                  </span>
+
+                  {/* The title opens the job. */}
+                  <Link
+                    href={`/projects/${project.slug}`}
+                    className="group flex min-h-[2.6em] items-start justify-between gap-4"
                   >
-                    <Image
-                      src={project.image.src}
-                      /* Decorative: the card link is named by the project
-                         title below it. */
-                      alt=""
-                      fill
-                      sizes="(min-width: 1024px) 30vw, (min-width: 640px) 46vw, 100vw"
-                      quality={72}
-                      className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.03] group-focus-visible:scale-[1.03]"
+                    <span className="line-clamp-2 font-display text-h5 font-semibold transition-colors group-hover:text-green">
+                      {project.title}
+                    </span>
+                    <ArrowUpRight
+                      aria-hidden="true"
+                      className="mt-0.5 size-5 shrink-0 text-moss transition-transform duration-200 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-green"
                     />
+                  </Link>
 
-                    {/* Only when there is genuinely more to see. */}
-                    {project.gallery.length > 0 ? (
-                      <span className="eyebrow absolute right-3 bottom-3 rounded-xs bg-ink/80 px-2.5 py-1.5 text-bone backdrop-blur-sm">
-                        {project.gallery.length + 1} photos
-                      </span>
-                    ) : null}
-                  </span>
-
-                  <span className="flex flex-col gap-3 border-t border-hairline-light pt-4">
-                    <span data-project-category className="eyebrow text-moss">
-                      {project.serviceCategory}
-                    </span>
-
-                    <span className="flex items-start justify-between gap-4">
-                      <span className="font-display text-h5 font-semibold transition-colors group-hover:text-green">
-                        {project.title}
-                      </span>
-                      <ArrowUpRight
-                        aria-hidden="true"
-                        className="mt-0.5 size-5 shrink-0 text-moss transition-transform duration-200 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-green"
-                      />
-                    </span>
-
-                    {/* Clamped, not truncated in the data: the card gives
-                        the gist, the project page gives the whole thing. */}
-                    <span className="line-clamp-3 text-body text-moss">
-                      {project.summary}
-                    </span>
-                  </span>
-                </Link>
+                  {/* Clamped on the listing only. The project page carries
+                      the whole thing. */}
+                  <p className="line-clamp-3 text-body text-moss">
+                    {project.summary}
+                  </p>
+                </div>
               </Reveal>
             ))}
           </ul>
