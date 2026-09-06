@@ -120,17 +120,22 @@ export function ServiceBody({ service }: { service: ServicePage }) {
           </div>
 
           {/*
-            Asymmetric pair — a wider frame carrying the work, a narrower
-            one carrying the context, the second dropped down the page so
-            the two read as a composition rather than a row of cards.
+            A LEVEL PAIR.
 
-            The offset is desktop-only: on a phone they simply stack, and
-            a top margin there would just be a gap.
+            This was an asymmetric composition — a wider frame and a
+            narrower one, the second dropped 64px down the page so the
+            two read as a composition rather than a row of cards. The
+            widths went first, when the client asked for every service
+            photograph to be the same size; the drop stayed, and with the
+            frames now identical it stopped reading as a composition and
+            started reading as two pictures that failed to line up. He
+            has asked for them level, which is the same call he made on
+            the homepage row and on /portfolio.
 
-            Both boxes stay PORTRAIT at every width. A landscape mobile
-            crop was tried and cut the heads off technicians — the source
-            library is almost entirely 3:4 phone photography, so a wide
-            box has to throw away most of the frame (DESIGN.md §6).
+            Both boxes stay PORTRAIT at every width. A landscape crop was
+            tried and cut the heads off technicians — the source library
+            is almost entirely 3:4 phone photography, so a wide box has
+            to throw away most of the frame (DESIGN.md §6).
           */}
           {pair ? (
             <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:mt-24 lg:gap-8">
@@ -138,11 +143,11 @@ export function ServiceBody({ service }: { service: ServicePage }) {
                 <Reveal
                   key={photo.src}
                   delay={i * STAGGER}
-                  /* The second frame still steps down the page — that is
-                     the section's rhythm and the client did not object to
-                     it. What changed is that both frames are now the same
-                     SIZE, which he did. */
-                  className={i === 1 ? "sm:mt-16 lg:mt-24" : undefined}
+                  /* A fade, not a rise. Reveal's default 22px travel with
+                     a per-frame delay would leave the pair briefly
+                     stepped anyway — the same transient offset the
+                     projects grids were levelled to stop showing. */
+                  y={0}
                 >
                   <ZoomableImage
                     image={photo}

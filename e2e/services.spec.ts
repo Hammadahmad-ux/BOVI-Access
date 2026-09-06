@@ -188,6 +188,52 @@ test.describe("service lightbox", () => {
 });
 
 test.describe("service photo placement", () => {
+  test("the overview pair sits on one line", async ({ page, viewport }) => {
+    /*
+      The pair used to be an asymmetric composition: a wider frame and a
+      narrower one, the second dropped 64px down the page. The widths
+      went when every service photograph was capped to one size, and the
+      drop then read as two pictures that failed to line up rather than
+      as a composition. The client asked for them level.
+
+      Sampled THROUGH the entrance: Reveal's default travel with a
+      per-frame delay would put the pair back on a step for most of a
+      second even with the margin gone.
+    */
+    test.skip((viewport?.width ?? 0) < 640, "The pair stacks on a phone.");
+    await page.goto("/services/brickwork-repointing");
+
+    const readTops = () =>
+      page.evaluate(() => {
+        const grid = [...document.querySelectorAll("main div.grid")].find(
+          (g) =>
+            g.querySelectorAll('button[aria-label^="View larger"]').length === 2,
+        );
+        if (!grid) return [];
+        return [
+          ...grid.querySelectorAll('button[aria-label^="View larger"]'),
+        ].map((b) => b.getBoundingClientRect().top);
+      });
+
+    await page.evaluate(() => {
+      const grid = [...document.querySelectorAll("main div.grid")].find(
+        (g) =>
+          g.querySelectorAll('button[aria-label^="View larger"]').length === 2,
+      );
+      grid?.scrollIntoView({ block: "center", behavior: "instant" });
+    });
+
+    for (let i = 0; i < 10; i++) {
+      const tops = await readTops();
+      expect(tops.length).toBe(2);
+      expect(
+        Math.abs(tops[0] - tops[1]),
+        `sample ${i}, tops: ${tops.join(", ")}`,
+      ).toBeLessThanOrEqual(1);
+      await page.waitForTimeout(80);
+    }
+  });
+
   test("every photograph is centred in its column", async ({
     page,
     viewport,
