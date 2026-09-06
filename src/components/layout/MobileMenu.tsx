@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Link from "next/link";
 import { X } from "lucide-react";
 import { business, primaryNav } from "@/lib/config/site";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/layout/Logo";
+import { NavLink } from "@/components/layout/NavLink";
 
 type MobileMenuProps = {
   open: boolean;
@@ -110,9 +110,13 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
         <ul className="flex flex-col">
           {primaryNav.map((item, i) => (
             <li key={item.href} className="border-b border-hairline-dark">
-              <Link
+              {/* Closing the menu is the `onNavigate` callback, so tapping
+                  the page you are already on closes it AND returns you to
+                  the top rather than closing onto the same scroll
+                  position. */}
+              <NavLink
                 href={item.href}
-                onClick={onClose}
+                onNavigate={onClose}
                 className="flex items-baseline gap-4 py-4"
               >
                 {/*
@@ -125,7 +129,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                 <span className="font-display text-h3 font-bold tracking-[-0.02em]">
                   {item.label}
                 </span>
-              </Link>
+              </NavLink>
             </li>
           ))}
         </ul>

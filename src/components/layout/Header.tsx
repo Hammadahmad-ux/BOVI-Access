@@ -1,13 +1,12 @@
 "use client";
 
 import { useRef, useState, useSyncExternalStore } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import { business, primaryNav } from "@/lib/config/site";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/layout/Logo";
+import { NavLink } from "@/components/layout/NavLink";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { cn } from "@/lib/utils/cn";
 
@@ -60,7 +59,6 @@ function getIsScrolledOnServer() {
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const pathname = usePathname();
 
   const scrolled = useSyncExternalStore(
     subscribeToScroll,
@@ -99,29 +97,25 @@ export function Header() {
 
           <nav aria-label="Primary" className="hidden xl:block">
             <ul className="flex items-center gap-8">
-              {primaryNav.map((item) => {
-                const active =
-                  item.href === "/"
-                    ? pathname === "/"
-                    : pathname.startsWith(item.href);
-
-                return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      aria-current={active ? "page" : undefined}
-                      className={cn(
+              {primaryNav.map((item) => (
+                <li key={item.href}>
+                  {/* NavLink owns the active rule and the same-page
+                      scroll-to-top; the styling below is unchanged. */}
+                  <NavLink
+                    href={item.href}
+                    className={(active) =>
+                      cn(
                         "eyebrow py-2 transition-colors",
                         active
                           ? "text-green-bright"
                           : "text-bone hover:text-green-bright",
-                      )}
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                );
-              })}
+                      )
+                    }
+                  >
+                    {item.label}
+                  </NavLink>
+                </li>
+              ))}
             </ul>
           </nav>
 
