@@ -442,23 +442,22 @@ none has been verified. Titles say what the work was.
    (`DEFAULT_HERO_VIDEO` / `DEFAULT_HERO_VIDEO_NARROW` in
    `src/lib/config/hero-media.ts`, or the Sanity Homepage field — which
    now actually reaches the page, see below).
-6. **The homepage CMS fields are still not wired up, apart from hero
-   media.** `getHomepage()` was written in Phase 4 and was never called
-   from anywhere, so every homepage field Renan can edit in Studio —
-   introduction copy and image, service-area copy, closing CTA copy,
-   featured project, selected projects — currently changes nothing on the
-   page. Hero media was connected during the hero revision because that
-   revision depended on it. **The rest still needs connecting**, and
-   until it is, CLAUDE.md §1 condition 4 is only partly true for the
-   homepage. Service pages and projects are unaffected: those read
-   through the provider correctly.
-4. **No verified project metadata.** Six projects are now published as a
+4. ~~The homepage CMS fields are not wired up.~~ **Resolved.**
+   `getHomepage()` was written in Phase 4 and called from nowhere, so
+   every homepage field Renan could edit in Studio changed nothing on the
+   page. All of them now reach it: hero supporting copy, introduction
+   copy and image, service-area copy, closing CTA copy, featured project
+   and selected projects — read by `Hero`, `Introduction`, `Coverage`,
+   `FinalCta`, `FeaturedProject` and `ProjectGrid` respectively. Each
+   falls back to the verified local content when blank, which is why the
+   empty Homepage document the project ships with renders unchanged.
+5. **No verified project metadata.** Six projects are now published as a
    completed-work gallery using service-led titles that are true of the
    photographs. What is still missing is anything that would let a project
    name a **client, address, location, date or scope** — supply any of
    those and the page shows them; leave them and it shows nothing rather
    than a guess.
-5. **Coverage vs Liverpool.** A meaningful part of the library is from
+6. **Coverage vs Liverpool.** A meaningful part of the library is from
    Liverpool, while approved coverage is "London & the South East". Worth
    clarifying with Renan before these images anchor a project page.
 

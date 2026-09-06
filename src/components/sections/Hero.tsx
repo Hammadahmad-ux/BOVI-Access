@@ -20,9 +20,10 @@ import { HeroContent } from "@/components/sections/HeroContent";
  * never called from anywhere, so every homepage CMS field — hero media
  * included — was dead: Renan could edit them in Studio and nothing would
  * change. Wiring the hero here makes CLAUDE.md §8 true rather than
- * merely intended. The REST of the homepage (introduction copy and
- * image, service-area copy, closing CTA copy, featured and selected
- * projects) is still unwired and needs the same treatment.
+ * merely intended, and the rest of the homepage now reads the same
+ * source: `Introduction`, `Coverage`, `FinalCta`, `FeaturedProject` and
+ * `ProjectGrid` each call `getHomepage()` too. It is memoised, so that
+ * is one query per request rather than six.
  *
  * COMPOSITION: just under a full viewport, in `svh` rather than `dvh` so the
  * section does not resize as mobile browser chrome collapses. Stopping short
