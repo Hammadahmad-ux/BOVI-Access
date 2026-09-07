@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+import type { Metadata, Route, Viewport } from "next";
 import { Archivo, Barlow } from "next/font/google";
 import "./globals.css";
 
@@ -7,6 +7,10 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { JsonLd, organizationSchema } from "@/lib/seo/structured-data";
+import {
+  getPublishedProjects,
+  getServices,
+} from "@/lib/content/provider";
 
 /**
  * Archivo is variable across 100-900, so a single face covers the display
@@ -51,11 +55,34 @@ export const viewport: Viewport = {
   themeColor: "#101211",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [services, projects] = await Promise.all([
+    getServices(),
+    getPublishedProjects(),
+  ]);
+
+  // Only serialisable navigation fields cross into the interactive header.
+  // Content fetching stays on the server and retains the provider's cache,
+  // outage fallback, published perspective, and deletion semantics.
+  const serviceItems = [
+    { label: "View All Services", href: "/services" as Route },
+    ...services.map((service) => ({
+      label: service.name,
+      href: `/services/${service.slug}` as Route,
+    })),
+  ];
+  const projectItems = [
+    { label: "View All Projects", href: "/portfolio" as Route },
+    ...projects.map((project) => ({
+      label: project.title,
+      href: `/projects/${project.slug}` as Route,
+    })),
+  ];
+
   return (
     <html lang="en-GB" className={`${archivo.variable} ${barlow.variable}`}>
       <body className="flex min-h-dvh flex-col">
@@ -83,7 +110,7 @@ export default function RootLayout({
           Skip to main content
         </a>
 
-        <Header />
+        <Header serviceItems={serviceItems} projectItems={projectItems} />
 
         {/* tabIndex -1 so the skip link actually moves focus here rather
             than leaving it on <body>. */}

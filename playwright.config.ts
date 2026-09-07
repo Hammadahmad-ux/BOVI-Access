@@ -24,6 +24,10 @@ const baseURL = `http://127.0.0.1:${PORT}`;
 
 export default defineConfig({
   testDir: "./e2e",
+  // Fixture lifecycle coverage owns its own already-running server and is
+  // invoked by `npm run verify:cms`; the normal suite must not run it
+  // against local or live content by accident.
+  testIgnore: "**/*.cms.spec.ts",
   fullyParallel: true,
   /**
    * Capped deliberately. The test build disables next/image optimization

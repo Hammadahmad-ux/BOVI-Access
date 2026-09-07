@@ -1,13 +1,24 @@
 "use client";
 
-import { useRef, useState, useSyncExternalStore } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { business, primaryNav } from "@/lib/config/site";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/layout/Logo";
 import { NavLink } from "@/components/layout/NavLink";
 import { MobileMenu } from "@/components/layout/MobileMenu";
+import {
+  NavDropdown,
+  type NavDropdownItem,
+} from "@/components/layout/NavDropdown";
 import { cn } from "@/lib/utils/cn";
 
 /**
@@ -32,6 +43,14 @@ import { cn } from "@/lib/utils/cn";
  * genuinely moves, large enough that mobile rubber-banding does not flip it.
  */
 const SCROLL_THRESHOLD = 24;
+const DROPDOWN_CLOSE_DELAY = 160;
+
+type DropdownId = "services" | "projects";
+
+type HeaderProps = {
+  serviceItems: readonly NavDropdownItem[];
+  projectItems: readonly NavDropdownItem[];
+};
 
 function subscribeToScroll(onStoreChange: () => void) {
   window.addEventListener("scroll", onStoreChange, { passive: true });
@@ -56,9 +75,16 @@ function getIsScrolledOnServer() {
   return false;
 }
 
-export function Header() {
+export function Header({ serviceItems, projectItems }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<DropdownId | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const desktopNavRef = useRef<HTMLElement>(null);
+  const servicesTriggerRef = useRef<HTMLButtonElement>(null);
+  const projectsTriggerRef = useRef<HTMLButtonElement>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const suppressFocusOpenRef = useRef(false);
+  const pathname = usePathname();
 
   const scrolled = useSyncExternalStore(
     subscribeToScroll,
@@ -70,6 +96,80 @@ export function Header() {
     setMenuOpen(false);
     triggerRef.current?.focus();
   };
+
+  const clearCloseTimer = useCallback(() => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  }, []);
+
+  const closeDropdown = useCallback(() => {
+    clearCloseTimer();
+    setOpenDropdown(null);
+  }, [clearCloseTimer]);
+
+  const openDesktopDropdown = useCallback(
+    (id: DropdownId) => {
+      // Escape returns focus to the disclosure button. That focus event is
+      // synchronous and must not immediately reopen the panel just closed.
+      if (suppressFocusOpenRef.current) return;
+      clearCloseTimer();
+      setOpenDropdown(id);
+    },
+    [clearCloseTimer],
+  );
+
+  const closeDropdownDelayed = useCallback(() => {
+    clearCloseTimer();
+    closeTimerRef.current = setTimeout(
+      () => setOpenDropdown(null),
+      DROPDOWN_CLOSE_DELAY,
+    );
+  }, [clearCloseTimer]);
+
+  useEffect(() => {
+    if (!openDropdown) return;
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (!desktopNavRef.current?.contains(event.target as Node)) {
+        closeDropdown();
+      }
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+
+      event.preventDefault();
+      const activeTrigger =
+        openDropdown === "services"
+          ? servicesTriggerRef.current
+          : projectsTriggerRef.current;
+      suppressFocusOpenRef.current = true;
+      closeDropdown();
+      activeTrigger?.focus();
+      // React's delegated focus event may flush after focus() returns, so
+      // keep the guard through the current task rather than clearing it
+      // synchronously.
+      setTimeout(() => {
+        suppressFocusOpenRef.current = false;
+      }, 0);
+    };
+
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [closeDropdown, openDropdown]);
+
+  useEffect(() => clearCloseTimer, [clearCloseTimer]);
+
+  const servicesActive = pathname.startsWith("/services");
+  const projectsActive =
+    pathname === "/portfolio" || pathname.startsWith("/projects/");
 
   return (
     <>
@@ -95,10 +195,49 @@ export function Header() {
         <Container className="flex h-20 items-center justify-between gap-6 lg:h-[5.5rem]">
           <Logo ground="dark" priority className="h-8 w-auto lg:h-11" />
 
-          <nav aria-label="Primary" className="hidden xl:block">
+          <nav
+            ref={desktopNavRef}
+            aria-label="Primary"
+            className="hidden xl:block"
+          >
             <ul className="flex items-center gap-8">
-              {primaryNav.map((item) => (
-                <li key={item.href}>
+              {primaryNav.map((item) => {
+                if (item.href === "/services") {
+                  return (
+                    <NavDropdown
+                      key={item.href}
+                      id="services"
+                      label={item.label}
+                      items={serviceItems}
+                      open={openDropdown === "services"}
+                      active={servicesActive}
+                      triggerRef={servicesTriggerRef}
+                      onOpen={() => openDesktopDropdown("services")}
+                      onClose={closeDropdown}
+                      onCloseDelayed={closeDropdownDelayed}
+                    />
+                  );
+                }
+
+                if (item.href === "/portfolio") {
+                  return (
+                    <NavDropdown
+                      key={item.href}
+                      id="projects"
+                      label={item.label}
+                      items={projectItems}
+                      open={openDropdown === "projects"}
+                      active={projectsActive}
+                      triggerRef={projectsTriggerRef}
+                      onOpen={() => openDesktopDropdown("projects")}
+                      onClose={closeDropdown}
+                      onCloseDelayed={closeDropdownDelayed}
+                    />
+                  );
+                }
+
+                return (
+                  <li key={item.href}>
                   {/* NavLink owns the active rule and the same-page
                       scroll-to-top; the styling below is unchanged. */}
                   <NavLink
@@ -114,8 +253,9 @@ export function Header() {
                   >
                     {item.label}
                   </NavLink>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           </nav>
 
@@ -157,7 +297,12 @@ export function Header() {
         there is no filter, so it worked, which is exactly why this only
         showed up after scrolling down.
       */}
-      <MobileMenu open={menuOpen} onClose={closeMenu} />
+      <MobileMenu
+        open={menuOpen}
+        onClose={closeMenu}
+        serviceItems={serviceItems}
+        projectItems={projectItems}
+      />
     </>
   );
 }

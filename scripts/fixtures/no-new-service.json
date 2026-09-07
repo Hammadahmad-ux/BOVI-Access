@@ -1,5 +1,5 @@
 {
-  "_comment": "TEST FIXTURE ONLY. The same CMS as new-service.json with the test service unpublished, used to prove that removing a service removes its page, its listing and its sitemap entry. The six migrated project documents stay, so the projects baseline is unchanged.",
+  "_comment": "TEST FIXTURE ONLY. The same CMS with the test service/project unpublished and Commercial Glazing Clean deleted. The successful five-project response proves deleted CMS projects do not fall back to stale local entries.",
   "services": [],
   "projects": [
     {
@@ -98,27 +98,6 @@
         "_type": "image",
         "asset": { "_type": "reference", "_ref": "image-e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5-1300x1733-jpg" },
         "alt": "A rope access technician applying sealant from a cordless gun into a vertical joint in brickwork"
-      },
-      "gallery": [],
-      "scope": null,
-      "featured": false,
-      "completionDate": null,
-      "seoTitle": null,
-      "seoDescription": null,
-      "ogImage": null
-    },
-    {
-      "_id": "project-commercial-glazing-clean",
-      "title": "Commercial Glazing Clean",
-      "slug": "commercial-glazing-clean",
-      "serviceSlug": "commercial-window-cleaning",
-      "serviceName": "Commercial Window Cleaning",
-      "location": null,
-      "summary": "Glazing, frames and cills cleaned across the full height of an apartment block elevation, worked from anchor points at roof level. Suits buildings where cradle access is unavailable or ground space for powered access is limited.",
-      "heroImage": {
-        "_type": "image",
-        "asset": { "_type": "reference", "_ref": "image-f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6-1300x1733-jpg" },
-        "alt": "A rope access technician cleaning glazing on a brick apartment block, a green bucket clipped to the harness"
       },
       "gallery": [],
       "scope": null,

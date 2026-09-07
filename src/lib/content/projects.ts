@@ -1,5 +1,4 @@
 import type { ImageAsset } from "@/lib/content/types";
-import type { ServiceSlug } from "@/lib/config/site";
 
 /**
  * BOVI ACCESS — project records.
@@ -53,7 +52,8 @@ export type ProjectRecord = {
   slug: string;
   /** Verified from the photograph's provenance. */
   serviceCategory: string;
-  serviceSlug: ServiceSlug;
+  /** May belong to an original service or one published later in Sanity. */
+  serviceSlug: string;
   /** Two or three sentences describing what the photographs show. */
   summary: string;
   /** The card and page-hero photograph. */

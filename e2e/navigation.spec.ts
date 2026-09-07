@@ -23,6 +23,23 @@ const NAV = [
 const settled = (page: import("@playwright/test").Page) =>
   page.waitForFunction(() => window.scrollY === 0, { timeout: 8000 });
 
+async function activateDesktopNav(
+  page: import("@playwright/test").Page,
+  label: (typeof NAV)[number]["label"],
+) {
+  const nav = page.getByRole("navigation", { name: "Primary" });
+
+  if (label === "Services" || label === "Projects") {
+    await nav.getByRole("button", { name: label, exact: true }).click();
+    await nav
+      .getByRole("link", { name: `View All ${label}`, exact: true })
+      .click();
+    return;
+  }
+
+  await nav.getByRole("link", { name: label, exact: true }).click();
+}
+
 test.describe("desktop primary nav", () => {
   test.skip(
     ({ viewport }) => (viewport?.width ?? 0) < 1280,
@@ -39,10 +56,7 @@ test.describe("desktop primary nav", () => {
         .poll(() => page.evaluate(() => window.scrollY))
         .toBeGreaterThan(200);
 
-      await page
-        .getByRole("navigation", { name: "Primary" })
-        .getByRole("link", { name: label, exact: true })
-        .click();
+      await activateDesktopNav(page, label);
 
       await settled(page);
       // And it must not have navigated anywhere.
@@ -75,12 +89,17 @@ test.describe("desktop primary nav", () => {
     await page.goto("/services/mastic-sealant");
     await page.evaluate(() => window.scrollTo(0, 1200));
 
-    const services = page
-      .getByRole("navigation", { name: "Primary" })
-      .getByRole("link", { name: "Services", exact: true });
-    await expect(services).toHaveAttribute("aria-current", "page");
+    const nav = page.getByRole("navigation", { name: "Primary" });
+    const services = nav.getByRole("button", {
+      name: "Services",
+      exact: true,
+    });
+    await expect(services).toHaveAttribute("data-active", "true");
 
     await services.click();
+    await nav
+      .getByRole("link", { name: "View All Services", exact: true })
+      .click();
     await expect(page).toHaveURL(/\/services$/);
   });
 
@@ -117,7 +136,22 @@ test.describe("mobile primary nav", () => {
       const menu = page.getByRole("dialog", { name: /site navigation/i });
       await expect(menu).toBeVisible();
 
-      await menu.getByRole("link", { name: label, exact: true }).click();
+      if (label === "Projects") {
+        const projects = menu.getByRole("button", {
+          name: "Projects",
+          exact: true,
+        });
+        // The active section opens by default; from another page it starts
+        // collapsed. Exercise the link in either valid initial state.
+        if ((await projects.getAttribute("aria-expanded")) === "false") {
+          await projects.click();
+        }
+        await menu
+          .getByRole("link", { name: "View All Projects", exact: true })
+          .click();
+      } else {
+        await menu.getByRole("link", { name: label, exact: true }).click();
+      }
 
       await expect(menu).toBeHidden();
       await settled(page);

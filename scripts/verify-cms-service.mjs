@@ -1,7 +1,8 @@
 /**
- * Proves the client-facing promise: a service that exists ONLY in the CMS
- * gets a real page, appears in the listing and the sitemap, and vanishes
- * from all three when it is unpublished.
+ * Proves the client-facing promise: services and projects that exist ONLY
+ * in the CMS get real pages and navigation entries, then vanish everywhere
+ * when unpublished. It also proves a successfully deleted CMS project is
+ * never resurrected from the local outage fallback.
  *
  * Run with: npm run verify:cms
  *
@@ -28,6 +29,12 @@ const SITE_PORT = 3661;
 const BASE = `http://localhost:${SITE_PORT}`;
 const API_HOST = `http://localhost:${STUB_PORT}`;
 const SLUG = "qa-temporary-test-service";
+const PROJECT_SLUG = "qa-temporary-test-project";
+const fixtureEnv = {
+  NEXT_PUBLIC_SANITY_PROJECT_ID: "fixture",
+  NEXT_PUBLIC_SANITY_DATASET: "fixture",
+  SANITY_API_HOST: API_HOST,
+};
 
 const children = [];
 let failures = 0;
@@ -90,7 +97,7 @@ function build() {
     process.execPath,
     ["node_modules/next/dist/bin/next", "build"],
     {
-      env: { ...process.env, SANITY_API_HOST: API_HOST },
+      env: { ...process.env, ...fixtureEnv },
       stdio: ["ignore", "pipe", "pipe"],
     },
   );
@@ -117,12 +124,35 @@ async function run(fixture, label, assertions) {
   const site = start(
     process.execPath,
     ["node_modules/next/dist/bin/next", "start", "-p", String(SITE_PORT)],
-    { SANITY_API_HOST: API_HOST },
+    fixtureEnv,
     "site",
   );
   await waitForServer(BASE);
 
   await assertions();
+
+  const browserResult = spawnSync(
+    process.execPath,
+    [
+      "node_modules/@playwright/test/cli.js",
+      "test",
+      "--config=playwright.cms.config.ts",
+    ],
+    {
+      env: {
+        ...process.env,
+        CMS_FIXTURE_BASE_URL: BASE,
+        CMS_FIXTURE_STATE: label === "Service PUBLISHED"
+          ? "published"
+          : "unpublished",
+      },
+      stdio: "inherit",
+    },
+  );
+  if (browserResult.status !== 0) {
+    failures++;
+    throw new Error(`fixture Playwright check failed for ${label}`);
+  }
 
   site.kill();
   stub.kill();
@@ -166,7 +196,7 @@ try {
       9,
     );
 
-    // The six projects in this run come from the fixture CMS, not local
+    // The projects in this run come from the fixture CMS, not local
     // fallback — proof that the provider treats a populated Sanity response
     // as authoritative for the project list.
     const project = await get("/projects/external-pipe-repair");
@@ -176,10 +206,12 @@ try {
       project.body.includes("running the full height of a narrow lightwell"),
       true,
     );
+    const addedProject = await get(`/projects/${PROJECT_SLUG}`);
+    check("new fixture project page renders", addedProject.status, 200);
 
     const map = await get("/sitemap.xml");
-    // 7 static + 8 core services + the fixture service + 6 projects.
-    check("sitemap URL count", (map.body.match(/<loc>/g) ?? []).length, 22);
+    // 7 static + 8 core services + fixture service + 7 projects.
+    check("sitemap URL count", (map.body.match(/<loc>/g) ?? []).length, 23);
     check(
       "sitemap contains the new service once",
       (map.body.match(new RegExp(`/services/${SLUG}<`, "g")) ?? []).length,
@@ -198,9 +230,13 @@ try {
     check("no longer listed", countLinks(list.body, SLUG), 0);
 
     const map = await get("/sitemap.xml");
-    // 7 static + 8 core services + 6 projects (the projects are unchanged
-    // between runs; only the extra service is unpublished here).
-    check("sitemap URL count back to baseline", (map.body.match(/<loc>/g) ?? []).length, 21);
+    // 7 static + 8 core services + 5 CMS projects. The fixture project is
+    // unpublished and one formerly published local-baseline project has
+    // been deleted from the successful CMS response.
+    check("sitemap URL count after removals", (map.body.match(/<loc>/g) ?? []).length, 20);
+
+    const deletedProject = await get("/projects/commercial-glazing-clean");
+    check("deleted CMS project does not fall back locally", deletedProject.status, 404);
 
     const core = await get("/services/mastic-sealant");
     check("the original eight are untouched", core.status, 200);
@@ -211,7 +247,7 @@ try {
 
 console.log(
   failures === 0
-    ? "\nCMS service lifecycle verified.\n"
+    ? "\nCMS navigation lifecycle verified.\n"
     : `\n${failures} check(s) FAILED.\n`,
 );
 process.exit(failures === 0 ? 0 : 1);

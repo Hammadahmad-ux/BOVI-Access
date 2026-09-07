@@ -1,5 +1,5 @@
 {
-  "_comment": "TEST FIXTURE ONLY. Simulates a service Renan creates in Studio that the codebase has never seen, alongside the six migrated project documents. Never written to any Sanity dataset; consumed only by scripts/sanity-stub-server.cjs. The service content is deliberately obvious placeholder QA text so it can never be mistaken for real BOVI copy. The projects mirror src/lib/content/projects.ts with placeholder image asset refs (verify:cms checks HTTP status and link/sitemap counts, never that an image loads).",
+  "_comment": "TEST FIXTURE ONLY. Simulates a service and project Renan creates in Studio alongside the six migrated project documents. Never written to any Sanity dataset; consumed only by scripts/sanity-stub-server.cjs. The fixture content is deliberately obvious placeholder QA text so it can never be mistaken for real BOVI copy.",
   "services": [
     {
       "slug": "qa-temporary-test-service",
@@ -137,6 +137,27 @@
         "_type": "image",
         "asset": { "_type": "reference", "_ref": "image-f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6-1300x1733-jpg" },
         "alt": "A rope access technician cleaning glazing on a brick apartment block, a green bucket clipped to the harness"
+      },
+      "gallery": [],
+      "scope": null,
+      "featured": false,
+      "completionDate": null,
+      "seoTitle": null,
+      "seoDescription": null,
+      "ogImage": null
+    },
+    {
+      "_id": "project-qa-temporary-test-project",
+      "title": "QA Temporary Test Project",
+      "slug": "qa-temporary-test-project",
+      "serviceSlug": "qa-temporary-test-service",
+      "serviceName": "QA Temporary Test Service",
+      "location": null,
+      "summary": "Temporary QA fixture used to prove that a project created in the CMS appears in project navigation.",
+      "heroImage": {
+        "_type": "image",
+        "asset": { "_type": "reference", "_ref": "image-a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7-1200x1600-jpg" },
+        "alt": "Temporary QA fixture image"
       },
       "gallery": [],
       "scope": null,

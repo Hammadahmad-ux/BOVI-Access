@@ -326,9 +326,10 @@ function mapProject(doc: SanityProject): ProjectRecord | null {
   // dropped rather than shown as an empty card.
   if (!image) return null;
 
-  const serviceSlug = serviceIndex.find(
-    (s) => s.slug === doc.serviceSlug,
-  )?.slug;
+  // The referenced service may itself have been created in Sanity after
+  // launch. Restricting this to the original local slug union silently
+  // discarded otherwise valid future projects.
+  const serviceSlug = doc.serviceSlug?.trim();
   if (!serviceSlug) return null;
 
   // Title and slug are required by the schema, but a document can still
@@ -340,8 +341,8 @@ function mapProject(doc: SanityProject): ProjectRecord | null {
   if (!title || !slug) return null;
 
   const serviceCategory =
-    doc.serviceName ??
-    serviceIndex.find((s) => s.slug === serviceSlug)?.name ??
+    doc.serviceName?.trim() ||
+    serviceIndex.find((s) => s.slug === serviceSlug)?.name ||
     "";
 
   return {

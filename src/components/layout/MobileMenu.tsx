@@ -1,16 +1,23 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronDown, X } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { business, primaryNav } from "@/lib/config/site";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/layout/Logo";
 import { NavLink } from "@/components/layout/NavLink";
+import type { NavDropdownItem } from "@/components/layout/NavDropdown";
+import { cn } from "@/lib/utils/cn";
 
 type MobileMenuProps = {
   open: boolean;
   onClose: () => void;
+  serviceItems: readonly NavDropdownItem[];
+  projectItems: readonly NavDropdownItem[];
 };
+
+type AccordionId = "services" | "projects";
 
 /**
  * Full-screen dark navigation panel.
@@ -19,9 +26,26 @@ type MobileMenuProps = {
  * treatment. Handles Escape, background scroll lock, and returns focus to
  * the trigger on close (the parent owns the trigger ref).
  */
-export function MobileMenu({ open, onClose }: MobileMenuProps) {
+export function MobileMenu({
+  open,
+  onClose,
+  serviceItems,
+  projectItems,
+}: MobileMenuProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const pathname = usePathname();
+  const servicesActive = pathname.startsWith("/services");
+  const projectsActive =
+    pathname === "/portfolio" || pathname.startsWith("/projects/");
+  const activeSection: AccordionId | null = servicesActive
+    ? "services"
+    : projectsActive
+      ? "projects"
+      : null;
+  const [openAccordion, setOpenAccordion] = useState<AccordionId | null>(
+    activeSection,
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -108,8 +132,101 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
         className="flex-1 overflow-y-auto px-(--spacing-gutter) py-8"
       >
         <ul className="flex flex-col">
-          {primaryNav.map((item, i) => (
-            <li key={item.href} className="border-b border-hairline-dark">
+          {primaryNav.map((item, i) => {
+            const accordion =
+              item.href === "/services"
+                ? {
+                    id: "services" as const,
+                    items: serviceItems,
+                    active: servicesActive,
+                  }
+                : item.href === "/portfolio"
+                  ? {
+                      id: "projects" as const,
+                      items: projectItems,
+                      active: projectsActive,
+                    }
+                  : null;
+
+            if (accordion) {
+              const expanded = openAccordion === accordion.id;
+              const panelId = `mobile-${accordion.id}-links`;
+
+              return (
+                <li
+                  key={item.href}
+                  className="border-b border-hairline-dark"
+                >
+                  <button
+                    type="button"
+                    aria-expanded={expanded}
+                    aria-controls={panelId}
+                    data-mobile-nav-trigger={accordion.id}
+                    data-active={accordion.active}
+                    onClick={() =>
+                      setOpenAccordion((current) =>
+                        current === accordion.id ? null : accordion.id,
+                      )
+                    }
+                    className={cn(
+                      "flex min-h-11 w-full items-center gap-4 py-4 text-left",
+                      accordion.active && "text-green-bright",
+                    )}
+                  >
+                    <span aria-hidden="true" className="eyebrow text-green-bright">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="flex-1 font-display text-h3 font-bold tracking-[-0.02em]">
+                      {item.label}
+                    </span>
+                    <ChevronDown
+                      aria-hidden="true"
+                      className={cn(
+                        "size-5 shrink-0 text-mist transition-transform duration-200",
+                        expanded && "rotate-180 text-green-bright",
+                      )}
+                    />
+                  </button>
+
+                  {expanded && (
+                    <ul
+                      id={panelId}
+                      aria-label={`${item.label} links`}
+                      className="pb-4 pl-8 sm:pl-10"
+                    >
+                      {accordion.items.map((nestedItem, nestedIndex) => (
+                        <li
+                          key={nestedItem.href}
+                          className={cn(
+                            nestedIndex === 1 &&
+                              "mt-1 border-t border-hairline-dark pt-1",
+                          )}
+                        >
+                          <NavLink
+                            href={nestedItem.href}
+                            onNavigate={onClose}
+                            className={(active) =>
+                              cn(
+                                "block min-h-11 py-3 font-display text-small font-medium leading-snug",
+                                "transition-colors hover:text-green-bright",
+                                active ? "text-green-bright" : "text-mist",
+                                nestedIndex === 0 &&
+                                  "font-semibold uppercase tracking-[0.06em] text-bone",
+                              )
+                            }
+                          >
+                            {nestedItem.label}
+                          </NavLink>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              );
+            }
+
+            return (
+              <li key={item.href} className="border-b border-hairline-dark">
               {/* Closing the menu is the `onNavigate` callback, so tapping
                   the page you are already on closes it AND returns you to
                   the top rather than closing onto the same scroll
@@ -131,7 +248,8 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                 </span>
               </NavLink>
             </li>
-          ))}
+            );
+          })}
         </ul>
       </nav>
 
