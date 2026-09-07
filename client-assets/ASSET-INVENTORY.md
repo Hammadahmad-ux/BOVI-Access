@@ -469,12 +469,16 @@ none has been verified. Titles say what the work was.
    `FinalCta`, `FeaturedProject` and `ProjectGrid` respectively. Each
    falls back to the verified local content when blank, which is why the
    empty Homepage document the project ships with renders unchanged.
-5. **No verified project metadata.** Six projects are now published as a
+5. **No verified project metadata.** Six projects are published as a
    completed-work gallery using service-led titles that are true of the
-   photographs. What is still missing is anything that would let a project
-   name a **client, address, location, date or scope** — supply any of
-   those and the page shows them; leave them and it shows nothing rather
-   than a guess.
+   photographs. They are now **real Sanity documents** (`project-<slug>`,
+   seeded by `npm run cms:seed-projects`), with the
+   `public/images/projects/<slug>/` derivatives uploaded as editable image
+   assets — so Renan edits and deletes them in Studio directly. What is
+   still missing is anything that would let a project name a **client,
+   address, location, date or scope** — supply any of those in Studio and
+   the page shows them; leave them and it shows nothing rather than a
+   guess.
 6. **Coverage vs Liverpool.** A meaningful part of the library is from
    Liverpool, while approved coverage is "London & the South East". Worth
    clarifying with Renan before these images anchor a project page.

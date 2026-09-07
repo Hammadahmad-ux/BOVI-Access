@@ -7,6 +7,18 @@ import { defineConfig, devices } from "@playwright/test";
  * the mandatory QA ladder from QA-CHECKLIST.md — every one of these widths
  * must be clean before launch.
  */
+
+/**
+ * The E2E build disables next/image optimization (next.config.ts) — the
+ * site's project/homepage photography now comes from the Sanity CDN, and
+ * `next start`'s single-process optimizer wedges under the parallel sweep,
+ * taking the whole server down. Set here so the webServer's `next build`
+ * inherits it AND specs can branch on it (one service-lightbox check
+ * inspects the `?w=` an optimized URL carries; Vercel's edge optimizer
+ * covers that in production).
+ */
+process.env.E2E_NO_IMAGE_OPT ||= "1";
+
 const PORT = 3100;
 const baseURL = `http://127.0.0.1:${PORT}`;
 
@@ -14,22 +26,27 @@ export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
   /**
-   * Capped deliberately. Seven viewport projects sweeping every route at
-   * full parallelism saturate `next start`'s single-process image
-   * optimizer, which then returns 5xx for image requests and trips the
-   * "no console errors" guard — a harness artefact, not a site defect
-   * (production serves optimised images from the edge). Capping workers
-   * keeps the suite deterministic without weakening any assertion.
+   * Capped deliberately. The test build disables next/image optimization
+   * (`E2E_NO_IMAGE_OPT` — see the webServer block and next.config.ts), so
+   * the project and homepage photography loads straight from the Sanity
+   * CDN. Seven viewport projects sweeping every route in parallel put
+   * enough concurrent load on that CDN that a cold transform occasionally
+   * takes several seconds, which delays a page's `load` event — hence the
+   * worker cap AND the roomy navigation/test timeouts below. The pages
+   * themselves render fine; this is purely image-fetch latency under a
+   * load production never sees.
    */
-  workers: process.env.CI ? 2 : 3,
+  workers: 2,
+  timeout: 90_000,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 2 : 1,
   reporter: process.env.CI ? "github" : "list",
 
   use: {
     baseURL,
     trace: "on-first-retry",
     screenshot: "only-on-failure",
+    navigationTimeout: 60_000,
   },
 
   projects: [
@@ -43,9 +60,18 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: `npx next start --port ${PORT}`,
+    /**
+     * Builds here rather than assuming a prior `npm run build`, because
+     * the test build must carry `E2E_NO_IMAGE_OPT` (next.config.ts reads
+     * it at build time). Locally the running server is reused between
+     * runs — `reuseExistingServer` — so this only costs a build on the
+     * first invocation. A normal `npm run build` for deployment is
+     * unaffected: the flag is scoped to this command's env.
+     */
+    command: `npx next build && npx next start --port ${PORT}`,
     url: baseURL,
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    timeout: 300_000,
+    env: { E2E_NO_IMAGE_OPT: process.env.E2E_NO_IMAGE_OPT ?? "1" },
   },
 });

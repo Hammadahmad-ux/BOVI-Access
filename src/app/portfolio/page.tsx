@@ -48,26 +48,42 @@ export const revalidate = 3600;
 export default async function PortfolioPage() {
   const projects = await getProjects();
 
+  const hero = (
+    <PageHero
+      eyebrow="Projects"
+      title={["Work at height.", "Seen from the ground."]}
+      lead="Selected examples of access, repair and maintenance work across commercial properties."
+      media={{
+        src: "/images/portfolio/hero.jpg",
+        alt: "A tall angular glazed tower photographed from street level against a clear sky",
+        width: 1600,
+        height: 2133,
+      }}
+      height="tall"
+    />
+  );
+
+  // Every project unpublished or deleted in Studio. Render the page frame
+  // and the conversion path — no placeholder copy (CONTENT-RULES.md §3),
+  // and no local set (an outage would have returned it from getProjects).
+  if (projects.length === 0) {
+    return (
+      <>
+        {hero}
+        <FinalCta />
+      </>
+    );
+  }
+
   // The lead item is chosen by the `featured` flag, not by array position,
   // so re-ordering the list — or Renan ticking a different project in
   // Studio — cannot silently change which one leads the page.
   const featured = projects.find((project) => project.featured) ?? projects[0];
-  const rest = projects.filter((project) => project.id !== featured?.id);
+  const rest = projects.filter((project) => project.id !== featured.id);
 
   return (
     <>
-      <PageHero
-        eyebrow="Projects"
-        title={["Work at height.", "Seen from the ground."]}
-        lead="Selected examples of access, repair and maintenance work across commercial properties."
-        media={{
-          src: "/images/portfolio/hero.jpg",
-          alt: "A tall angular glazed tower photographed from street level against a clear sky",
-          width: 1600,
-          height: 2133,
-        }}
-        height="tall"
-      />
+      {hero}
 
       {/* ---------------- Featured ---------------- */}
       <section data-ground="dark" className="bg-ink text-bone">

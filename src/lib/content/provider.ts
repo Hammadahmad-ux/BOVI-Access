@@ -288,7 +288,7 @@ type SanityProject = {
   completionDate?: string;
 };
 
-const PROJECT_QUERY = `*[_type == "project"] | order(featured desc, completionDate desc, _createdAt desc){
+const PROJECT_QUERY = `*[_type == "project"] | order(featured desc, completionDate desc, _createdAt asc){
   _id,
   title,
   "slug": slug.current,
@@ -357,16 +357,28 @@ function mapProject(doc: SanityProject): ProjectRecord | null {
 }
 
 export async function getProjects(): Promise<ProjectRecord[]> {
+  // Local content is an OUTAGE / UNCONFIGURED fallback only — never a
+  // content fallback after Sanity has answered. Once the CMS is reachable
+  // it is the single source of truth for which projects exist, so a
+  // project Renan deletes in Studio actually disappears from the site
+  // (portfolio, project pages, sitemap AND the homepage) instead of being
+  // resurrected from the local array below. See CMS-HANDOVER.md § Projects.
   if (!sanityConfig.isConfigured) return [...localProjects];
 
   const cms = await sanityFetch<SanityProject[]>(PROJECT_QUERY, {
     tags: ["project"],
   });
 
-  // No CMS projects yet? Keep showing the verified local photography
-  // rather than an empty portfolio.
-  const mapped = (cms ?? []).map(mapProject).filter(Boolean) as ProjectRecord[];
-  return mapped.length > 0 ? mapped : [...localProjects];
+  // `sanityFetch` returns null ONLY on a genuine outage or a malformed
+  // query (it catches and logs) — never for a successful query that
+  // matched nothing. That distinction is the whole point: an outage keeps
+  // the verified local photography up; a successful empty response means
+  // there are no published projects, and the site must show that.
+  if (cms === null) return [...localProjects];
+
+  return cms
+    .map(mapProject)
+    .filter((project): project is ProjectRecord => project !== null);
 }
 
 /** Only projects with a real slug get a detail URL. */
@@ -464,8 +476,12 @@ export const getHomepage = cache(async function getHomepage(): Promise<HomepageC
     introImage: imageAssetFrom(cms.introImage, fallback.introImage),
     serviceAreaCopy: cms.serviceAreaCopy?.trim() || fallback.serviceAreaCopy,
     finalCtaCopy: cms.finalCtaCopy?.trim() || fallback.finalCtaCopy,
+    // A deleted `featuredProject` reference resolves to null here; a
+    // deleted entry in `selectedProjects` resolves to null inside the
+    // array. Both are dropped so the homepage never carries a dangling
+    // project id — it just has one fewer selection until Renan re-picks.
     featuredProjectId: cms.featuredProjectId ?? null,
-    selectedProjectIds: cms.selectedProjectIds ?? [],
+    selectedProjectIds: (cms.selectedProjectIds ?? []).filter(Boolean),
   };
 })
 

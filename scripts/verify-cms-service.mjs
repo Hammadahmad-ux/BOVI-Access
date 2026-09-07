@@ -166,6 +166,17 @@ try {
       9,
     );
 
+    // The six projects in this run come from the fixture CMS, not local
+    // fallback — proof that the provider treats a populated Sanity response
+    // as authoritative for the project list.
+    const project = await get("/projects/external-pipe-repair");
+    check("a fixture project page renders", project.status, 200);
+    check(
+      "project page shows its CMS summary",
+      project.body.includes("running the full height of a narrow lightwell"),
+      true,
+    );
+
     const map = await get("/sitemap.xml");
     // 7 static + 8 core services + the fixture service + 6 projects.
     check("sitemap URL count", (map.body.match(/<loc>/g) ?? []).length, 22);
@@ -187,7 +198,8 @@ try {
     check("no longer listed", countLinks(list.body, SLUG), 0);
 
     const map = await get("/sitemap.xml");
-    // 7 static + 8 core services + 6 projects.
+    // 7 static + 8 core services + 6 projects (the projects are unchanged
+    // between runs; only the extra service is unpublished here).
     check("sitemap URL count back to baseline", (map.body.match(/<loc>/g) ?? []).length, 21);
 
     const core = await get("/services/mastic-sealant");

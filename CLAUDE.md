@@ -284,7 +284,8 @@ seven viewports. **Add every new route to its `ROUTES` array.**
 
 ```bash
 npm run check      # lint + typecheck + build
-npm run test:e2e   # Playwright, all viewports (needs a build first)
+npm run test:e2e   # Playwright, all viewports (its webServer builds first,
+                   # with image optimization disabled — see playwright.config.ts)
 ```
 
 ---

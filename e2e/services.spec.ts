@@ -163,6 +163,14 @@ test.describe("service lightbox", () => {
 
   test("the thumbnail is small and the large view is not", async ({ page }) => {
     // A lightbox that upscales its own thumbnail would defeat the point.
+    // This reads the `?w=` that an OPTIMIZED next/image URL carries; the
+    // E2E build turns optimization off (playwright.config.ts), so both
+    // views load the same source file and there is no width to compare.
+    // Vercel's edge optimizer serves the right variant in production.
+    test.skip(
+      process.env.E2E_NO_IMAGE_OPT === "1",
+      "next/image optimization is disabled in the E2E build",
+    );
     await page.goto("/services/gutter-cleaning");
 
     const thumbWidth = await page

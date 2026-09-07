@@ -89,12 +89,17 @@ Every field listed here genuinely changes the live site.
 - **Introduction text and photograph** — the first section below the hero.
   Leave a blank line between paragraphs and each becomes its own
   paragraph.
-- **Featured project** — pick one of your projects. Only its photograph
-  and service name are used; the heading and paragraph beside it are part
-  of the design.
-- **Projects shown on the homepage** — pick three. The design holds
-  exactly three frames, one wide and two tall, so the first three you
-  choose are the ones shown.
+- **Featured project** — optional. Leave it blank and the homepage shows
+  the project you have ticked as "featured" on the Projects page (today
+  that is External Pipe Repair). Pick one here to override that. Only its
+  photograph and service name are used; the heading and paragraph beside
+  it are part of the design. Note: once a project is picked here, you have
+  to un-pick it before you can delete that project.
+- **Projects shown on the homepage** — optional. Leave it blank and the
+  homepage shows your first three projects. Pick three here to choose
+  them instead — the design holds exactly three frames, so only the first
+  three you pick are shown. Same note as above: a project picked here
+  can't be deleted until it is un-picked.
 - **Service area text** — the sentence under "London & The South East".
   Those two headline lines are fixed.
 - **Closing call-to-action text** — the sentence under "NEED SAFE ACCESS
@@ -105,9 +110,37 @@ Every field listed here genuinely changes the live site.
 
 This is the one you will use most.
 
-The Projects page is now a gallery of completed work: each project is
-**one job**, with its own photographs, its own short description, and its
-own page at `/projects/<name>`.
+The Projects page is a gallery of completed work: each project is **one
+job**, with its own photographs, its own short description, and its own
+page at `/projects/<name>`.
+
+**The six current projects are already in the editor.** Open **Projects**
+and you will see all six — External Pipe Repair, Gutter & Downpipe
+Clearance, Brickwork Repointing, Lightning Protection Works, Mastic &
+Sealant Renewal, Commercial Glazing Clean. They are the exact projects the
+website shows today, with their real photographs attached as images you can
+replace. Nothing was invented: there are no client names, addresses, dates
+or scope on them, because none has been confirmed — add any of those to a
+project and its page starts showing them.
+
+**To edit an existing project:**
+
+1. Click **Projects**, then the project you want.
+2. Change any text (title, short description) or replace a photograph —
+   click the image, choose **Upload**, pick the new file, write the alt
+   text, drag the crop circle over the important part.
+3. **More photographs from this job** — click **Add item** to add one,
+   drag the handle on the left of a row to reorder, use the **⋯** menu to
+   remove one. Every photo needs alt text. They must all be from the same
+   job.
+4. Click **Publish**. The change is live within about a minute.
+
+**To delete a project:** open it, **⋯ → Delete**, confirm. It disappears
+from the Projects page, its own page stops existing, and it drops out of
+the Google sitemap — all together, within about a minute. Unlike the eight
+services, projects are yours to remove. (Sanity keeps revision history, so
+a delete can be recovered — contact your developer before creating a
+replacement.)
 
 **To add a project:**
 

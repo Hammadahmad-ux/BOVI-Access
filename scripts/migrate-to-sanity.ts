@@ -19,9 +19,9 @@ import { servicePages } from "@/lib/content/services";
  * re-seed of one document, delete it in Studio first.
  *
  * WHAT IT DELIBERATELY DOES NOT DO:
- *   - No project documents. No BOVI project has a verified name, client,
- *     location or date, so there is nothing truthful to seed. Renan adds
- *     those himself (CONTENT-RULES.md §1).
+ *   - No project documents. The six verified projects are seeded by a
+ *     separate script — `npm run cms:seed-projects` (scripts/seed-projects.ts)
+ *     — which also uploads their photographs as image assets.
  *   - No address or company number on siteSettings — neither supplied.
  *   - No FAQs. Every service seeds with an empty list; the front end
  *     renders nothing rather than inventing questions.

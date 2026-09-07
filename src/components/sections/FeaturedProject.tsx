@@ -79,31 +79,34 @@ export async function FeaturedProject() {
   const [home, projects] = await Promise.all([getHomepage(), getProjects()]);
 
   /*
-    Renan picks the featured project in Studio. Only its PHOTOGRAPH and
-    SERVICE CATEGORY are taken from it — the heading and the supporting
-    paragraph stay in code, because they are the section's designed argument
-    rather than project metadata.
+    The PHOTOGRAPH and SERVICE CATEGORY come from a project in the CMS
+    collection — the one Renan selected in Studio, else the project flagged
+    `featured`, else the first. A selection that no longer resolves (the
+    project was deleted) falls through by the same logic to another CMS
+    project; it is never replaced with a local copy of the deleted one.
 
-    That restraint is the same one the section was built around: no project
-    name, client, location, value or date is shown, because none has been
-    verified (CONTENT-RULES.md §2). Selecting a project here does not change
-    that; it changes which photograph carries the block.
-
-    Nothing selected, or a selection that no longer resolves, falls back to
-    the verified local frame.
+    The heading and the supporting paragraph stay in code — they are the
+    section's designed argument, not project metadata. No project name,
+    client, location, value or date is shown (CONTENT-RULES.md §2).
   */
-  const selected = home.featuredProjectId
-    ? projects.find((project) => project.id === home.featuredProjectId)
-    : undefined;
+  const selected =
+    (home.featuredProjectId
+      ? projects.find((project) => project.id === home.featuredProjectId)
+      : undefined) ??
+    projects.find((project) => project.featured) ??
+    projects[0];
 
-  const image = selected?.image ?? featuredProject.image;
-  const serviceCategory =
-    selected?.serviceCategory ?? featuredProject.serviceCategory;
+  // No projects in the CMS at all — only reachable by deleting every one,
+  // since an outage returns the verified local set here. Omit the section
+  // rather than carry a stale local photograph the site can no longer
+  // stand behind.
+  if (!selected) return null;
 
-  // Goes to the JOB, not to /portfolio and not to a service page. The
-  // fallback names the project its own photograph came from, so the link
-  // is still specific when nothing is selected in Studio.
-  const projectSlug = selected?.slug ?? featuredProject.projectSlug;
+  const image = selected.image;
+  const serviceCategory = selected.serviceCategory;
+
+  // Goes to the JOB, not to /portfolio and not to a service page.
+  const projectSlug = selected.slug;
 
   return (
     <section

@@ -8,9 +8,9 @@ Schema design in `sanity/schemaTypes/index.ts`.
 
 **CONNECTED.** Project `4x76hdgl`, dataset `production`.
 
-The eight service documents are migrated and the frontend renders from
-Sanity. Ownership still sits with a developer account and must be
-transferred — see DEPLOYMENT.md §6.
+The eight service documents and the six project documents are migrated and
+the frontend renders from Sanity. Ownership still sits with a developer
+account and must be transferred — see DEPLOYMENT.md §6.
 
 | Piece | State |
 | --- | --- |
@@ -19,7 +19,7 @@ transferred — see DEPLOYMENT.md §6.
 | Content provider | `src/lib/content/provider.ts` — every page reads through it |
 | Image pipeline | `src/lib/sanity/image.ts`, hotspot-aware, CLS-safe |
 | Publish → live | `/api/revalidate`, signature-verified |
-| Seed script | `npm run cms:migrate`, idempotent |
+| Seed scripts | `npm run cms:migrate` (8 services) and `npm run cms:seed-projects` (6 projects + images), both idempotent |
 
 Until a project ID is set, `/studio` shows setup instructions and every
 page serves its verified local content. See DEPLOYMENT.md §2.
@@ -158,6 +158,21 @@ required. Location, completion date and scope are deliberately optional:
 Renan may not hold that information for older jobs, and a required field
 would push him towards inventing one. The front end renders only the fields
 that actually have values — see `CONTENT-RULES.md` §2.
+
+**Seeded, deletable, no local resurrection.** The six current projects are
+real documents (`project-<slug>`), created by `npm run cms:seed-projects`
+from `src/lib/content/projects.ts` with the
+`public/images/projects/<slug>/` derivatives uploaded as image assets. Once
+Sanity answers, `getProjects()` treats its project set as authoritative —
+local content is an outage/unconfigured fallback only — so deleting a
+project in Studio removes it from `/portfolio`, `/projects/<slug>`, the
+sitemap **and** the homepage Featured Project / Recent Works, with no local
+copy taking its place. The homepage block does not hold `featuredProject` /
+`selectedProjects` references by default: with nothing chosen those
+sections resolve against the live collection themselves (the `featured`
+project, then the first three), so a project stays freely deletable.
+Choosing one in Studio is still supported — Sanity will then ask you to
+unpick it before that project can be deleted.
 
 ---
 

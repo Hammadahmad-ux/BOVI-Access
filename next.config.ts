@@ -42,6 +42,23 @@ const nextConfig: NextConfig = {
   },
 
   images: {
+    /**
+     * TEST BUILDS ONLY. The Playwright suite runs the site under `next
+     * start`, whose image optimizer is a single process. Sweeping every
+     * route across seven viewports in parallel already strained it; once
+     * the project and homepage photography moved to the Sanity CDN, the
+     * cold upstream fetches wedged the optimizer and took the whole server
+     * down — every later `page.goto` then timed out waiting for `load`.
+     *
+     * Production runs on Vercel's edge optimizer and is unaffected. With
+     * `E2E_NO_IMAGE_OPT=1` (set by playwright.config.ts's webServer)
+     * `next/image` serves sources untouched for the test build, so the
+     * browser fetches them straight from Sanity's CDN — which already
+     * does format negotiation and width capping (see src/lib/sanity/
+     * image.ts). Image DELIVERY is still asserted directly by
+     * homepage.spec.ts and projects.spec.ts.
+     */
+    unoptimized: process.env.E2E_NO_IMAGE_OPT === "1",
     // AVIF first, WebP second, original as the final fallback.
     formats: ["image/avif", "image/webp"],
     // Next 16 only honours quality values declared here; anything else

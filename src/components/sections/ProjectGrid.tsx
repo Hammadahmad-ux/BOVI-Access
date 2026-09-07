@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
-import { projects as localProjects } from "@/lib/content/home";
+import type { ProjectRecord } from "@/lib/content/projects";
 import { getHomepage, getProjects } from "@/lib/content/provider";
 import { ArrowLink } from "@/components/ui/ArrowLink";
 import { Container } from "@/components/ui/Container";
@@ -46,7 +46,7 @@ import { cn } from "@/lib/utils/cn";
  */
 
 /** Union comes from the content module, so a new span there fails here. */
-type ProjectSpan = (typeof localProjects)[number]["span"];
+type ProjectSpan = ProjectRecord["span"];
 
 /**
  * Frame shape is driven by the content module's `span`, not by position.
@@ -80,15 +80,21 @@ export async function ProjectGrid() {
     allowed to reflow the grid into something it was not designed for.
     Choosing more in Studio simply means the first three show.
 
-    An empty or unresolvable selection falls back to the verified local
-    set, which is what renders today.
+    With nothing selected — or once every selected project has been deleted
+    — this falls to the first three of the CMS collection, NOT to a local
+    set. A project removed in Studio must not reappear here linking to a
+    page that no longer exists. `all` is already the verified local set on
+    a CMS outage (see getProjects), so resilience is preserved.
   */
-  const selected = home.selectedProjectIds
+  const chosen = home.selectedProjectIds
     .map((id) => all.find((project) => project.id === id))
-    .filter((project): project is (typeof all)[number] => Boolean(project))
-    .slice(0, 3);
+    .filter((project): project is (typeof all)[number] => Boolean(project));
 
-  const projects = selected.length > 0 ? selected : localProjects;
+  const projects = (chosen.length > 0 ? chosen : all).slice(0, 3);
+
+  // No projects published (or all deleted). Omit "Recent works" rather than
+  // render stale cards — an outage would have returned the local set above.
+  if (projects.length === 0) return null;
 
   /*
     The composition is a landscape anchor plus two stepped portraits —

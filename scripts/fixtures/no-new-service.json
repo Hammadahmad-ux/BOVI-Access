@@ -1,7 +1,134 @@
 {
-  "_comment": "TEST FIXTURE ONLY. The same CMS with the test service unpublished, used to prove that removing a service removes its page, its listing and its sitemap entry.",
+  "_comment": "TEST FIXTURE ONLY. The same CMS as new-service.json with the test service unpublished, used to prove that removing a service removes its page, its listing and its sitemap entry. The six migrated project documents stay, so the projects baseline is unchanged.",
   "services": [],
-  "projects": [],
+  "projects": [
+    {
+      "_id": "project-external-pipe-repair",
+      "title": "External Pipe Repair",
+      "slug": "external-pipe-repair",
+      "serviceSlug": "drainage-external-pipe-repairs",
+      "serviceName": "Drainage & External Pipe Repairs",
+      "location": null,
+      "summary": "Cast iron soil and rainwater stacks running the full height of a narrow lightwell, reached on rope for inspection and repair. Soil pipe repairs at this height can reduce the need for scaffolding where a lightwell leaves little room to erect it.",
+      "heroImage": {
+        "_type": "image",
+        "asset": { "_type": "reference", "_ref": "image-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1-1200x1600-jpg" },
+        "alt": "A rope access technician working on cast iron soil pipework high in a narrow lightwell"
+      },
+      "gallery": [],
+      "scope": null,
+      "featured": true,
+      "completionDate": null,
+      "seoTitle": null,
+      "seoDescription": null,
+      "ogImage": null
+    },
+    {
+      "_id": "project-gutter-downpipe-clearance",
+      "title": "Gutter & Downpipe Clearance",
+      "slug": "gutter-downpipe-clearance",
+      "serviceSlug": "gutter-cleaning",
+      "serviceName": "Gutter Cleaning",
+      "location": null,
+      "summary": "Gutters, hopper heads and downpipes cleared on a residential block — including an outlet blocked solid with leaf litter, and a downpipe with a plant growing out of it. Roofline drainage can be reached directly from above where the roof allows it.",
+      "heroImage": {
+        "_type": "image",
+        "asset": { "_type": "reference", "_ref": "image-b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2-1170x1174-jpg" },
+        "alt": "A rope access technician working at the roofline of a brick residential block"
+      },
+      "gallery": [],
+      "scope": null,
+      "featured": false,
+      "completionDate": null,
+      "seoTitle": null,
+      "seoDescription": null,
+      "ogImage": null
+    },
+    {
+      "_id": "project-brickwork-repointing-works",
+      "title": "Brickwork Repointing",
+      "slug": "brickwork-repointing-works",
+      "serviceSlug": "brickwork-repointing",
+      "serviceName": "Brickwork & Repointing",
+      "location": null,
+      "summary": "Weathered chimney stacks and parapet brickwork with eroded and missing mortar joints, rigged and worked from rope. Isolated high-level masonry often suits rope access, where scaffolding a whole elevation would be disproportionate to the repair.",
+      "heroImage": {
+        "_type": "image",
+        "asset": { "_type": "reference", "_ref": "image-c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3-1300x1733-jpg" },
+        "alt": "A tall brick chimney stack rigged with ropes against a clear sky"
+      },
+      "gallery": [],
+      "scope": null,
+      "featured": false,
+      "completionDate": null,
+      "seoTitle": null,
+      "seoDescription": null,
+      "ogImage": null
+    },
+    {
+      "_id": "project-lightning-protection-works",
+      "title": "Lightning Protection Works",
+      "slug": "lightning-protection-works",
+      "serviceSlug": "lightning-protection",
+      "serviceName": "Lightning Protection",
+      "location": null,
+      "summary": "Conductor tape running the full height of a brick elevation, with saddle fixings set into the mortar joints, reached on rope from roof level down. BOVI provides the access; testing and certification sit with a specialist lightning protection engineer.",
+      "heroImage": {
+        "_type": "image",
+        "asset": { "_type": "reference", "_ref": "image-d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4-1300x1733-jpg" },
+        "alt": "A rope access technician descending a red brick elevation above a street"
+      },
+      "gallery": [],
+      "scope": null,
+      "featured": false,
+      "completionDate": null,
+      "seoTitle": null,
+      "seoDescription": null,
+      "ogImage": null
+    },
+    {
+      "_id": "project-mastic-sealant-renewal",
+      "title": "Mastic & Sealant Renewal",
+      "slug": "mastic-sealant-renewal",
+      "serviceSlug": "mastic-sealant",
+      "serviceName": "Mastic & Sealant",
+      "location": null,
+      "summary": "Vertical movement joints resealed on a brick and panel elevation, with sealant applied from rope and backer rod fitted first. Individual joints can be reached at height rather than treating a whole elevation as a scaffold job.",
+      "heroImage": {
+        "_type": "image",
+        "asset": { "_type": "reference", "_ref": "image-e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5-1300x1733-jpg" },
+        "alt": "A rope access technician applying sealant from a cordless gun into a vertical joint in brickwork"
+      },
+      "gallery": [],
+      "scope": null,
+      "featured": false,
+      "completionDate": null,
+      "seoTitle": null,
+      "seoDescription": null,
+      "ogImage": null
+    },
+    {
+      "_id": "project-commercial-glazing-clean",
+      "title": "Commercial Glazing Clean",
+      "slug": "commercial-glazing-clean",
+      "serviceSlug": "commercial-window-cleaning",
+      "serviceName": "Commercial Window Cleaning",
+      "location": null,
+      "summary": "Glazing, frames and cills cleaned across the full height of an apartment block elevation, worked from anchor points at roof level. Suits buildings where cradle access is unavailable or ground space for powered access is limited.",
+      "heroImage": {
+        "_type": "image",
+        "asset": { "_type": "reference", "_ref": "image-f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6-1300x1733-jpg" },
+        "alt": "A rope access technician cleaning glazing on a brick apartment block, a green bucket clipped to the harness"
+      },
+      "gallery": [],
+      "scope": null,
+      "featured": false,
+      "completionDate": null,
+      "seoTitle": null,
+      "seoDescription": null,
+      "ogImage": null
+    }
+  ],
   "homepage": null,
   "siteSettings": null
 }

@@ -80,6 +80,9 @@ Completed:
       in `.env.local` (git-ignored)
 - [x] CORS origins allowed: `http://localhost:3000`, `http://localhost:3333`
 - [x] Eight service documents migrated, verified present exactly once
+- [x] Six project documents migrated (`npm run cms:seed-projects`), with
+      their photographs uploaded as image assets; verified present exactly
+      once, all image references resolve
 - [x] GROQ verified against the real dataset
 - [x] Frontend confirmed rendering CMS content with no visual change
 
@@ -101,8 +104,23 @@ npm run cms:migrate
 This is `sanity exec … --with-user-token` under the hood: it authenticates
 from the CLI session, so **no write token needs to be created or stored**.
 It is idempotent — a second run reports all eight as already present and
-writes nothing. It does not create project documents (none verified) and
-does not upload images.
+writes nothing. It does not touch project documents or images.
+
+### Re-running the project seed
+
+```bash
+npm run cms:seed-projects
+```
+
+Same mechanism. Creates the six `project-<slug>` documents from
+`src/lib/content/projects.ts` and uploads the
+`public/images/projects/<slug>/` derivatives as image assets. Idempotent —
+a project that already exists is skipped whole, so no image is re-uploaded
+and no Studio edit is overwritten; to re-seed one, delete it in Studio
+first. It does NOT touch the homepage — the Featured Project and Recent
+Works sections resolve against the live project collection on their own, so
+seeded projects stay freely deletable. Sanity image assets are
+content-addressed, so even a re-upload never duplicates an asset.
 
 ### Revalidation — so publishing updates the site
 

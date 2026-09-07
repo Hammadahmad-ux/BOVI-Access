@@ -16,7 +16,7 @@ and a bad migration loses that.
 | `/services` | Services overview | **Complete** — alternating editorial directory |
 | `/services/[slug]` | Individual service pages (×8) | **Complete** — one reusable template, data-driven |
 | `/portfolio` | Projects index | **Complete** — completed-work gallery: one card per job, each linking to its own project page. No filters. |
-| `/projects/[slug]` | Project detail | **Live — 6 pages.** One per completed job, each with its own photographs. Titles are service-led and verified against the photography; no client, address or date is published. |
+| `/projects/[slug]` | Project detail | **Live — 6 pages, served from Sanity.** One per completed job, each with its own photographs. Titles are service-led and verified against the photography; no client, address or date is published. Renan edits and deletes these in Studio; a deleted project 404s here and drops from `/portfolio` and the sitemap. |
 | `/service-areas` | Coverage | **Complete** |
 | `/contact` | Request a Quote | **Complete front end** — submission wired in Phase 4 |
 | `/privacy` | Privacy Policy | Live — needs legal review |
@@ -159,8 +159,9 @@ config. Do not hand-write redirect entries.
 
 `src/app/sitemap.ts` lists static routes **explicitly** rather than
 crawling, so a route that is not ready to be indexed cannot leak in by
-accident. Service URLs are generated from the service config. Project URLs
-join in Phase 4 from Sanity.
+accident. Service URLs come from the content provider (local + CMS).
+Project URLs come from the provider too — the six seeded Sanity projects
+today, and anything Renan publishes or removes from Studio.
 
 `/studio` is disallowed in `robots.ts` and excluded from the sitemap.
 

@@ -4,7 +4,7 @@ Hard completion criteria. The site does not launch until every item passes.
 
 ```bash
 npm run check      # lint + typecheck + production build
-npm run test:e2e   # Playwright across all seven viewports (build first)
+npm run test:e2e   # Playwright across all seven viewports (its webServer builds first)
 ```
 
 `e2e/foundation.spec.ts` encodes many of these as executable guards, so
