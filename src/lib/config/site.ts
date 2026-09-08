@@ -123,8 +123,9 @@ export const footerNav: readonly NavItem[] = [
  * The service index. Order is meaningful — it drives the numbered editorial
  * rows on the Homepage and the /services overview.
  *
- * Legacy URLs are the two confirmed live Wix paths. Others are `null` until
- * the full legacy URL audit is completed (see ROUTES.md).
+ * Legacy URLs are the live Wix paths confirmed from Google Search Console's
+ * Pages report. Others are `null` until the rest of the audit is done
+ * (see ROUTES.md).
  */
 export const services = [
   {
@@ -177,7 +178,9 @@ export const services = [
     name: "Roof & Roofline Repairs",
     index: "07",
     primary: false,
-    legacyUrl: null,
+    // Confirmed from Search Console: Google had `/roof-rooflineworks`
+    // indexed from the Wix site and it was 404ing on the new one.
+    legacyUrl: "/roof-rooflineworks",
   },
   {
     slug: "lightning-protection",

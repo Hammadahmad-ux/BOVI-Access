@@ -87,9 +87,13 @@ seen, once without it — and never touches the real dataset.
 | --- | --- | --- | --- |
 | `/CommercialWindowCleaning-FacadeCleaning/` | `/services/commercial-window-cleaning` | Redirect | **308 — implemented** |
 | `/PressureWashingandDOFFcleaning/` | `/services/pressure-washing-doff-cleaning` | Redirect | **308 — implemented** |
+| `/roof-rooflineworks` | `/services/roof-roofline-repairs` | Redirect | **308 — implemented** (found in the Search Console *Pages* report, 404 on the new site until 2026-09-09) |
 
-Both are registered **with and without** the trailing slash, because the
-Wix URLs were published with one.
+Each is registered **with and without** the trailing slash. `next.config.ts`
+sets `skipTrailingSlashRedirect` so the trailing-slash form reaches its
+destination in **one** 308 hop rather than being stripped to the no-slash
+form by Next's built-in redirect first; a catch-all `/:path+/ → /:path+`
+rule in `redirects()` keeps every other URL slash-less.
 
 ### Convenience redirect
 
@@ -100,24 +104,26 @@ Wix URLs were published with one.
 `/projects` is the URL people guess. Redirecting it avoids a 404 and keeps
 `/portfolio` canonical.
 
-### Outstanding — legacy audit not complete
+### Outstanding — legacy audit
 
-The two URLs above are the only ones confirmed. The live Wix site almost
-certainly has more.
+Search Console's *Pages* report (checked 2026-09-09) shows Google holding
+only **one** un-redirected legacy URL, `/roof-rooflineworks`, now fixed
+above. The other "not indexed" entries are the apex / `http://` domain
+variants, which correctly 308 to the `https://www.boviaccess.co.uk`
+canonical — expected, not URLs to redirect.
 
-**Required before launch:**
+If more legacy URLs surface later (a `site:boviaccess.co.uk` crawl, an old
+backlink, a new 404 in Search Console):
 
-1. Export the full URL list from the live site — Google Search Console
-   *Pages* report, an `site:boviaccess.co.uk` crawl, or the Wix site map.
-2. Record every legacy URL below with a decision.
-3. Add each to `legacyUrl` on the matching service in
-   `src/lib/config/site.ts` — redirects generate from that field, so they
-   cannot drift.
-4. Verify each redirect in `e2e/foundation.spec.ts`.
+1. Confirm the URL is real — it must appear in Search Console or an
+   external link, never be guessed.
+2. Add it to `legacyUrl` on the matching service in
+   `src/lib/config/site.ts` — redirects generate from that field.
+3. Add the redirect to `e2e/seo-metadata.spec.ts`.
 
 | Legacy URL | New route | Decision | Status |
 | --- | --- | --- | --- |
-| *(to be audited)* | | | |
+| *(none outstanding)* | | | |
 
 Likely candidates to look for: an about page, a contact page, a gallery
 page, and pages for Gutter Cleaning, Mastic & Sealant, Roof & Roofline
