@@ -49,17 +49,18 @@ export async function Coverage() {
     >
       {/*
         Decorative only — carries no information, so it is hidden from
-        assistive tech and cannot be hit by a pointer. The two flanking
-        rules are dropped below md, where three rules across a 375px screen
-        would stop being quiet.
+        assistive tech and cannot be hit by a pointer. All three rules are
+        dropped below md: the full grid across a 375px screen would stop
+        being quiet, and a lone centre rule crossing the divider below
+        reads as an unintended "+" rather than as sheet structure.
       */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10"
+        className="pointer-events-none absolute inset-0 -z-10 hidden md:block"
       >
-        <div className="absolute inset-y-0 left-1/4 hidden w-px bg-bone/5 md:block" />
+        <div className="absolute inset-y-0 left-1/4 w-px bg-bone/5" />
         <div className="absolute inset-y-0 left-1/2 w-px bg-bone/10" />
-        <div className="absolute inset-y-0 left-3/4 hidden w-px bg-bone/5 md:block" />
+        <div className="absolute inset-y-0 left-3/4 w-px bg-bone/5" />
       </div>
 
       {/* Tallest rhythm on the page: one statement earns the whole frame. */}
