@@ -101,25 +101,19 @@ async function run() {
     await client.patch(`service-${service.slug}`).set({ relatedServices }).commit();
   }
 
-  // Singletons, with the fixed IDs the Studio structure resolves.
-  // Created empty on purpose: the front end falls back to verified local
-  // content for anything blank, so an empty Homepage document changes
-  // nothing on the live site until Renan fills it in.
-  console.log("Creating singletons…");
+  // The homepage singleton, with the fixed ID the Studio structure
+  // resolves. Created empty on purpose: the front end falls back to
+  // verified local content for anything blank, so an empty Homepage
+  // document changes nothing on the live site until Renan fills it in.
+  // (There is no siteSettings document — contact details and brand config
+  // live in src/lib/config/site.ts. See CMS-HANDOVER.md.)
+  console.log("Creating the homepage singleton…");
   await client.createIfNotExists({ _id: "homepage", _type: "homepage" });
-  await client.createIfNotExists({
-    _id: "siteSettings",
-    _type: "siteSettings",
-    phone: "07990 377780",
-    phoneE164: "+447990377780",
-    email: "info@boviaccess.co.uk",
-    quoteCTA: "Request a Quote",
-  });
 
   console.log(
     `\nDone. ${created} services created, ${skipped} already present.\n` +
-      "Images are NOT migrated — upload them in Studio so the hotspot tool\n" +
-      "can control cropping.",
+      "Service and homepage images are seeded separately by\n" +
+      "`npm run cms:seed-media`; projects by `npm run cms:seed-projects`.",
   );
 }
 

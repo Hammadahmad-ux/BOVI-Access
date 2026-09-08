@@ -326,6 +326,23 @@ One service still has none:
 It stays flagged `mediaIsGeneric: true` in `src/lib/content/services.ts`
 and carries **one** extra image rather than a pair — see §7.
 
+### Service and homepage photography is now IN Sanity
+
+`npm run cms:seed-media` (one-off) uploaded every file listed in §5 that
+has a Studio field — the 8 service heroes and their galleries, the
+homepage hero poster (`hero/hero-still.jpg`) and the homepage introduction
+image — as real Sanity image assets, wired onto the `service` and
+`homepage` documents. No hotspot was set, so the crop is unchanged; the
+files are the exact derivatives `npm run assets:images` produces.
+
+After this, service images are **CMS-authoritative** (`provider.ts ›
+mergeService`): what Renan sets in Studio is what renders, a photo he
+removes is genuinely removed, and no stale `public/images/services/*`
+file is pushed underneath. The local files remain only as an outage
+fallback. Regenerating them with `npm run assets:images` no longer changes
+the live site on its own — re-run `cms:seed-media` after clearing a
+service's photos in Studio to push a fresh set.
+
 ### Service galleries
 
 Added in the client revision pass, after Renan asked for more pictures on
@@ -466,9 +483,17 @@ none has been verified. Titles say what the work was.
    page. All of them now reach it: hero supporting copy, introduction
    copy and image, service-area copy, closing CTA copy, featured project
    and selected projects — read by `Hero`, `Introduction`, `Coverage`,
-   `FinalCta`, `FeaturedProject` and `ProjectGrid` respectively. Each
-   falls back to the verified local content when blank, which is why the
-   empty Homepage document the project ships with renders unchanged.
+   `FinalCta`, `FeaturedProject` and `ProjectGrid` respectively. The hero
+   poster and introduction image are seeded into Sanity by
+   `npm run cms:seed-media`; the copy fields fall back to verified local
+   content when blank, which is why the empty Homepage document the
+   project ships with renders unchanged. The homepage SEO fields were
+   removed from the schema — the homepage title and description are fixed
+   brand copy in `src/app/page.tsx`.
+   ~~And the whole `siteSettings` document~~ **removed** — every one of its
+   fields (phone, email, address, company number, social links, footer
+   text, logo, quote-button label, site SEO) was a control nothing on the
+   site read. Those facts live in `src/lib/config/site.ts`.
 5. **No verified project metadata.** Six projects are published as a
    completed-work gallery using service-led titles that are true of the
    photographs. They are now **real Sanity documents** (`project-<slug>`,

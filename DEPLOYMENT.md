@@ -13,9 +13,10 @@ document says so.
 | Content editor (Sanity) | **CONNECTED** — project `4x76hdgl`, dataset `production` | Ownership transfer (see §6) |
 | Enquiry email (Resend) | **Verified in development** — real API, real message IDs | **Production sending is NOT verified** — see below |
 | File attachments | **Verified end to end** — sent, received, nothing stored | — |
-| Publish → live refresh | **Code complete, not connected** | Webhook secret + Sanity webhook |
+| Publish → live refresh | **Code complete, NOT connected** — verified: `/api/revalidate` returns "not configured" | `SANITY_REVALIDATE_SECRET` on Vercel + a Sanity webhook (see § Revalidation) |
 | Custom domain | **Not pointed** | Deliberate — see §7 |
-| Service content in CMS | **Migrated** — 8 documents, verified once each | Images still to upload in Studio |
+| Service / project content in CMS | **Migrated** — 8 services + 6 projects, text and photography, verified once each | — |
+| Homepage content in CMS | **Migrated** — hero poster, introduction image and all copy fields wired | — |
 | Analytics | **Not installed** | No IDs supplied; no cookie banner needed yet |
 
 **The site still runs correctly with none of the above configured.** The
@@ -83,6 +84,12 @@ Completed:
 - [x] Six project documents migrated (`npm run cms:seed-projects`), with
       their photographs uploaded as image assets; verified present exactly
       once, all image references resolve
+- [x] Service and homepage photography migrated (`npm run cms:seed-media`)
+      — 8 service heroes + galleries and the homepage hero poster and
+      introduction image, uploaded as assets; all references resolve
+- [x] No `siteSettings` document — it was a dead control surface; removed,
+      including the live document. Contact details / brand config live in
+      `src/lib/config/site.ts`
 - [x] GROQ verified against the real dataset
 - [x] Frontend confirmed rendering CMS content with no visual change
 
@@ -91,8 +98,6 @@ Still to do:
 - [ ] **Transfer project ownership to Renan** — see §6
 - [ ] Add the production and Vercel preview URLs to Sanity CORS origins
 - [ ] Set the same two env vars in Vercel
-- [ ] Upload service images in Studio (the migration deliberately does not
-      migrate images, so the hotspot tool can set the crop)
 - [ ] Configure the publish webhook below
 
 ### Re-running the migration
@@ -104,7 +109,9 @@ npm run cms:migrate
 This is `sanity exec … --with-user-token` under the hood: it authenticates
 from the CLI session, so **no write token needs to be created or stored**.
 It is idempotent — a second run reports all eight as already present and
-writes nothing. It does not touch project documents or images.
+writes nothing. It creates only the eight `service` documents and the
+empty `homepage` singleton (no `siteSettings` — that document type was
+removed); images are seeded by the two scripts below.
 
 ### Re-running the project seed
 
@@ -122,27 +129,56 @@ Works sections resolve against the live project collection on their own, so
 seeded projects stay freely deletable. Sanity image assets are
 content-addressed, so even a re-upload never duplicates an asset.
 
+### Re-running the media seed
+
+```bash
+npm run cms:seed-media
+```
+
+Uploads the current service and homepage photography — the exact
+`public/images/services/*`, `public/images/hero/hero-still.jpg` and
+`public/images/home/introduction.jpg` files — as Sanity assets and wires
+them onto the eight `service` documents (`heroMedia` + `gallery`) and the
+`homepage` singleton (`heroPoster` + `introImage`). No hotspot is set, so
+the crop stays centred and the rendered result is unchanged. Idempotent —
+a service that already carries any photograph is skipped whole; the
+homepage fields are filled only when empty. A re-run therefore only
+repairs an image slot that is still empty; to re-seed a service, clear its
+photographs in Studio first.
+
+Once seeded, `provider.ts › mergeService` treats service images as
+CMS-authoritative: a photo replaced in Studio replaces it, a photo removed
+removes it, and no stale local image is pushed underneath. Local imagery
+is reached only on a full CMS outage.
+
 ### Revalidation — so publishing updates the site
 
-Pages revalidate hourly by default. To make Publish take effect in
-seconds:
+**STATUS (verified against the live deployment): NOT configured.**
+`POST https://bovi-access.vercel.app/api/revalidate` returns
+`{"ok":false,"message":"Revalidation is not configured."}` — the
+`SANITY_REVALIDATE_SECRET` env var is not set on Vercel, so the endpoint
+fails closed and any Sanity webhook is a no-op. Every Publish therefore
+reaches the live site by **time-based ISR only** — up to **1 hour**
+(`export const revalidate = 3600` on the dynamic routes and on the
+`sanityFetch` cache). It does NOT require a redeploy.
 
-1. Generate a long random string; set it as `SANITY_REVALIDATE_SECRET`.
-2. Sanity → API → **Webhooks** → Create:
-   - URL: `https://<your-domain>/api/revalidate`
-   - Trigger on: create, update, delete
-   - Filter: `_type in ["service","project","homepage","siteSettings"]`
+To make Publish take effect in seconds — **manual, two UI steps, ~5 min,
+cannot be done from the codebase:**
+
+1. **Vercel** → project → Settings → Environment Variables → add
+   `SANITY_REVALIDATE_SECRET` = a long random string (Production scope),
+   then redeploy.
+2. **sanity.io** → project `4x76hdgl` → API → **Webhooks** → Create:
+   - URL: `https://bovi-access.vercel.app/api/revalidate` (swap for the
+     real domain at launch)
+   - Trigger on: Create, Update, Delete
+   - Filter: `_type in ["service","project","homepage"]`
    - HTTP method: `POST`
-   - Secret: the same string
+   - Secret: the same string from step 1
 
 Without the secret the endpoint refuses every request — an
 unauthenticated cache-purge endpoint is a free denial-of-service lever, so
 it fails closed on purpose.
-
-**STATUS: this webhook still has to be created by hand.** It cannot be
-set up from the codebase, and nothing here can confirm whether it exists
-in the Sanity project. Until it does, publishing still reaches the live
-site — it just takes up to an hour rather than seconds.
 
 **This is what makes new service pages appear.** When Renan publishes a
 service, `revalidateTag("service")` purges the cached Sanity read, which
@@ -308,10 +344,12 @@ field contents, names, emails or phone numbers into analytics.
 ## 9. Commands
 
 ```bash
-npm run dev            # local development
-npm run check          # lint + typecheck + production build
-npm run test:e2e       # Playwright, seven viewports (build first)
-npm run cms:migrate    # one-off Sanity seed
-npm run assets:brand   # regenerate logos and favicons
-npm run assets:images  # regenerate web image derivatives
+npm run dev              # local development
+npm run check            # lint + typecheck + production build
+npm run test:e2e         # Playwright, seven viewports (its webServer builds first)
+npm run cms:migrate      # one-off — seed the 8 service docs + homepage singleton
+npm run cms:seed-projects # one-off — seed the 6 project docs + their photos
+npm run cms:seed-media    # one-off — seed the service + homepage photos
+npm run assets:brand     # regenerate logos and favicons
+npm run assets:images    # regenerate web image derivatives
 ```

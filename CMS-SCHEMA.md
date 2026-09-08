@@ -121,7 +121,7 @@ is the only instruction Renan sees inside Studio.
 | `eyebrow` | string | | |
 | `heroTitle` | string | Yes | |
 | `intro` | text | | 1–2 sentences under the heading |
-| `heroMedia` | image (hotspot) | | Hotspot controls crop safety |
+| `heroMedia` | image + alt (hotspot) | | Hotspot controls crop safety |
 | `overview` | block[] | | Main body copy |
 | `commonWorks` | string[] | | Typical jobs |
 | `deliveryContent` | block[] | | How the work is delivered |
@@ -134,6 +134,15 @@ is the only instruction Renan sees inside Studio.
 Currently mirrored in code by `services` in `src/lib/config/site.ts`, which
 remains the source of truth for **slugs and ordering** even after the CMS
 goes live — those are URL contracts, not content.
+
+**Images are CMS-authoritative.** All eight services are seeded with their
+current photography (`npm run cms:seed-media`, one-off; uploads the exact
+`public/images/services/*` files as assets, no hotspot so the crop is
+unchanged). Once seeded, `provider.ts › mergeService` takes `heroMedia`
+and `gallery` from Sanity ONLY — a photo replaced in Studio replaces it, a
+photo removed removes it, and no stale local image is pushed under a
+service. Local imagery is reached only on a full CMS outage. TEXT fields
+keep their local fallback (a half-written document must not blank a page).
 
 ---
 
@@ -176,26 +185,25 @@ unpick it before that project can be deleted.
 
 ---
 
-## 5. `siteSettings` (singleton)
+## 5. No `siteSettings` document
 
-| Field | Type | Notes |
-| --- | --- | --- |
-| `logo` | image | |
-| `phone` | string | Display format, e.g. `07990 377780` |
-| `phoneE164` | string | Dialling format, e.g. `+447990377780` |
-| `email` | string | |
-| `address` | text | |
-| `companyNumber` | string | Optional — shown only if filled in |
-| `socialLinks` | {platform, url}[] | |
-| `footerText` | string | |
-| `quoteCTA` | string | Quote button label |
-| `seo` | seo object | Site-wide defaults |
+It existed with fields for `logo`, `phone`, `phoneE164`, `email`,
+`address`, `companyNumber`, `socialLinks`, `footerText`, `quoteCTA` and a
+site-wide `seo` object — but **nothing on the site ever read it**
+(`getSiteSettings()` was written and never called). Every field was a
+Studio control that changed nothing.
 
-Phone is split into **display** and **dialling** fields so the `tel:` link
-can never break when the display format is edited.
+Removed: the document type, its Studio structure entry, its
+singleton-protection, the dead `getSiteSettings` / `SITE_SETTINGS_QUERY` /
+`SiteSettings` code, and the `"siteSettings"` tag in `/api/revalidate`.
+The live document was deleted from the dataset.
 
-**Do not pre-populate unknown factual fields.** `companyNumber` and
-`address` stay empty until supplied.
+Business identity — phone, email, the "Request a Quote" wording, the logo,
+coverage — lives in `src/lib/config/site.ts`, which CLAUDE.md §2 makes the
+single source of truth. `Footer`, `structured-data.tsx` and `metadata.ts`
+read it directly. Company number and registered-office address are not
+published anywhere; a developer adds them to `site.ts` when the client
+supplies them.
 
 ---
 
@@ -204,23 +212,26 @@ can never break when the display format is edited.
 | Field | Type | Notes |
 | --- | --- | --- |
 | `heroVideoUrl` | url | **The one place the hero video changes** |
-| `heroPoster` | image (hotspot) | Shown while video loads |
-| `heroFallback` | image (hotspot) | Phones + video failure |
+| `heroPoster` | image + alt (hotspot) | The hero photograph; also the video's poster |
+| `heroFallback` | image + alt (hotspot) | Optional — only for a *different* phone/failure image |
 | `heroSupportingCopy` | text | → `HeroContent` |
 | `introCopy` | text | → `Introduction`. Blank line = new paragraph |
-| `introImage` | image (hotspot) | → `Introduction` |
+| `introImage` | image + alt (hotspot) | → `Introduction` |
 | `featuredProject` | reference → project | → `FeaturedProject`. Photograph + service name only |
 | `selectedProjects` | reference[] → project | → `ProjectGrid`. **Max 3** — the grid holds three frames |
 | `serviceAreaCopy` | text | → `Coverage` |
 | `finalCtaCopy` | text | → `FinalCta`, which appears on **every** page |
-| `seo` | seo object | |
 
-**Every field above is wired to a rendered section.** That was not true
-before the client-editability revision: `getHomepage()` existed but was
-called from nowhere, so all of these could be edited in Studio and nothing
-would change on the site. If a field is ever added here without a
-consumer, remove it instead — a control that does nothing is worse than no
-control.
+**Every field above is wired to a rendered section.** No `seo` object —
+the homepage title and description are fixed brand copy in
+`src/app/page.tsx`, so an editable SEO block here would change nothing. If
+a field is ever added here without a consumer, remove it instead.
+
+`heroPoster` and `introImage` are seeded with the current photography by
+`npm run cms:seed-media` (one-off). They keep a code fallback because the
+hero and introduction compositions always need an image (CLAUDE.md §8) —
+replacing one works; removing it entirely returns the built-in genuine
+BOVI photograph, a supported state.
 
 Each falls back to the verified local content when blank, which is why an
 empty Homepage document renders exactly as the site ships.

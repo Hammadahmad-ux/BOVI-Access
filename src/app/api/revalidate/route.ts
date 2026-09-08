@@ -47,7 +47,7 @@ export async function POST(request: Request) {
   }
 
   const type = payload._type;
-  const known = ["service", "project", "homepage", "siteSettings"];
+  const known = ["service", "project", "homepage"];
 
   if (!type || !known.includes(type)) {
     return NextResponse.json({ ok: true, revalidated: [] });

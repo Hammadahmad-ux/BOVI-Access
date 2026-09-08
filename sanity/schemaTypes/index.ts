@@ -84,6 +84,21 @@ export const galleryImage = {
   ],
 };
 
+/**
+ * Alt text for a standalone `image` field. Every photograph on the site
+ * needs one — the front end drops an image with no alt rather than ship it
+ * unlabelled (src/lib/sanity/image.ts), so without this a replacement made
+ * in Studio would not appear.
+ */
+const imageAlt = {
+  name: "alt",
+  title: "Alt text",
+  type: "string",
+  description:
+    "One sentence describing what is in the photograph, for screen readers and Google. Required — an image with no alt text will not appear on the site.",
+  validation: required,
+};
+
 /* ------------------------------------------------------------------ */
 /* service                                                             */
 /* ------------------------------------------------------------------ */
@@ -175,6 +190,7 @@ export const service = {
       title: "Main photograph",
       type: "image",
       options: { hotspot: true },
+      fields: [imageAlt],
       description:
         "The large photograph at the top of the page. Click the crop icon and drag the circle over the part that must stay visible when it is cropped on a phone - usually a person or the building. Optional: leave it empty and the page opens on a plain dark heading, which is better than a photograph that does not show this service.",
     },
@@ -408,57 +424,17 @@ export const project = {
 };
 
 /* ------------------------------------------------------------------ */
-/* siteSettings (singleton)                                            */
+/* NO siteSettings document.                                           */
+/*                                                                    */
+/* It existed with fields for phone, email, address, company number,   */
+/* social links, footer text, logo, quote-button label and SEO — but   */
+/* nothing on the site ever read them (`getSiteSettings()` was never    */
+/* called), so every field was a control that changed nothing. Those   */
+/* facts live in src/lib/config/site.ts, which CLAUDE.md §2 makes the   */
+/* single source of truth for business identity; a developer edits     */
+/* them there. The document type, its Studio entry and the dead        */
+/* provider code were removed together — see CMS-HANDOVER.md.           */
 /* ------------------------------------------------------------------ */
-
-export const siteSettings = {
-  name: "siteSettings",
-  title: "Site settings",
-  type: "document",
-  /** Singleton — Studio structure restricts this to a single document. */
-  fields: [
-    { name: "logo", title: "Logo", type: "image" },
-    {
-      name: "phone",
-      title: "Phone number",
-      type: "string",
-      description: "As you want it displayed, for example 07990 377780.",
-    },
-    {
-      name: "phoneE164",
-      title: "Phone number (dialling format)",
-      type: "string",
-      description:
-        "International format used by the call links, for example +447990377780. No spaces.",
-    },
-    { name: "email", title: "Email address", type: "string" },
-    { name: "address", title: "Address", type: "text", rows: 3 },
-    {
-      name: "companyNumber",
-      title: "Company registration number",
-      type: "string",
-      description:
-        "Optional. Shown in the footer and privacy policy only if you fill it in.",
-    },
-    {
-      name: "socialLinks",
-      title: "Social links",
-      type: "array",
-      of: [
-        {
-          type: "object",
-          fields: [
-            { name: "platform", title: "Platform", type: "string" },
-            { name: "url", title: "URL", type: "url" },
-          ],
-        },
-      ],
-    },
-    { name: "footerText", title: "Footer text", type: "string" },
-    { name: "quoteCTA", title: "Quote button label", type: "string" },
-    seoFields,
-  ],
-};
 
 /* ------------------------------------------------------------------ */
 /* homepage (singleton)                                                */
@@ -496,15 +472,18 @@ export const homepage = {
       title: "Hero poster image",
       type: "image",
       options: { hotspot: true },
-      description: "Shown while the video loads.",
+      fields: [imageAlt],
+      description:
+        "The photograph shown while the video loads, and — unless you also set the fallback below — on phones and whenever the video cannot play. Must be a real BOVI photograph.",
     },
     {
       name: "heroFallback",
       title: "Hero fallback photograph",
       type: "image",
       options: { hotspot: true },
+      fields: [imageAlt],
       description:
-        "Shown on phones and whenever the video cannot play. Must be a real BOVI photograph.",
+        "Optional. Only set this if you want a DIFFERENT photograph on phones and when the video cannot play. Leave it blank and the poster image above is used. Must be a real BOVI photograph.",
     },
     {
       name: "heroSupportingCopy",
@@ -527,6 +506,7 @@ export const homepage = {
       title: "Introduction photograph",
       type: "image",
       options: { hotspot: true },
+      fields: [imageAlt],
       description:
         "The tall photograph beside that text. Click the crop icon and drag the circle over the part that must stay visible.",
     },
@@ -563,7 +543,12 @@ export const homepage = {
       description:
         'The sentence under "NEED SAFE ACCESS AT HEIGHT?". Note: this block closes EVERY page on the site, not just the homepage, so changing it changes all of them.',
     },
-    seoFields,
+    /*
+      NO SEO fields here. The homepage title and description are fixed brand
+      copy set in code (src/app/page.tsx), so an editable SEO block on this
+      document would be a control that changes nothing. Service and project
+      SEO fields ARE wired and stay.
+    */
   ],
 };
 
@@ -572,7 +557,6 @@ export const homepage = {
 export const schemaTypes = [
   service,
   project,
-  siteSettings,
   homepage,
   galleryImage,
 ];

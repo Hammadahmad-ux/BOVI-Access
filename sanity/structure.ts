@@ -5,13 +5,18 @@ import type { StructureResolver } from "sanity/structure";
  *
  * Two things this fixes about the default Studio:
  *
- * 1. Homepage and Site settings are SINGLETONS. By default Sanity would
- *    offer "create another Homepage", which is meaningless and would
- *    silently break the site by making the query ambiguous. They are
- *    shown here as a single editable document.
+ * 1. Homepage is a SINGLETON. By default Sanity would offer "create
+ *    another Homepage", which is meaningless and would silently break the
+ *    site by making the query ambiguous. It is shown here as a single
+ *    editable document.
  *
  * 2. The order is the order Renan will actually use: the things he
  *    changes most often first.
+ *
+ * There is deliberately NO "Site settings" here. Contact details, the
+ * quote-button label and brand assets are code configuration
+ * (src/lib/config/site.ts) — a Studio control for them would change
+ * nothing on the site. See CMS-HANDOVER.md.
  */
 export const structure: StructureResolver = (S) =>
   S.list()
@@ -41,17 +46,5 @@ export const structure: StructureResolver = (S) =>
           S.documentTypeList("service")
             .title("Services")
             .defaultOrdering([{ field: "order", direction: "asc" }]),
-        ),
-
-      S.divider(),
-
-      S.listItem()
-        .title("Site settings")
-        .id("siteSettings")
-        .child(
-          S.document()
-            .schemaType("siteSettings")
-            .documentId("siteSettings")
-            .title("Site settings"),
         ),
     ]);

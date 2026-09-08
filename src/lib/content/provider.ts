@@ -96,21 +96,29 @@ const SERVICE_QUERY = `*[_type == "service" && defined(slug.current)]{
 /**
  * Merges CMS content over the local baseline field by field.
  *
- * A half-filled Sanity document must not blank out a page: if Renan has
- * not written an overview yet, the verified local copy still renders.
- * This is what makes the CMS safe to hand over.
+ * TEXT falls back to local: a half-filled Sanity document must not blank a
+ * page — if Renan has not written an overview yet, the verified local copy
+ * still renders.
+ *
+ * IMAGES do NOT fall back. All eight services are seeded with their
+ * current photography (`npm run cms:seed-media`), so once the service
+ * document exists the CMS decides what renders: a hero replaced in Studio
+ * replaces it, a hero removed removes it (the page opens on a dark
+ * heading, exactly as the schema field says), and the gallery is exactly
+ * what Studio holds — nothing gets a stale local photograph pushed under
+ * it. Local imagery is only ever reached on a full CMS outage, which
+ * getServices() handles by returning the whole local set.
  */
 function mergeService(local: ServicePage, cms?: SanityService): ServicePage {
   if (!cms) return local;
 
-  const heroMedia = imageAssetFrom(cms.heroMedia) ?? local.heroMedia;
+  const heroMedia = imageAssetFrom(cms.heroMedia) ?? undefined;
 
-  // Gallery entries without alt text are dropped by `imageAssetFrom`
-  // rather than shipped unlabelled, so a CMS gallery can come back
-  // shorter than it is in Studio — and an all-invalid gallery falls back
-  // to the local one instead of emptying the page.
-  const gallery = cms.gallery
-    ?.map((image) => imageAssetFrom(image))
+  // Entries without alt text are dropped by `imageAssetFrom` rather than
+  // shipped unlabelled, so a CMS gallery can come back shorter than it is
+  // in Studio — that is the intended behaviour, not a reason to fall back.
+  const gallery = (cms.gallery ?? [])
+    .map((image) => imageAssetFrom(image))
     .filter((asset): asset is ImageAsset => asset !== null);
 
   return {
@@ -122,7 +130,7 @@ function mergeService(local: ServicePage, cms?: SanityService): ServicePage {
     // If the CMS supplied its own image, the local "this is a generic
     // photo" caveat no longer applies.
     mediaIsGeneric: cms.heroMedia ? undefined : local.mediaIsGeneric,
-    gallery: gallery?.length ? gallery : local.gallery,
+    gallery,
     overview: cms.overview?.length ? cms.overview : local.overview,
     commonWorks: cms.commonWorks?.length ? cms.commonWorks : local.commonWorks,
     delivery: cms.delivery?.length ? cms.delivery : local.delivery,
@@ -232,7 +240,13 @@ export async function getServices(): Promise<ServicePage[]> {
   const cms = await sanityFetch<SanityService[]>(SERVICE_QUERY, {
     tags: ["service"],
   });
-  const docs = cms ?? [];
+
+  // Outage or malformed query (sanityFetch catches and returns null) —
+  // keep the whole verified local set up, photography included. A
+  // successful response is authoritative from here, images and all.
+  if (cms === null) return [...localServices];
+
+  const docs = cms;
 
   const merged = localServices.map((local) =>
     mergeService(
@@ -486,86 +500,14 @@ export const getHomepage = cache(async function getHomepage(): Promise<HomepageC
 })
 
 /* ------------------------------------------------------------------ */
-/* Site settings                                                       */
+/* No getSiteSettings().                                               */
+/*                                                                    */
+/* It read a `siteSettings` document for phone, email, address,        */
+/* company number, social links, footer text, logo, the quote-button  */
+/* label and site-wide SEO — but no page ever called it, so every one  */
+/* of those Studio fields was a control that changed nothing. The      */
+/* document type, its Studio entry and this function were removed      */
+/* together. Business identity lives in src/lib/config/site.ts         */
+/* (CLAUDE.md §2); Footer, structured data and metadata read it        */
+/* directly. See CMS-HANDOVER.md.                                      */
 /* ------------------------------------------------------------------ */
-
-export type SiteSettings = {
-  phoneDisplay: string;
-  phoneHref: string;
-  emailDisplay: string;
-  emailHref: string;
-  /** Only rendered when the client has actually supplied it. */
-  address: string | null;
-  companyNumber: string | null;
-  socialLinks: readonly { platform: string; url: string }[];
-  footerText: string | null;
-  quoteCta: string;
-  defaultSeoDescription: string | null;
-  defaultOgImage: ImageAsset | null;
-};
-
-type SanitySiteSettings = {
-  phone?: string;
-  phoneE164?: string;
-  email?: string;
-  address?: string;
-  companyNumber?: string;
-  socialLinks?: { platform?: string; url?: string }[];
-  footerText?: string;
-  quoteCTA?: string;
-  seoDescription?: string;
-  ogImage?: SanityImage;
-};
-
-const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
-  phone, phoneE164, email, address, companyNumber,
-  socialLinks[]{platform, url},
-  footerText, quoteCTA,
-  "seoDescription": seo.seoDescription,
-  "ogImage": seo.ogImage
-}`;
-
-export async function getSiteSettings(): Promise<SiteSettings> {
-  const fallback: SiteSettings = {
-    phoneDisplay: business.phoneDisplay,
-    phoneHref: business.phoneHref,
-    emailDisplay: business.emailDisplay,
-    emailHref: business.emailHref,
-    // Deliberately null: no address or company number has been supplied.
-    // CONTENT-RULES.md §1 — never fabricate either.
-    address: null,
-    companyNumber: null,
-    socialLinks: [],
-    footerText: null,
-    quoteCta: "Request a Quote",
-    defaultSeoDescription: null,
-    defaultOgImage: null,
-  };
-
-  if (!sanityConfig.isConfigured) return fallback;
-
-  const cms = await sanityFetch<SanitySiteSettings>(SITE_SETTINGS_QUERY, {
-    tags: ["siteSettings"],
-  });
-  if (!cms) return fallback;
-
-  const e164 = cms.phoneE164?.replace(/\s+/g, "");
-
-  return {
-    phoneDisplay: cms.phone?.trim() || fallback.phoneDisplay,
-    phoneHref: e164 ? `tel:${e164}` : fallback.phoneHref,
-    emailDisplay: cms.email?.trim() || fallback.emailDisplay,
-    emailHref: cms.email?.trim()
-      ? `mailto:${cms.email.trim()}`
-      : fallback.emailHref,
-    address: cms.address?.trim() || null,
-    companyNumber: cms.companyNumber?.trim() || null,
-    socialLinks: (cms.socialLinks ?? [])
-      .filter((link) => link.platform && link.url)
-      .map((link) => ({ platform: link.platform!, url: link.url! })),
-    footerText: cms.footerText?.trim() || null,
-    quoteCta: cms.quoteCTA?.trim() || fallback.quoteCta,
-    defaultSeoDescription: cms.seoDescription?.trim() || null,
-    defaultOgImage: imageAssetFrom(cms.ogImage),
-  };
-}

@@ -49,8 +49,8 @@ export default defineConfig({
      * Two protections, both about damage that cannot be undone from the
      * Studio.
      *
-     * SINGLETONS must not be duplicated — a second Homepage document
-     * would make the site's query ambiguous.
+     * THE HOMEPAGE SINGLETON must not be duplicated — a second Homepage
+     * document would make the site's query ambiguous.
      *
      * THE ORIGINAL EIGHT SERVICES must not be deleted. Their URLs are a
      * contract: they are in Google's index and two of them are the target
@@ -61,7 +61,7 @@ export default defineConfig({
      * himself stay fully deletable — those are his to remove.
      */
     actions: (prev, context) => {
-      if (["homepage", "siteSettings"].includes(context.schemaType)) {
+      if (context.schemaType === "homepage") {
         return prev.filter(
           ({ action }) => action && !["duplicate", "delete"].includes(action),
         );

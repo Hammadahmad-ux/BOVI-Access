@@ -57,18 +57,26 @@ Log in with the Sanity account you created. Bookmark it.
 | Homepage hero video and images | How the site looks on mobile |
 | Homepage introduction, service area and closing text | The design |
 | Which project is featured, and which three are shown | Which services appear on the homepage list |
-| FAQs on service pages | |
-| Phone, email, address | |
-| Google/search wording (SEO) | |
+| FAQs on service pages | Phone, email, address, the "Request a Quote" wording |
+| Google/search wording (SEO) on service and project pages | Homepage search wording |
 
 That split is deliberate. You can change anything a visitor reads or
 looks at. You cannot accidentally break how the site is put together.
 
+**Your phone number, email address, the "Request a Quote" button wording
+and the logo are NOT in the editor.** They are set in the site's code and
+appear identically everywhere — footer, buttons, structured data. To
+change one, tell your developer; it is a one-line change for them and it
+keeps every place that shows it perfectly in step. There used to be a
+"Site settings" screen for these — it was removed because editing it
+changed nothing on the website.
+
 ---
 
-## The four things in the editor
+## The three things in the editor
 
-When you log in you will see four items in the left-hand menu.
+When you log in you will see three items in the left-hand menu:
+**Homepage**, **Projects** and **Services**.
 
 ### Homepage
 
@@ -81,12 +89,16 @@ Every field listed here genuinely changes the live site.
   plays behind the big "ACCESS WITHOUT LIMITS" heading. Leave it empty and
   the photograph shows instead. Both look right; the photograph is not a
   fallback you need to feel bad about.
-- **Hero poster / fallback image** — the photograph shown while the video
-  loads, on phones, and if the video cannot play.
+- **Hero poster image** — the big photograph behind the heading (and what
+  shows while the video loads, on phones, and if the video cannot play).
+  The current one is already loaded. Replace it and write the alt text.
+  **Hero fallback photograph** is optional — only set it if you want a
+  *different* image on phones; leave it blank and the poster is used.
 - **Hero supporting text** — the paragraph under ACCESS WITHOUT LIMITS.
   The headline itself, the buttons and the three claims under them are
   part of the design and are not editable.
 - **Introduction text and photograph** — the first section below the hero.
+  The photograph is already loaded; replace it and write the alt text.
   Leave a blank line between paragraphs and each becomes its own
   paragraph.
 - **Featured project** — optional. Leave it blank and the homepage shows
@@ -183,20 +195,27 @@ sitemap Google reads — within about a minute.
 
 ### Services
 
-There are eight, already written and live. You can edit any of them.
+There are eight, already written and live, **with their current
+photographs already loaded in the editor** — the exact images the site
+shows today. You can edit any of them.
 
 - **Page heading**, **Introduction**, **Overview**, **Common works**,
   **How we deliver it**, **Suitable for** — all editable.
-- **Main image** — click it, upload a new photograph, and **use the
-  hotspot tool** (the little circle) to mark the part that must stay
-  visible when the image is cropped on a phone.
+- **Main image** — the photograph is already there. Click it, choose
+  **Upload** for a new one, write the **alt text**, and **use the hotspot
+  tool** (the little circle) to mark the part that must stay visible when
+  the image is cropped on a phone. Remove it entirely and the page opens
+  on a clean dark heading instead — a real choice, not a fault.
 - **Photo gallery** — the extra photographs further down the service
   page. The first one is the large image beside "How the work gets
-  done"; the next two sit side by side under the introduction. **Add
-  three and you get all of them; add one and you get just the large
-  one.** The page is built to look right either way, so only add photos
-  that genuinely show that service — a page with two honest photographs
-  beats a page with four borrowed ones.
+  done"; the next two sit side by side under the introduction. **Three
+  gives you all of them; one gives you just the large image; remove them
+  all and that part of the page simply closes up.** The page is built to
+  look right either way, so only add photos that genuinely show that
+  service — a page with two honest photographs beats a page with four
+  borrowed ones.
+- What you change here is what shows. Nothing you remove is quietly
+  replaced by an old photo.
 
   Every photograph on a service page is shown at the same tidy size and
   **opens full size when a visitor clicks it**, so the page stays clean
@@ -265,19 +284,15 @@ Studio on purpose — see the warning under Services above.
 
 ---
 
-### Site settings
+### Contact details, the quote button, the logo
 
-Your phone number, email address, and social links.
-
-Two fields for the phone on purpose:
-
-- **Phone number** — how it is displayed, e.g. `07990 377780`
-- **Phone number (dialling format)** — what happens when someone taps it
-  on a phone, e.g. `+447990377780`, no spaces
-
-Keep both in step. **Company registration number** and **Address** are
-blank because they have not been supplied — fill them in and they appear
-in the footer and privacy policy automatically.
+These are **not** in the editor. Your phone number, email address, the
+"Request a Quote" button wording and the logo live in the site's code, so
+they read identically in the header, the footer, every call-to-action and
+the data Google reads. To change one, tell your developer — a one-line
+change that updates every place at once. Company registration number and
+registered-office address are not published anywhere yet; supply them and
+your developer adds them to the footer and privacy policy.
 
 ---
 
