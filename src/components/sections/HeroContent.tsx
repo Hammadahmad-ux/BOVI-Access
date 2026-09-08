@@ -156,7 +156,19 @@ export function HeroContent({ supportingCopy }: HeroContentProps) {
           rather than darkening the whole frame, which is what the
           earlier note ruled out.
         */
-        className="eyebrow text-green-bright"
+        /*
+          OPTICAL LEFT ALIGNMENT (mobile/tablet). The eyebrow and the H1
+          share a container edge — both boxes start at the same x. But
+          Archivo's capital "B" (this line) carries a ~0.07em left
+          side-bearing, and against a small phone-size H1 whose opening
+          "A"/"W" sit near flush, the green label reads a hair inset from
+          the heading beneath it. A -0.04em indent — the gap between those
+          two bearings — hangs the "B" to the heading's optical edge. The
+          box is untouched. At lg the H1 is large enough that its own "A"
+          bearing already matches, so the indent is dropped and desktop is
+          unchanged.
+        */
+        className="eyebrow text-green-bright [text-indent:-0.04em] lg:[text-indent:0px]"
       >
         {business.name}
       </Entrance>
