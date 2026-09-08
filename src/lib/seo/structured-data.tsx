@@ -14,6 +14,16 @@ export function organizationSchema() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: business.name,
+    // The registered legal entity behind the "BOVI Access" brand.
+    legalName: business.legalName,
+    // schema.org's designed slot for a typed external identifier — here
+    // the Companies House number. Not invented: identifier + PropertyValue
+    // is the standard pattern.
+    identifier: {
+      "@type": "PropertyValue",
+      name: "UK company number",
+      value: business.companyNumber,
+    },
     url: siteUrl,
     logo: absoluteUrl("/brand/bovi-access-lockup-on-light.png"),
     description: `${business.descriptor}. ${business.slogan}.`,

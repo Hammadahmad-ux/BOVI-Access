@@ -11,16 +11,17 @@ export const metadata: Metadata = buildMetadata({
 });
 
 /**
- * PRE-LAUNCH — LEGAL REVIEW REQUIRED.
+ * PRE-LAUNCH — LEGAL REVIEW STILL RECOMMENDED.
  *
  * This describes accurately what the website actually does with data, and
- * nothing more. It deliberately contains no company registration number,
- * registered office or ICO registration number, because none has been
- * supplied — and it does not claim to have been reviewed by a solicitor,
- * because it has not been.
+ * nothing more. The controller identity (legal name, company number,
+ * registered office, contact email) is the client's written confirmation
+ * of 2026-09-08. It still contains no ICO registration number, VAT number
+ * or named DPO, because none has been supplied, and it does not claim to
+ * have been reviewed by a solicitor, because it has not been.
  *
- * Before launch: obtain the company details, have the wording reviewed,
- * and update. Tracked in CONTENT-RULES.md §10 and DEPLOYMENT.md §7.
+ * Before launch: have the wording reviewed. Tracked in CONTENT-RULES.md
+ * §10 and DEPLOYMENT.md §7.
  */
 export default function PrivacyPage() {
   return (
@@ -35,6 +36,29 @@ export default function PrivacyPage() {
       <section className="bg-bone">
         <Container width="narrow" className="py-20 lg:py-28">
           <div className="flex flex-col gap-10 text-body-lg text-moss">
+            <div>
+              <h2 className="text-h4 text-ink">Who runs this website</h2>
+              <p className="mt-3">
+                This website is operated by {business.legalName}, registered
+                in England &amp; Wales under company number{" "}
+                {business.companyNumber}. Our registered office is{" "}
+                {business.registeredOffice}. The registered office is a legal
+                address for correspondence, not a public or visitor address.
+              </p>
+              <p className="mt-3">
+                {business.legalName} is the data controller for the
+                information you send through this website. For any question
+                about your information, contact us at{" "}
+                <a
+                  href={business.emailHref}
+                  className="text-ink underline underline-offset-4 hover:text-green"
+                >
+                  {business.emailDisplay}
+                </a>
+                .
+              </p>
+            </div>
+
             <div>
               <h2 className="text-h4 text-ink">Information we collect</h2>
               <p className="mt-3">

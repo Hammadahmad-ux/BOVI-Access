@@ -46,7 +46,18 @@ export type ServiceSummary = {
 
 export const business = {
   name: "BOVI Access",
-  legalName: "BOVI Access",
+  /** Legal entity. Confirmed by the client in writing on 2026-09-08. */
+  legalName: "BOVI Access Ltd",
+  /** Companies House number. Confirmed by the client on 2026-09-08. */
+  companyNumber: "16680959",
+  /**
+   * Registered office — a Companies House legal address, NOT a trading
+   * address, a visitable office or a service location. Render it only as
+   * legal identity (footer legal line, privacy policy). Never label it
+   * "our office" or place it in marketing copy.
+   */
+  registeredOffice:
+    "167–169 Great Portland Street, 5th Floor, London, W1W 5PF",
   slogan: "Access without Limits",
   /** Short descriptor used in metadata and structured data. */
   descriptor: "Commercial Rope Access & External Maintenance",
@@ -206,25 +217,25 @@ export const audiences = [
 ] as const;
 
 /* ------------------------------------------------------------------ */
-/* Trust claims — VERIFICATION REQUIRED BEFORE LAUNCH                   */
+/* Trust claims — CLIENT-CONFIRMED 2026-09-08                          */
 /* ------------------------------------------------------------------ */
 
 /**
- * These three claims appear in prior BOVI material but have NOT been
- * re-confirmed by Renan for this build.
+ * Confirmed in writing by Renan on 2026-09-08 and cleared for the site.
+ * Rendered once, on the hero trust rail (HeroContent.tsx) — kept to a
+ * single location on purpose.
  *
- * `verified: false` is a build-time signal, not a runtime one — the claims
- * still render, because they are the client's own existing copy. The flag
- * exists so this file is the one place a pre-launch check has to look.
+ * "Commercial & Residential" is a business-coverage descriptor the client
+ * asked to sit alongside the others; it is not a certification and must
+ * not be presented as one.
  *
- * DO NOT strengthen this wording, and DO NOT add entries. Adding an
- * accreditation, insurance figure or year count that the client has not
- * stated in writing is a content-rules violation.
+ * DO NOT strengthen this wording and DO NOT add entries: no insurance
+ * figure, no year count beyond "18+", no further accreditation without a
+ * new written confirmation. See CONTENT-RULES.md §4.
  */
 export const trustClaims = [
-  { label: "IRATA LEVEL 3", verified: false },
-  { label: "FULLY INSURED", verified: false },
-  { label: "18+ YEARS AT HEIGHT", verified: false },
+  "IRATA Level 3",
+  "Fully Insured",
+  "18+ Years’ Experience Working at Height",
+  "Commercial & Residential",
 ] as const;
-
-export const unverifiedTrustClaims = trustClaims.filter((c) => !c.verified);

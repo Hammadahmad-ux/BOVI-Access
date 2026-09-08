@@ -312,11 +312,12 @@ content or his enquiries.
 Do not point the domain, change DNS, or take down the Wix site until all
 of these are true:
 
-- [ ] Renan has confirmed the trust claims in writing (`CONTENT-RULES.md` §4)
+- [x] Renan has confirmed the trust claims in writing — 2026-09-08 (`CONTENT-RULES.md` §4)
+- [x] Company details supplied and applied to footer + `/privacy` — 2026-09-08
 - [ ] Legacy URL export obtained and redirects completed (`ROUTES.md` §3)
 - [ ] Sanity project connected and owned by the client
 - [ ] Resend domain verified and a real test enquiry received
-- [ ] Privacy policy legally reviewed, company details supplied
+- [ ] Privacy policy legally reviewed (wording review still recommended)
 - [ ] Full Phase 5 QA pass
 - [ ] Renan has approved the site
 

@@ -85,6 +85,17 @@ export function Footer() {
               </p>
 
               {/*
+                Statutory web disclosure (Companies Act 2006 s.82). The
+                registered office is a legal address, not a visitor or
+                trading address, so the full address sits on the privacy
+                page rather than here — see src/app/privacy/page.tsx.
+              */}
+              <p className="max-w-[40ch] text-small text-mist sm:text-right">
+                {business.legalName} is registered in England &amp; Wales,
+                company&nbsp;no.&nbsp;{business.companyNumber}.
+              </p>
+
+              {/*
                 Build credit. External, so it opens in a new tab and carries
                 `noreferrer`. The mark is decorative — the link already reads
                 "Designed by SadaWorks" — so it is hidden from assistive tech

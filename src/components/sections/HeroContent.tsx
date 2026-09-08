@@ -208,9 +208,9 @@ export function HeroContent({ supportingCopy }: HeroContentProps) {
       </Entrance>
 
       {/*
-        Trust rail. These three claims come from the client's own prior
-        material and are pending written re-confirmation — see
-        `trustClaims` in src/lib/config/site.ts and CONTENT-RULES.md.
+        Trust rail. Client-confirmed in writing on 2026-09-08 — see
+        `trustClaims` in src/lib/config/site.ts and CONTENT-RULES.md §4.
+        The last item is a coverage descriptor, not a certification.
       */}
       <Entrance
         as="ul"
@@ -219,9 +219,9 @@ export function HeroContent({ supportingCopy }: HeroContentProps) {
         className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-hairline-dark pt-6 lg:mt-14"
       >
         {trustClaims.map((claim) => (
-          <li key={claim.label} className="eyebrow flex items-center gap-2.5">
-            <span aria-hidden="true" className="size-1.5 bg-green-bright" />
-            <span className="text-mist">{claim.label}</span>
+          <li key={claim} className="eyebrow flex items-center gap-2.5">
+            <span aria-hidden="true" className="size-1.5 shrink-0 bg-green-bright" />
+            <span className="text-mist">{claim}</span>
           </li>
         ))}
       </Entrance>

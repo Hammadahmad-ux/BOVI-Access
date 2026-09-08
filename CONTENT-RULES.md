@@ -70,32 +70,29 @@ section over stubbing it with fake text.
 
 ---
 
-## 4. Claims pending verification
+## 4. Trust claims — confirmed 2026-09-08
 
-These three appear in the client's prior material. They are **rendered**,
-because they are his own existing copy — but they have **not** been
-re-confirmed in writing for this build.
+Renan confirmed the following in writing. They are cleared for the site
+and live in `trustClaims` in `src/lib/config/site.ts` (rendered once, on
+the hero trust rail).
 
 | Claim | Status |
 | --- | --- |
-| IRATA Level 3 | Pending written confirmation |
-| Fully Insured | Pending written confirmation |
-| 18+ Years at Height | Pending written confirmation |
-| RAMS-led delivery | Pending written confirmation |
-
-Tracked in code as `trustClaims` in `src/lib/config/site.ts` with
-`verified: false`.
+| IRATA Level 3 | Confirmed in writing 2026-09-08 |
+| Fully Insured | Confirmed in writing 2026-09-08 |
+| 18+ Years’ Experience Working at Height | Confirmed in writing 2026-09-08 |
+| Commercial & Residential | Confirmed 2026-09-08 — coverage descriptor, not a certification |
 
 **Rules:**
 
-- Do not add a fourth claim.
 - Do not strengthen the wording. "IRATA Level 3" must not become "IRATA
   Level 3 certified team" or "fully IRATA accredited".
 - Do not attach a specific insurance figure to "Fully Insured".
-- Do not convert "18+ Years at Height" into a founding year.
-
-**Pre-launch action:** get all four confirmed in writing by Renan, then set
-`verified: true`. If any cannot be confirmed, remove it.
+- Do not convert "18+ Years’ Experience" into a founding year.
+- "Commercial & Residential" is business coverage. Do not present it as an
+  accreditation, and do not extend it into "nationwide", "all property
+  types" or a residential certification claim.
+- Do not add a further claim without a new written confirmation.
 
 ---
 
@@ -203,13 +200,14 @@ page.
 ## 9. Legal pages
 
 `/privacy` describes only what the site actually does: what the enquiry
-form collects, why, how it is transmitted, and the user's rights.
+form collects, why, how it is transmitted, and the user's rights. It now
+also names the controller — legal entity, company number and registered
+office (confirmed by Renan 2026-09-08).
 
-It deliberately contains **no** company registration number, registered
-office address or ICO registration number, because none has been supplied.
+It still contains **no** ICO registration number, VAT number or named DPO,
+because none has been supplied.
 
-**Pre-launch action:** obtain company details and a legal review before
-launch.
+**Pre-launch action:** a legal review of the wording is still recommended.
 
 ---
 
@@ -223,9 +221,12 @@ It is never tracked as visible on-page text.
 
 ### Open questions for Renan
 
-1. Confirm in writing: IRATA Level 3, Fully Insured, 18+ Years at Height,
-   RAMS-led delivery.
-2. Company registration number and registered office (for footer + privacy).
+1. ~~Confirm trust claims~~ — **done 2026-09-08** (IRATA Level 3, Fully
+   Insured, 18+ Years’ Experience Working at Height, Commercial &
+   Residential).
+2. ~~Company registration number and registered office~~ — **done
+   2026-09-08** (BOVI Access Ltd, 16680959, 167–169 Great Portland Street,
+   5th Floor, London, W1W 5PF).
 3. Approve the coverage statement, and clarify the Liverpool work.
 4. Supply verified project details for at least 3–6 projects: title,
    service, location (optional), summary, scope.

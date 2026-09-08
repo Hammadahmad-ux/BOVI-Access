@@ -53,19 +53,22 @@ component.
 **Audience:** Property Managers, Facilities Managers, Commercial Property
 Owners, Contractors.
 
-### Claims pending verification — DO NOT STRENGTHEN
+### Trust claims — CONFIRMED, DO NOT STRENGTHEN
 
-Three trust claims appear in the client's prior material but have **not**
-been re-confirmed in writing for this build:
+Renan confirmed the following in writing on 2026-09-08. They are cleared
+for the site and live in `trustClaims` (`src/lib/config/site.ts`):
 
 - IRATA Level 3
 - Fully Insured
-- 18+ Years at Height
+- 18+ Years’ Experience Working at Height
+- Commercial & Residential (a coverage descriptor, **not** a certification)
 
-They are flagged `verified: false` in `trustClaims` (`src/lib/config/site.ts`).
-That flag is the single place a pre-launch check has to look. Do not add
-accreditations, insurance figures, year counts or certifications beyond
-these three. Do not rephrase them into something stronger.
+Do not add accreditations, insurance figures, year counts or
+certifications beyond these. Do not rephrase them into something stronger.
+The legal entity, company number (16680959) and registered office are
+also confirmed and live in `business` (`src/lib/config/site.ts`); the
+registered office is a Companies House address only — never a trading or
+visitor address.
 
 ---
 

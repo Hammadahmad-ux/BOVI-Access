@@ -162,12 +162,12 @@ playable, and is suppressed below 768px and for reduced-motion users.
 
 ## 8. Pre-launch — client actions outstanding
 
-1. **Confirm trust claims in writing** — IRATA Level 3, Fully Insured, 18+ Years at Height, RAMS-led. Then set `verified: true`, or remove.
+1. ~~Confirm trust claims in writing~~ — **done 2026-09-08** (IRATA Level 3, Fully Insured, 18+ Years’ Experience Working at Height, Commercial & Residential). Live in `trustClaims`.
 2. **Complete the legacy URL audit** — `ROUTES.md` §3.
 3. **Supply the hero video URL** — or confirm the photograph ships.
-4. **Create the Sanity project** — `CMS-SCHEMA.md` §1.
-5. **Supply company registration details** — footer and privacy policy.
-6. **Legal review of `/privacy`.**
+4. ~~Create the Sanity project~~ — **done** (`4x76hdgl`).
+5. ~~Supply company registration details~~ — **done 2026-09-08** (BOVI Access Ltd, company no. 16680959, registered office 167–169 Great Portland Street, 5th Floor, London, W1W 5PF). Live in footer + `/privacy`.
+6. **Legal review of `/privacy`** — still recommended.
 7. **Supply verified project content** — 3–6 projects minimum.
 8. **Clarify the Liverpool photography** against the stated coverage.
 9. Configure `RESEND_API_KEY` and verify the sending domain.
