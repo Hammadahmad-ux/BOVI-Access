@@ -78,24 +78,13 @@ export default function ServiceAreasPage() {
       />
 
       {/* ---------------- Coverage statement ---------------- */}
-      <section
-        data-ground="dark"
-        className="relative isolate overflow-hidden bg-ink text-bone"
-      >
-        {/*
-          Decorative measured linework — the feel of a survey drawing, not
-          cartography. It states nothing about where BOVI works.
-        */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 opacity-[0.07]"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(to right, #F5F4F0 0 1px, transparent 1px 96px), repeating-linear-gradient(to bottom, #F5F4F0 0 1px, transparent 1px 96px)",
-          }}
-        />
-
-        <Container className="relative z-10 py-20 lg:py-28">
+      {/*
+        Flat ground, no decorative grid — an earlier version laid a faint
+        survey-drawing grid behind the statement; the client read it as
+        stray square lines, so every page now uses the same flat treatment.
+      */}
+      <section data-ground="dark" className="bg-ink text-bone">
+        <Container className="py-20 lg:py-28">
           <Reveal>
             <SectionLabel ground="dark">
               Coverage

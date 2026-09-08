@@ -7,10 +7,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { JsonLd, organizationSchema } from "@/lib/seo/structured-data";
-import {
-  getPublishedProjects,
-  getServices,
-} from "@/lib/content/provider";
+import { getServices } from "@/lib/content/provider";
 
 /**
  * Archivo is variable across 100-900, so a single face covers the display
@@ -60,26 +57,20 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [services, projects] = await Promise.all([
-    getServices(),
-    getPublishedProjects(),
-  ]);
+  const services = await getServices();
 
   // Only serialisable navigation fields cross into the interactive header.
   // Content fetching stays on the server and retains the provider's cache,
   // outage fallback, published perspective, and deletion semantics.
+  //
+  // Projects is a plain link to /portfolio — the individual services are
+  // discoverable under the Services dropdown, but the projects list is
+  // not, at the client's request.
   const serviceItems = [
     { label: "View All Services", href: "/services" as Route },
     ...services.map((service) => ({
       label: service.name,
       href: `/services/${service.slug}` as Route,
-    })),
-  ];
-  const projectItems = [
-    { label: "View All Projects", href: "/portfolio" as Route },
-    ...projects.map((project) => ({
-      label: project.title,
-      href: `/projects/${project.slug}` as Route,
     })),
   ];
 
@@ -110,7 +101,7 @@ export default async function RootLayout({
           Skip to main content
         </a>
 
-        <Header serviceItems={serviceItems} projectItems={projectItems} />
+        <Header serviceItems={serviceItems} />
 
         {/* tabIndex -1 so the skip link actually moves focus here rather
             than leaving it on <body>. */}

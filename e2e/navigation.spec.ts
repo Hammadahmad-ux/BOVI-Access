@@ -29,10 +29,11 @@ async function activateDesktopNav(
 ) {
   const nav = page.getByRole("navigation", { name: "Primary" });
 
-  if (label === "Services" || label === "Projects") {
-    await nav.getByRole("button", { name: label, exact: true }).click();
+  // Services is the only disclosure; Projects is a plain link to /portfolio.
+  if (label === "Services") {
+    await nav.getByRole("button", { name: "Services", exact: true }).click();
     await nav
-      .getByRole("link", { name: `View All ${label}`, exact: true })
+      .getByRole("link", { name: "View All Services", exact: true })
       .click();
     return;
   }
@@ -136,22 +137,8 @@ test.describe("mobile primary nav", () => {
       const menu = page.getByRole("dialog", { name: /site navigation/i });
       await expect(menu).toBeVisible();
 
-      if (label === "Projects") {
-        const projects = menu.getByRole("button", {
-          name: "Projects",
-          exact: true,
-        });
-        // The active section opens by default; from another page it starts
-        // collapsed. Exercise the link in either valid initial state.
-        if ((await projects.getAttribute("aria-expanded")) === "false") {
-          await projects.click();
-        }
-        await menu
-          .getByRole("link", { name: "View All Projects", exact: true })
-          .click();
-      } else {
-        await menu.getByRole("link", { name: label, exact: true }).click();
-      }
+      // Both Home and Projects are plain links in the mobile menu.
+      await menu.getByRole("link", { name: label, exact: true }).click();
 
       await expect(menu).toBeHidden();
       await settled(page);

@@ -13,7 +13,8 @@ export type NavDropdownItem = {
 };
 
 type NavDropdownProps = {
-  id: "services" | "projects";
+  // Services is the only navigation disclosure. Projects is a plain link.
+  id: "services";
   label: string;
   items: readonly NavDropdownItem[];
   open: boolean;

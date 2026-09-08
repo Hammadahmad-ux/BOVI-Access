@@ -17,13 +17,10 @@ import { cn } from "@/lib/utils/cn";
  * media and no list at all — the type does the whole job, set at the h1 step
  * so it lands as a declaration rather than another heading.
  *
- * WHY THE RULES BEHIND IT: a proportional column grid, the way a survey
- * sheet is set out before anything is drawn on it. Deliberately built from
- * positioned 1px hairlines rather than a background gradient, so it stays
- * inside the site's separator language (DESIGN.md § Hairlines / Gradients).
- * It sits at 5–10% bone: enough to register as sheet structure, never enough
- * to compete with the statement. Percentage positions mean it scales instead
- * of tiling, and the section clips its own x axis so it cannot widen a page.
+ * NO DECORATIVE GRID: an earlier version laid a faint "survey sheet" of
+ * vertical hairlines behind the statement. The client read it as stray
+ * square lines, so every page now uses the same flat treatment — a plain
+ * ground with only the functional section dividers.
  *
  * WHY THE LAST LINE IS GREEN: at the h1 step this is large text, where brand
  * green clears contrast (3.64:1 on ink is large-text-only). The supporting
@@ -45,24 +42,8 @@ export async function Coverage() {
     <section
       data-ground="dark"
       aria-labelledby="coverage-heading"
-      className="relative isolate overflow-x-clip bg-ink text-bone"
+      className="bg-ink text-bone"
     >
-      {/*
-        Decorative only — carries no information, so it is hidden from
-        assistive tech and cannot be hit by a pointer. All three rules are
-        dropped below md: the full grid across a 375px screen would stop
-        being quiet, and a lone centre rule crossing the divider below
-        reads as an unintended "+" rather than as sheet structure.
-      */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 hidden md:block"
-      >
-        <div className="absolute inset-y-0 left-1/4 w-px bg-bone/5" />
-        <div className="absolute inset-y-0 left-1/2 w-px bg-bone/10" />
-        <div className="absolute inset-y-0 left-3/4 w-px bg-bone/5" />
-      </div>
-
       {/* Tallest rhythm on the page: one statement earns the whole frame. */}
       <Container className="py-24 lg:py-32">
         <Reveal>

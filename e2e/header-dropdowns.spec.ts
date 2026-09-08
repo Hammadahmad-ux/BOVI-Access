@@ -37,46 +37,35 @@ test.describe("desktop header dropdowns", () => {
     expect(actual).toEqual(expected);
   });
 
-  test("Projects opens on click and contains only the provided projects", async ({
-    page,
-  }) => {
-    await page.goto("/portfolio");
-    const expected = await uniqueMainHrefs(page, "/projects/");
-    const nav = primaryNav(page);
-    const trigger = nav.getByRole("button", { name: "Projects", exact: true });
-
-    await trigger.click();
-    await expect(trigger).toHaveAttribute("aria-expanded", "true");
-
-    const panel = nav.locator('[data-nav-panel="projects"]');
-    await expect(
-      panel.getByRole("link", { name: "View All Projects", exact: true }),
-    ).toHaveAttribute("href", "/portfolio");
-
-    const actual = await panel.locator('a[href^="/projects/"]').evaluateAll(
-      (links) => links.map((link) => link.getAttribute("href") ?? ""),
-    );
-    expect(actual).toEqual(expected);
-  });
-
-  test("service and project items navigate to their real detail routes", async ({
+  test("Projects is a plain link to /portfolio with no dropdown", async ({
     page,
   }) => {
     await page.goto("/");
-    let nav = primaryNav(page);
+    const nav = primaryNav(page);
+
+    // No disclosure button, no panel — just a link.
+    await expect(
+      nav.getByRole("button", { name: "Projects", exact: true }),
+    ).toHaveCount(0);
+    const link = nav.getByRole("link", { name: "Projects", exact: true });
+    await expect(link).toHaveAttribute("href", "/portfolio");
+
+    await link.click();
+    await expect(page).toHaveURL(/\/portfolio$/);
+    await expect(nav.locator('[data-nav-panel="projects"]')).toHaveCount(0);
+  });
+
+  test("service items navigate to their real detail routes", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const nav = primaryNav(page);
 
     await nav.getByRole("button", { name: "Services", exact: true }).click();
     const service = nav.locator('[data-nav-panel="services"] a').nth(1);
     const serviceHref = await service.getAttribute("href");
     await service.click();
     await expect(page).toHaveURL(new RegExp(`${serviceHref}$`));
-
-    nav = primaryNav(page);
-    await nav.getByRole("button", { name: "Projects", exact: true }).click();
-    const project = nav.locator('[data-nav-panel="projects"] a').nth(1);
-    const projectHref = await project.getAttribute("href");
-    await project.click();
-    await expect(page).toHaveURL(new RegExp(`${projectHref}$`));
   });
 
   test("keyboard operation, Escape, and outside click close cleanly", async ({
@@ -120,7 +109,7 @@ test.describe("desktop header dropdowns", () => {
 
   });
 
-  test("section triggers stay active on detail routes", async ({ page }) => {
+  test("the section stays lit on detail routes", async ({ page }) => {
     await page.goto("/services/gutter-cleaning");
     await expect(
       primaryNav(page).getByRole("button", {
@@ -129,23 +118,22 @@ test.describe("desktop header dropdowns", () => {
       }),
     ).toHaveAttribute("data-active", "true");
 
+    // Projects is a link now — it lights up green across its whole section,
+    // the /portfolio index and every /projects/<slug> page.
     await page.goto("/projects/external-pipe-repair");
     await expect(
-      primaryNav(page).getByRole("button", {
-        name: "Projects",
-        exact: true,
-      }),
-    ).toHaveAttribute("data-active", "true");
+      primaryNav(page).getByRole("link", { name: "Projects", exact: true }),
+    ).toHaveClass(/text-green-bright/);
   });
 });
 
-test.describe("mobile header accordions", () => {
+test.describe("mobile header accordion", () => {
   test.skip(
     ({ viewport }) => (viewport?.width ?? 0) >= 1280,
     "The accordion lives in the mobile/tablet navigation.",
   );
 
-  test("Services and Projects expand with their nested links", async ({
+  test("Services expands with its nested links; Projects is a plain link", async ({
     page,
   }) => {
     await page.goto("/");
@@ -162,16 +150,14 @@ test.describe("mobile header accordions", () => {
       dialog.getByRole("link", { name: "View All Services", exact: true }),
     ).toBeVisible();
 
-    const projects = dialog.getByRole("button", {
-      name: "Projects",
-      exact: true,
-    });
-    await projects.click();
-    await expect(projects).toHaveAttribute("aria-expanded", "true");
-    await expect(services).toHaveAttribute("aria-expanded", "false");
+    // Projects has no disclosure button and no nested list — it is a
+    // direct link to /portfolio.
     await expect(
-      dialog.getByRole("link", { name: "View All Projects", exact: true }),
-    ).toBeVisible();
+      dialog.getByRole("button", { name: "Projects", exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      dialog.getByRole("link", { name: "Projects", exact: true }),
+    ).toHaveAttribute("href", "/portfolio");
   });
 
   test("selecting a nested item navigates, closes, and releases scroll", async ({

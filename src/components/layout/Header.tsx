@@ -45,11 +45,8 @@ import { cn } from "@/lib/utils/cn";
 const SCROLL_THRESHOLD = 24;
 const DROPDOWN_CLOSE_DELAY = 160;
 
-type DropdownId = "services" | "projects";
-
 type HeaderProps = {
   serviceItems: readonly NavDropdownItem[];
-  projectItems: readonly NavDropdownItem[];
 };
 
 function subscribeToScroll(onStoreChange: () => void) {
@@ -75,13 +72,13 @@ function getIsScrolledOnServer() {
   return false;
 }
 
-export function Header({ serviceItems, projectItems }: HeaderProps) {
+export function Header({ serviceItems }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<DropdownId | null>(null);
+  // Services is the only disclosure in the bar, so this is a boolean.
+  const [servicesOpen, setServicesOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const desktopNavRef = useRef<HTMLElement>(null);
   const servicesTriggerRef = useRef<HTMLButtonElement>(null);
-  const projectsTriggerRef = useRef<HTMLButtonElement>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const suppressFocusOpenRef = useRef(false);
   const pathname = usePathname();
@@ -106,30 +103,27 @@ export function Header({ serviceItems, projectItems }: HeaderProps) {
 
   const closeDropdown = useCallback(() => {
     clearCloseTimer();
-    setOpenDropdown(null);
+    setServicesOpen(false);
   }, [clearCloseTimer]);
 
-  const openDesktopDropdown = useCallback(
-    (id: DropdownId) => {
-      // Escape returns focus to the disclosure button. That focus event is
-      // synchronous and must not immediately reopen the panel just closed.
-      if (suppressFocusOpenRef.current) return;
-      clearCloseTimer();
-      setOpenDropdown(id);
-    },
-    [clearCloseTimer],
-  );
+  const openDesktopDropdown = useCallback(() => {
+    // Escape returns focus to the disclosure button. That focus event is
+    // synchronous and must not immediately reopen the panel just closed.
+    if (suppressFocusOpenRef.current) return;
+    clearCloseTimer();
+    setServicesOpen(true);
+  }, [clearCloseTimer]);
 
   const closeDropdownDelayed = useCallback(() => {
     clearCloseTimer();
     closeTimerRef.current = setTimeout(
-      () => setOpenDropdown(null),
+      () => setServicesOpen(false),
       DROPDOWN_CLOSE_DELAY,
     );
   }, [clearCloseTimer]);
 
   useEffect(() => {
-    if (!openDropdown) return;
+    if (!servicesOpen) return;
 
     const onPointerDown = (event: PointerEvent) => {
       if (!desktopNavRef.current?.contains(event.target as Node)) {
@@ -141,13 +135,9 @@ export function Header({ serviceItems, projectItems }: HeaderProps) {
       if (event.key !== "Escape") return;
 
       event.preventDefault();
-      const activeTrigger =
-        openDropdown === "services"
-          ? servicesTriggerRef.current
-          : projectsTriggerRef.current;
       suppressFocusOpenRef.current = true;
       closeDropdown();
-      activeTrigger?.focus();
+      servicesTriggerRef.current?.focus();
       // React's delegated focus event may flush after focus() returns, so
       // keep the guard through the current task rather than clearing it
       // synchronously.
@@ -163,11 +153,14 @@ export function Header({ serviceItems, projectItems }: HeaderProps) {
       document.removeEventListener("pointerdown", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [closeDropdown, openDropdown]);
+  }, [closeDropdown, servicesOpen]);
 
   useEffect(() => clearCloseTimer, [clearCloseTimer]);
 
   const servicesActive = pathname.startsWith("/services");
+  // Projects is a plain link now, but it still lights up across its whole
+  // section — the /portfolio index and every /projects/<slug> detail page —
+  // exactly as Services does. NavLink's own rule only matches /portfolio.
   const projectsActive =
     pathname === "/portfolio" || pathname.startsWith("/projects/");
 
@@ -209,50 +202,38 @@ export function Header({ serviceItems, projectItems }: HeaderProps) {
                       id="services"
                       label={item.label}
                       items={serviceItems}
-                      open={openDropdown === "services"}
+                      open={servicesOpen}
                       active={servicesActive}
                       triggerRef={servicesTriggerRef}
-                      onOpen={() => openDesktopDropdown("services")}
+                      onOpen={openDesktopDropdown}
                       onClose={closeDropdown}
                       onCloseDelayed={closeDropdownDelayed}
                     />
                   );
                 }
 
-                if (item.href === "/portfolio") {
-                  return (
-                    <NavDropdown
-                      key={item.href}
-                      id="projects"
-                      label={item.label}
-                      items={projectItems}
-                      open={openDropdown === "projects"}
-                      active={projectsActive}
-                      triggerRef={projectsTriggerRef}
-                      onOpen={() => openDesktopDropdown("projects")}
-                      onClose={closeDropdown}
-                      onCloseDelayed={closeDropdownDelayed}
-                    />
-                  );
-                }
+                const sectionActive =
+                  item.href === "/portfolio" ? projectsActive : false;
 
                 return (
-                  <li key={item.href}>
-                  {/* NavLink owns the active rule and the same-page
-                      scroll-to-top; the styling below is unchanged. */}
-                  <NavLink
-                    href={item.href}
-                    className={(active) =>
-                      cn(
-                        "eyebrow py-2 transition-colors",
-                        active
-                          ? "text-green-bright"
-                          : "text-bone hover:text-green-bright",
-                      )
-                    }
-                  >
-                    {item.label}
-                  </NavLink>
+                  <li key={item.href} className="flex items-center">
+                    {/* NavLink owns the active rule and the same-page
+                        scroll-to-top. inline-flex + items-center so the
+                        label centres on the same axis as the Services
+                        disclosure button, which is also a flex box. */}
+                    <NavLink
+                      href={item.href}
+                      className={(active) =>
+                        cn(
+                          "eyebrow inline-flex items-center py-2 transition-colors",
+                          active || sectionActive
+                            ? "text-green-bright"
+                            : "text-bone hover:text-green-bright",
+                        )
+                      }
+                    >
+                      {item.label}
+                    </NavLink>
                   </li>
                 );
               })}
@@ -301,7 +282,6 @@ export function Header({ serviceItems, projectItems }: HeaderProps) {
         open={menuOpen}
         onClose={closeMenu}
         serviceItems={serviceItems}
-        projectItems={projectItems}
       />
     </>
   );

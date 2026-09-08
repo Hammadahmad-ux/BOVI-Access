@@ -14,10 +14,7 @@ type MobileMenuProps = {
   open: boolean;
   onClose: () => void;
   serviceItems: readonly NavDropdownItem[];
-  projectItems: readonly NavDropdownItem[];
 };
-
-type AccordionId = "services" | "projects";
 
 /**
  * Full-screen dark navigation panel.
@@ -26,26 +23,14 @@ type AccordionId = "services" | "projects";
  * treatment. Handles Escape, background scroll lock, and returns focus to
  * the trigger on close (the parent owns the trigger ref).
  */
-export function MobileMenu({
-  open,
-  onClose,
-  serviceItems,
-  projectItems,
-}: MobileMenuProps) {
+export function MobileMenu({ open, onClose, serviceItems }: MobileMenuProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
   const servicesActive = pathname.startsWith("/services");
-  const projectsActive =
-    pathname === "/portfolio" || pathname.startsWith("/projects/");
-  const activeSection: AccordionId | null = servicesActive
-    ? "services"
-    : projectsActive
-      ? "projects"
-      : null;
-  const [openAccordion, setOpenAccordion] = useState<AccordionId | null>(
-    activeSection,
-  );
+  // Services is the only nested section — open it by default when the
+  // visitor is already on a service page. Projects is a plain link.
+  const [servicesExpanded, setServicesExpanded] = useState(servicesActive);
 
   useEffect(() => {
     if (!open) return;
@@ -133,24 +118,8 @@ export function MobileMenu({
       >
         <ul className="flex flex-col">
           {primaryNav.map((item, i) => {
-            const accordion =
-              item.href === "/services"
-                ? {
-                    id: "services" as const,
-                    items: serviceItems,
-                    active: servicesActive,
-                  }
-                : item.href === "/portfolio"
-                  ? {
-                      id: "projects" as const,
-                      items: projectItems,
-                      active: projectsActive,
-                    }
-                  : null;
-
-            if (accordion) {
-              const expanded = openAccordion === accordion.id;
-              const panelId = `mobile-${accordion.id}-links`;
+            if (item.href === "/services") {
+              const panelId = "mobile-services-links";
 
               return (
                 <li
@@ -159,18 +128,14 @@ export function MobileMenu({
                 >
                   <button
                     type="button"
-                    aria-expanded={expanded}
+                    aria-expanded={servicesExpanded}
                     aria-controls={panelId}
-                    data-mobile-nav-trigger={accordion.id}
-                    data-active={accordion.active}
-                    onClick={() =>
-                      setOpenAccordion((current) =>
-                        current === accordion.id ? null : accordion.id,
-                      )
-                    }
+                    data-mobile-nav-trigger="services"
+                    data-active={servicesActive}
+                    onClick={() => setServicesExpanded((current) => !current)}
                     className={cn(
                       "flex min-h-11 w-full items-center gap-4 py-4 text-left",
-                      accordion.active && "text-green-bright",
+                      servicesActive && "text-green-bright",
                     )}
                   >
                     <span aria-hidden="true" className="eyebrow text-green-bright">
@@ -183,18 +148,18 @@ export function MobileMenu({
                       aria-hidden="true"
                       className={cn(
                         "size-5 shrink-0 text-mist transition-transform duration-200",
-                        expanded && "rotate-180 text-green-bright",
+                        servicesExpanded && "rotate-180 text-green-bright",
                       )}
                     />
                   </button>
 
-                  {expanded && (
+                  {servicesExpanded && (
                     <ul
                       id={panelId}
                       aria-label={`${item.label} links`}
                       className="pb-4 pl-8 sm:pl-10"
                     >
-                      {accordion.items.map((nestedItem, nestedIndex) => (
+                      {serviceItems.map((nestedItem, nestedIndex) => (
                         <li
                           key={nestedItem.href}
                           className={cn(

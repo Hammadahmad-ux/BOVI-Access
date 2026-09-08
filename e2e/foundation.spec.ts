@@ -194,16 +194,15 @@ test.describe("mobile navigation", () => {
     const dialog = page.getByRole("dialog", { name: /site navigation/i });
     await expect(dialog).toBeVisible();
 
-    for (const label of ["Home", "About", "Service Areas", "Contact"]) {
+    for (const label of ["Home", "About", "Projects", "Service Areas", "Contact"]) {
       await expect(
         dialog.getByRole("link", { name: label, exact: true }),
       ).toBeVisible();
     }
-    for (const label of ["Services", "Projects"]) {
-      await expect(
-        dialog.getByRole("button", { name: label, exact: true }),
-      ).toBeVisible();
-    }
+    // Services is the only nested section.
+    await expect(
+      dialog.getByRole("button", { name: "Services", exact: true }),
+    ).toBeVisible();
 
     // Escape must close it.
     await page.keyboard.press("Escape");
