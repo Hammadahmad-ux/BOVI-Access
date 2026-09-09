@@ -37,6 +37,21 @@ export default defineConfig({
 
   schema: { types: schemaTypes as SchemaTypeDefinition[] },
 
+  /**
+   * Content Releases and scheduled drafts are turned off.
+   *
+   * Renan edits three document types and publishes them one at a time —
+   * he has no use for staged multi-document releases. Leaving the feature
+   * on adds a "Releases" tab and extra entries to the perspective menu,
+   * and every non-default perspective renders the editor READ-ONLY (that
+   * is Studio behaviour, not our schema). A non-technical editor who lands
+   * on one sees "This field is read-only" with no obvious way back. Off,
+   * the only perspectives are "Drafts" (editable) and "Published"
+   * (read-only, reached only via the explicit chip on a document).
+   */
+  releases: { enabled: false },
+  scheduledDrafts: { enabled: false },
+
   plugins: [
     structureTool({ structure }),
     // Vision is a developer query tool. Useful during setup and

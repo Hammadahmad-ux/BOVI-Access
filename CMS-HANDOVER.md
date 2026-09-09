@@ -290,9 +290,10 @@ These are **not** in the editor. Your phone number, email address, the
 "Request a Quote" button wording and the logo live in the site's code, so
 they read identically in the header, the footer, every call-to-action and
 the data Google reads. To change one, tell your developer — a one-line
-change that updates every place at once. Company registration number and
-registered-office address are not published anywhere yet; supply them and
-your developer adds them to the footer and privacy policy.
+change that updates every place at once. The company registration number
+(16680959) and registered-office address are already in the footer and
+privacy policy; the registered office is shown as a Companies House
+address only, never as a place to visit.
 
 ---
 
@@ -392,6 +393,24 @@ Nothing you type is live until you press **Publish**.
 If a change does not appear after a couple of minutes, hard-refresh the
 page (**Ctrl+Shift+R**, or **Cmd+Shift+R** on a Mac).
 
+### "This field is read-only" — you are looking at the published copy
+
+Every document has two views, chosen from the toggle at the top of the
+editor (and the drop-down near your avatar):
+
+- **Draft** — your working copy. This is where you type. It is the normal
+  view and the one you want almost all the time.
+- **Published** — a *read-only* snapshot of what is live right now. Every
+  field is greyed out and **"Add item" on the galleries is disabled** —
+  that is on purpose, so you can look at the live version without changing
+  it by accident.
+
+If a service, project or the Homepage will not let you edit anything —
+the text is greyed out, or Safari says **"This field is read-only"** —
+you are on **Published**. Switch the toggle back to **Draft** and you can
+edit again. Nothing is broken and nothing is locked; it is just the wrong
+view. This is the most likely reason you cannot add a gallery image.
+
 ---
 
 ## Two rules worth keeping
@@ -413,6 +432,9 @@ photograph, not what you wish it showed.
 
 - **A page looks empty** — you probably deleted text rather than leaving
   it as it was. Use the revision history to put it back.
+- **Everything is greyed out / "This field is read-only"** — you are on
+  the **Published** view. Switch the toggle at the top of the editor back
+  to **Draft**. See "This field is read-only" under **Publishing** above.
 - **You cannot log in** — use the password reset on the Sanity login page.
 - **You have accidentally deleted a project** — Sanity keeps history.
   Contact your developer before creating anything new.

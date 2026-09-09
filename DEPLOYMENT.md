@@ -92,6 +92,17 @@ Completed:
       `src/lib/config/site.ts`
 - [x] GROQ verified against the real dataset
 - [x] Frontend confirmed rendering CMS content with no visual change
+- [x] `@sanity/mutator` patched (`patches/@sanity+mutator+5.31.2.patch`,
+      applied by the `postinstall` script) — its `Document.rebase()` did
+      not guard `HEAD === null`, so publishing a Homepage / Project /
+      Service while an image edit was still in flight (publish deletes the
+      draft; the delete echoes back with the edit still pending) crashed
+      the Studio with "getAttribute only applies to plain objects". The
+      one-line guard makes the editor surface "document was deleted"
+      instead. Guarded by `e2e/studio-mutator-patch.spec.ts`. Revisit when
+      the project moves off `sanity@5.x` (the bug is still open upstream in
+      6.x, so the patch will need re-generating against whatever `Document`
+      minifies to there).
 
 Still to do:
 

@@ -1,0 +1,13 @@
+diff --git a/node_modules/@sanity/mutator/lib/index.js b/node_modules/@sanity/mutator/lib/index.js
+index 05204ca..6844e8d 100644
+--- a/node_modules/@sanity/mutator/lib/index.js
++++ b/node_modules/@sanity/mutator/lib/index.js
+@@ -1530,7 +1530,7 @@ class Document {
+   }
+   rebase(incomingMutations) {
+     const oldEdge = this.EDGE;
+-    this.EDGE = Mutation.applyAll(this.HEAD, this.submitted.concat(this.pending)), oldEdge !== null && this.EDGE !== null && (oldEdge._rev = this.EDGE._rev), !isEqual(this.EDGE, oldEdge) && this.onRebase && this.onRebase(this.EDGE, incomingMutations, this.pending);
++    this.EDGE = this.HEAD == null ? null : Mutation.applyAll(this.HEAD, this.submitted.concat(this.pending)), oldEdge !== null && this.EDGE !== null && (oldEdge._rev = this.EDGE._rev), !isEqual(this.EDGE, oldEdge) && this.onRebase && this.onRebase(this.EDGE, incomingMutations, this.pending);
+   }
+ }
+ class SquashingBuffer {

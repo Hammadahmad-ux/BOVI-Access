@@ -1,0 +1,3 @@
+# Patch files must stay LF — patch-package applies them on Linux (Vercel)
+# during postinstall, and a CRLF patch fails to apply.
+*.patch text eol=lf
