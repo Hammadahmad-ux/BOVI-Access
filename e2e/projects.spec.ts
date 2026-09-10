@@ -38,14 +38,18 @@ test.describe("projects gallery", () => {
     // The duplicate Lightning Protection entry existed because two
     // photographs shared a category. Now one card is one job, so a
     // repeated destination means a genuine duplicate.
+    //
+    // Each card carries TWO links to its project — the photograph and the
+    // title — so the count is taken from the title links, one per card.
     await page.goto("/portfolio");
 
     const hrefs = await page
-      .locator('main a[href^="/projects/"]')
+      .locator('main a[data-project-title]')
       .evaluateAll((links) =>
         links.map((link) => link.getAttribute("href") ?? ""),
       );
 
+    expect(hrefs.length).toBeGreaterThanOrEqual(3);
     expect(hrefs.length).toBe(new Set(hrefs).size);
   });
 
@@ -205,11 +209,12 @@ test.describe("projects grid and lightbox", () => {
   test("every card preview has identical dimensions", async ({ page }) => {
     // The old grid switched between a 4:3 and a 3:4 frame depending on
     // the source photograph's orientation, and staggered every second
-    // column down 64px. Both are what "misaligned" meant.
+    // column down 64px. Both are what "misaligned" meant. The card
+    // photograph is now a link to the project, not a lightbox trigger.
     await page.goto("/portfolio");
 
     const sizes = await page
-      .locator('main button[aria-label^="View larger"] span.block')
+      .locator("main ul li a[data-card-image] span.block")
       .evaluateAll((frames) =>
         frames.map((frame) => {
           const rect = frame.getBoundingClientRect();
@@ -240,9 +245,9 @@ test.describe("projects grid and lightbox", () => {
 
     const cards = await page.locator("main ul > li").evaluateAll((items) =>
       items
-        .filter((li) => li.querySelector('button[aria-label^="View larger"]'))
+        .filter((li) => li.querySelector("a[data-card-image]"))
         .map((li) => {
-          const title = li.querySelector('a[href^="/projects/"]');
+          const title = li.querySelector("a[data-project-title]");
           return {
             top: li.getBoundingClientRect().top,
             titleTop: title ? title.getBoundingClientRect().top : -1,
@@ -285,7 +290,7 @@ test.describe("projects grid and lightbox", () => {
 
     await page.evaluate(() => {
       const ul = [...document.querySelectorAll("main ul")].find((u) =>
-        u.querySelector('button[aria-label^="View larger"]'),
+        u.querySelector("a[data-card-image]"),
       );
       ul?.scrollIntoView({ block: "center", behavior: "instant" });
     });
@@ -293,7 +298,7 @@ test.describe("projects grid and lightbox", () => {
     const readTops = () =>
       page.locator("main ul > li").evaluateAll((items) =>
         items
-          .filter((li) => li.querySelector('button[aria-label^="View larger"]'))
+          .filter((li) => li.querySelector("a[data-card-image]"))
           .map((li) => li.getBoundingClientRect().top),
       );
 
@@ -329,7 +334,7 @@ test.describe("projects grid and lightbox", () => {
 
     const spread = await page.evaluate((cols) => {
       const ul = [...document.querySelectorAll("main ul")].find((u) =>
-        u.querySelector('button[aria-label^="View larger"]'),
+        u.querySelector("a[data-card-image]"),
       )!;
       const template = ul.querySelector("li")!;
       for (let i = 0; i < 7; i++) ul.appendChild(template.cloneNode(true));
@@ -383,92 +388,49 @@ test.describe("projects grid and lightbox", () => {
     expect(columns).toBe(expected);
   });
 
-  test("clicking a photograph opens it larger, and Escape closes it", async ({
+  test("the photograph and the title both open the project page", async ({
     page,
   }) => {
-    await page.goto("/portfolio");
-
-    const trigger = page
-      .locator('main button[aria-label^="View larger"]')
-      .first();
-    const label = await trigger.getAttribute("aria-label");
-
-    await expect(page.getByRole("dialog")).toHaveCount(0);
-
-    await trigger.click();
-    const dialog = page.getByRole("dialog");
-    await expect(dialog).toBeVisible();
-
-    // The large view must show the whole photograph, not another crop.
-    const image = dialog.locator("img").first();
-    await expect(image).toHaveCSS("object-fit", "contain");
-
-    const box = await image.boundingBox();
-    expect(box!.width).toBeLessThanOrEqual((page.viewportSize()?.width ?? 0) + 1);
-    expect(box!.height).toBeLessThanOrEqual(
-      (page.viewportSize()?.height ?? 0) + 1,
-    );
-
-    // Background must not scroll behind the dialog.
-    expect(
-      await page.evaluate(() => document.body.style.overflow),
-    ).toBe("hidden");
-
-    await page.keyboard.press("Escape");
-    await expect(page.getByRole("dialog")).toHaveCount(0);
-
     /*
-      Polled, not asserted instantly. Closing a <dialog> is synchronous,
-      but the scroll lock is released by a React effect cleanup, which
-      lands on the next tick — reading it immediately raced the framework
-      rather than testing the behaviour.
+      The client's latest note: "clicking the main project photo should
+      navigate to the project detail page, exactly like clicking the
+      project title". So the card carries two links to one job — and the
+      listing has no lightbox at all any more; that belongs on the detail
+      page where a visitor is actually looking at the work.
     */
-    await expect
-      .poll(() => page.evaluate(() => document.body.style.overflow))
-      .not.toBe("hidden");
-
-    // Focus handed back to the photograph that opened it.
-    await expect
-      .poll(() =>
-        page.evaluate(() =>
-          document.activeElement?.getAttribute("aria-label"),
-        ),
-      )
-      .toBe(label);
-  });
-
-  test("the close button and the backdrop both dismiss the lightbox", async ({
-    page,
-  }) => {
-    await page.goto("/portfolio");
-    const trigger = page
-      .locator('main button[aria-label^="View larger"]')
-      .first();
-
-    await trigger.click();
-    await page.getByRole("dialog").getByLabel("Close image").click();
-    await expect(page.getByRole("dialog")).toHaveCount(0);
-
-    await trigger.click();
-    await expect(page.getByRole("dialog")).toBeVisible();
-    // Top-left corner is backdrop on every viewport.
-    await page.mouse.click(5, 5);
-    await expect(page.getByRole("dialog")).toHaveCount(0);
-  });
-
-  test("the title still opens the project page", async ({ page }) => {
-    // Two destinations from one card: the photograph opens the image, the
-    // title opens the job. Neither may swallow the other.
     await page.goto("/portfolio");
 
-    const link = page.locator('main a[href^="/projects/"]').last();
-    const href = await link.getAttribute("href");
-    await link.click();
+    // No lightbox trigger anywhere on the listing.
+    await expect(
+      page.locator('main button[aria-label^="View larger"]'),
+    ).toHaveCount(0);
 
-    await expect(page).toHaveURL(new RegExp(`${href}$`));
+    // The card photograph is a link to the project.
+    const cardImage = page.locator("main ul li a[data-card-image]").first();
+    const imageHref = await cardImage.getAttribute("href");
+    expect(imageHref).toMatch(/^\/projects\/[a-z-]+$/);
+
+    await cardImage.click();
+    await expect(page).toHaveURL(new RegExp(`${imageHref}$`));
     await expect(page.locator("h1")).toHaveCount(1);
-    // Opening a project must not have left a dialog behind.
     await expect(page.getByRole("dialog")).toHaveCount(0);
+
+    // And the title link still goes to the same place.
+    await page.goto("/portfolio");
+    const title = page.locator("main ul li a[data-project-title]").last();
+    const titleHref = await title.getAttribute("href");
+    await title.click();
+    await expect(page).toHaveURL(new RegExp(`${titleHref}$`));
+    await expect(page.locator("h1")).toHaveCount(1);
+  });
+
+  test("the featured photograph opens the project page", async ({ page }) => {
+    await page.goto("/portfolio");
+    const figureLink = page.locator("main figure a[href^='/projects/']");
+    const href = await figureLink.getAttribute("href");
+    expect(href).toMatch(/^\/projects\/[a-z-]+$/);
+    await figureLink.click({ force: true });
+    await expect(page).toHaveURL(new RegExp(`${href}$`));
   });
 
   test("a project page's photographs are capped and identical", async ({
@@ -478,8 +440,10 @@ test.describe("projects grid and lightbox", () => {
     /*
       The client's complaint, in one assertion: a photograph inside a
       project ran the full column, so at 1440 each frame was 664x830 and
-      one filled the screen. It must never exceed the 400px a service
-      page uses, and every frame in the set must be the same size.
+      one filled the screen. After a first pass it capped at 400; the
+      latest note is that it should sit "closer in size to the Related
+      Services cards", so on a laptop or desktop it is now ~320 wide, and
+      every frame in the set must still be the same size.
     */
     await page.goto("/projects/lightning-protection-works");
 
@@ -503,10 +467,11 @@ test.describe("projects grid and lightbox", () => {
     }
 
     const width = viewport?.width ?? 0;
-    if (width >= 640) {
-      expect(first.w).toBeLessThanOrEqual(400);
+    if (width >= 1024) {
+      // Reduced from the earlier 400px cap towards the Related card scale.
+      expect(first.w).toBeLessThanOrEqual(360);
     }
-    // 4:5, the same frame the service pages and the grid use.
+    // 4:5, the same frame the service pages and the Related cards' scale.
     expect(first.h / first.w).toBeGreaterThan(1.2);
     expect(first.h / first.w).toBeLessThan(1.3);
   });

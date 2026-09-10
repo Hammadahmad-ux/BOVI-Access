@@ -100,15 +100,25 @@ export default async function PortfolioPage() {
               as="figure"
               className="relative aspect-[4/3] overflow-hidden rounded-sm lg:col-span-7"
             >
-              <Image
-                src={featured.image.src}
-                alt={featured.image.alt}
-                fill
-                sizes="(min-width: 1024px) 55vw, 100vw"
-                quality={74}
-                style={focalPointStyle(featured.image)}
-                className="object-cover"
-              />
+              {/* The photograph opens the project, same as "View project"
+                  below. aria-hidden and off the tab order — the button
+                  beside it is the accessible control. */}
+              <Link
+                href={`/projects/${featured.slug}`}
+                aria-hidden="true"
+                tabIndex={-1}
+                className="group/img relative block size-full"
+              >
+                <Image
+                  src={featured.image.src}
+                  alt={featured.image.alt}
+                  fill
+                  sizes="(min-width: 1024px) 55vw, 100vw"
+                  quality={74}
+                  style={focalPointStyle(featured.image)}
+                  className="object-cover transition-transform duration-500 group-hover/img:scale-[1.03]"
+                />
+              </Link>
             </Reveal>
 
             {/*
@@ -202,11 +212,11 @@ export default async function PortfolioPage() {
                 y={0}
                 className="flex flex-col gap-5"
               >
-                {/* The photograph opens the photograph. */}
+                {/* The photograph opens the project, same as the title. */}
                 <ProjectPreview
                   image={project.image}
+                  href={`/projects/${project.slug}`}
                   title={project.title}
-                  category={project.serviceCategory}
                   photoCount={project.gallery.length + 1}
                 />
 
@@ -222,9 +232,11 @@ export default async function PortfolioPage() {
                     {project.serviceCategory}
                   </span>
 
-                  {/* The title opens the job. */}
+                  {/* The title opens the job — same destination as the
+                      photograph above, and the primary tab stop for it. */}
                   <Link
                     href={`/projects/${project.slug}`}
+                    data-project-title
                     className="group flex min-h-[2.6em] items-start justify-between gap-4"
                   >
                     <span className="line-clamp-2 font-display text-h5 font-semibold transition-colors group-hover:text-green">

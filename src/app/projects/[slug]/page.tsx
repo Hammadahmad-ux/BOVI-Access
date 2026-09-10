@@ -13,7 +13,7 @@ import { RelatedServices } from "@/components/service/RelatedServices";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { ZoomableImage } from "@/components/ui/ZoomableImage";
+import { GalleryProvider, GalleryThumb } from "@/components/ui/Gallery";
 import { STAGGER } from "@/lib/animations/motion";
 
 type Params = { slug: string };
@@ -49,14 +49,16 @@ export const revalidate = 3600;
   per screen.
 
   The cap goes on the GRID, not on each cell: capping cells would strand
-  every photograph at the left of a 664px column with 264px of dead
-  space beside it. 1264px is three 400px columns plus two 2rem gaps, so
-  a service photograph and a project photograph are the same 400x500 on
-  a 1440 laptop, and the cap is inert below that.
+  every photograph at the left of a wide column with dead space beside
+  it. 1024px is three 320px columns plus two 2rem gaps — the client's
+  latest note is that these should sit "closer in size to the Related
+  Services cards", so the frame is now ~320px on a laptop or desktop, the
+  same as a service photograph and close to a Related Services card. The
+  cap is inert below `lg`, where a phone stays near full width.
 */
 const GALLERY_PHOTO_FRAME = "aspect-[4/5]";
 const GALLERY_PHOTO_SIZES =
-  "(min-width: 1024px) 400px, (min-width: 640px) 46vw, 100vw";
+  "(min-width: 1024px) 320px, (min-width: 640px) 46vw, 100vw";
 
 export async function generateStaticParams(): Promise<Params[]> {
   const published = await getPublishedProjects();
@@ -103,6 +105,14 @@ export default async function ProjectPage({
   */
   const hasDetails = Boolean(project.location || project.completionDate);
   const hasScope = Boolean(project.scope?.length);
+
+  // The lightbox pages through every photograph on this project, in the
+  // order they appear in the grid.
+  const galleryItems = project.gallery.map((photo, i) => ({
+    image: photo,
+    label: `${project.title}, photograph ${i + 1}`,
+    caption: <span className="text-bone">{project.title}</span>,
+  }));
 
   return (
     <>
@@ -208,30 +218,31 @@ export default async function ProjectPage({
               photographs, so two columns now leaves the third alone in
               its own row with two thirds of the band empty beside it —
               tolerable when a cell WAS the column, glaring once a cell
-              is 400px in a 1344px field.
+              is ~320px in a wide field.
 
               Click-to-enlarge comes with the smaller frame rather than
-              after it: shrinking a photograph of a repair to 400px only
-              works if the detail behind it is still reachable. Same
-              component as the service pages and the projects grid.
+              after it: shrinking a photograph of a repair works only if
+              the detail behind it is still reachable. Opening any one
+              pages through the whole set — same gallery lightbox as the
+              service pages.
             */}
-            <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:mt-12 lg:max-w-[1264px] lg:grid-cols-3 lg:gap-8">
-              {project.gallery.map((photo, i) => (
-                <Reveal
-                  as="li"
-                  key={photo.src}
-                  delay={Math.min(i * STAGGER, 0.24)}
-                >
-                  <ZoomableImage
-                    image={photo}
-                    label={`${project.title}, photograph ${i + 1}`}
-                    frameClassName={GALLERY_PHOTO_FRAME}
-                    sizes={GALLERY_PHOTO_SIZES}
-                    caption={<span className="text-bone">{project.title}</span>}
-                  />
-                </Reveal>
-              ))}
-            </ul>
+            <GalleryProvider items={galleryItems}>
+              <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:mt-12 lg:max-w-[1024px] lg:grid-cols-3 lg:gap-8">
+                {project.gallery.map((photo, i) => (
+                  <Reveal
+                    as="li"
+                    key={photo.src}
+                    delay={Math.min(i * STAGGER, 0.24)}
+                  >
+                    <GalleryThumb
+                      index={i}
+                      frameClassName={GALLERY_PHOTO_FRAME}
+                      sizes={GALLERY_PHOTO_SIZES}
+                    />
+                  </Reveal>
+                ))}
+              </ul>
+            </GalleryProvider>
           </Container>
         </section>
       ) : null}

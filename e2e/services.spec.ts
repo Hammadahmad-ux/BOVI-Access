@@ -98,13 +98,15 @@ test.describe("service imagery", () => {
     viewport,
   }) => {
     // The whole point of the change: smaller on a laptop, unchanged on a
-    // phone. 400px is the cap; a phone is narrower than that anyway.
+    // phone. The cap was 400; the client's latest note pulled it down
+    // towards the Related Services card scale, so it is ~320 now. A phone
+    // is narrower than that anyway.
     await page.goto("/services/gutter-cleaning");
     const [first] = await frames(page);
     const width = Number(first.split("x")[0]);
 
     if ((viewport?.width ?? 0) >= 1024) {
-      expect(width).toBeLessThanOrEqual(400);
+      expect(width).toBeLessThanOrEqual(360);
     } else if ((viewport?.width ?? 0) < 640) {
       // Full-bleed inside the gutter, as it was before.
       expect(width).toBeGreaterThan((viewport?.width ?? 0) * 0.8);

@@ -1,4 +1,4 @@
-import { ZoomableImage } from "@/components/ui/ZoomableImage";
+import { GalleryProvider, GalleryThumb } from "@/components/ui/Gallery";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionLabel } from "@/components/ui/SectionLabel";
@@ -44,10 +44,12 @@ import type { ServicePage } from "@/lib/content/services";
   and 648x810 — three different sizes, the largest taller than the
   viewport.
 
-  Now all of them share a ratio and a ceiling: 4:5, capped at 400px wide
-  from `sm` up, so every photograph on a service page is 400x500 on a
+  Now all of them share a ratio and a ceiling: 4:5, capped at 320px wide
+  from `sm` up, so every photograph on a service page is 320x400 on a
   laptop or desktop no matter which slot it occupies or how many there
-  are. Below `sm` the cap does not apply and the images stay full-bleed,
+  are. The latest note is that these should sit "closer in size to the
+  Related Services cards" — ~320px is the same footprint as one of those.
+  Below `sm` the cap does not apply and the images stay full-bleed,
   because that is the presentation he said already works.
 
   4:5 rather than anything wider for the reason the projects grid found
@@ -58,27 +60,28 @@ import type { ServicePage } from "@/lib/content/services";
   inherits all of this without any code change.
 */
 const SERVICE_PHOTO_FRAME = "aspect-[4/5]";
-const SERVICE_PHOTO_SIZES = "(min-width: 640px) 400px, 100vw";
+const SERVICE_PHOTO_SIZES = "(min-width: 640px) 320px, 100vw";
 
 /**
  * The pair already sits in a two-column grid, so its cells are narrower
  * than the cap until the viewport is wide enough for the cap to bite.
  *
- * Centred in the cell once it does. Left-aligned, a 400px photograph in a
- * 656px cell put all 256px of slack on one side, which is what the client
- * saw as a photograph pushed hard against the edge with a hole beside it.
+ * Centred in the cell once it does. Left-aligned, a photograph pinned to
+ * the edge of a wider cell puts all the slack on one side, which is what
+ * the client saw as a photograph pushed hard against the edge with a
+ * hole beside it.
  */
-const PAIR_PHOTO_WIDTH = "mx-auto sm:max-w-[400px]";
+const PAIR_PHOTO_WIDTH = "mx-auto sm:max-w-[320px]";
 
 /**
- * The delivery photograph sits in a single-column grid until `lg`, so
- * without the half-width rule it rendered 400px wide at 768 next to a
- * pair of 332px ones — same page, three photographs, two sizes. Matching
- * a pair cell (half the container, less half the 1.5rem gap) keeps every
- * service photograph identical at every width from `sm` up.
+ * The delivery photograph sits in a single-column grid until `lg`, and
+ * in a half-width column after it. Neither matches a pair cell on its
+ * own, so it tracks `min(half the container less the gap, the 320px
+ * cap)` up to `lg` and the flat cap beyond — which keeps every service
+ * photograph the same size at every width from `sm` up.
  */
 const DELIVERY_PHOTO_WIDTH =
-  "mx-auto sm:max-w-[calc(50%-0.75rem)] lg:max-w-[400px]";
+  "mx-auto sm:max-w-[min(calc(50%-0.75rem),320px)] lg:max-w-[320px]";
 
 export function ServiceBody({ service }: { service: ServicePage }) {
   const flip = Number(service.index) % 2 === 0;
@@ -88,8 +91,33 @@ export function ServiceBody({ service }: { service: ServicePage }) {
   const deliveryMedia = gallery[0] ?? service.heroMedia;
   const pair = gallery[1] && gallery[2] ? [gallery[1], gallery[2]] : null;
 
+  /*
+    The lightbox pages through the photographs THIS page actually shows,
+    in reading order: the "access and delivery" image first, then the
+    pair. A gallery of two never shows its second image (the pair needs
+    both), so it is not in the lightbox either.
+  */
+  const galleryItems = [
+    ...(deliveryMedia
+      ? [
+          {
+            image: deliveryMedia,
+            label: `${service.name}, access and delivery`,
+            caption: <span className="text-bone">{service.name}</span>,
+          },
+        ]
+      : []),
+    ...(pair
+      ? pair.map((photo, i) => ({
+          image: photo,
+          label: `${service.name}, photograph ${i + 1}`,
+          caption: <span className="text-bone">{service.name}</span>,
+        }))
+      : []),
+  ];
+
   return (
-    <>
+    <GalleryProvider items={galleryItems}>
       {/* ---------------- Overview ---------------- */}
       <section className="bg-bone">
         <Container className="py-20 lg:py-28">
@@ -149,15 +177,11 @@ export function ServiceBody({ service }: { service: ServicePage }) {
                      projects grids were levelled to stop showing. */
                   y={0}
                 >
-                  <ZoomableImage
-                    image={photo}
-                    label={`${service.name}, photograph ${i + 1}`}
+                  <GalleryThumb
+                    index={i + 1}
                     frameClassName={SERVICE_PHOTO_FRAME}
                     className={PAIR_PHOTO_WIDTH}
                     sizes={SERVICE_PHOTO_SIZES}
-                    caption={
-                      <span className="text-bone">{service.name}</span>
-                    }
                   />
                 </Reveal>
               ))}
@@ -212,17 +236,15 @@ export function ServiceBody({ service }: { service: ServicePage }) {
                     : "lg:col-span-6 lg:col-start-1"
                 }
               >
-                <ZoomableImage
-                  image={deliveryMedia}
-                  label={`${service.name}, access and delivery`}
+                <GalleryThumb
+                  index={0}
                   frameClassName={SERVICE_PHOTO_FRAME}
                   /* Centred in its half of the row rather than pinned to
-                     the outer edge. Pinning put the whole 256px of slack
-                     between the photograph and the copy on the pages
-                     where the image leads. */
+                     the outer edge. Pinning put the whole slack between
+                     the photograph and the copy on the pages where the
+                     image leads. */
                   className={DELIVERY_PHOTO_WIDTH}
                   sizes={SERVICE_PHOTO_SIZES}
-                  caption={<span className="text-bone">{service.name}</span>}
                 />
               </Reveal>
             ) : null}
@@ -286,6 +308,6 @@ export function ServiceBody({ service }: { service: ServicePage }) {
           </div>
         </Container>
       </section>
-    </>
+    </GalleryProvider>
   );
 }

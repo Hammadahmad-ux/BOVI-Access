@@ -175,9 +175,11 @@ replacement.)
    the result. **They must all be from the same job.**
 
    These appear under **Photographs** on the project's own page, at the
-   same tidy size as the ones on a service page, and **each one opens
-   full size when a visitor clicks it**. Anything you add gets that
-   automatically — there is nothing to switch on.
+   same tidy size as the ones on a service page. **Clicking any one opens
+   it full size, and a visitor can then page through the rest of that
+   job's photographs — arrows on a computer, a swipe on a phone.** The
+   order you set here is the order they page through. Anything you add
+   gets this automatically — there is nothing to switch on.
 8. **Location**, **Completed** date and **Scope of works** are OPTIONAL.
    Leave anything blank you are not sure of — the page shows nothing
    rather than a guess, and there is no empty gap where it would have been.
@@ -217,10 +219,11 @@ shows today. You can edit any of them.
 - What you change here is what shows. Nothing you remove is quietly
   replaced by an old photo.
 
-  Every photograph on a service page is shown at the same tidy size and
-  **opens full size when a visitor clicks it**, so the page stays clean
-  and the work can still be looked at properly. Anything you add gets
-  that automatically — there is nothing to switch on.
+  Every photograph on a service page is shown at the same tidy size.
+  **Clicking one opens it full size, and a visitor can page through the
+  rest from there** — so the page stays clean and the work can still be
+  looked at properly. Anything you add gets that automatically — there is
+  nothing to switch on.
 - **FAQs** — only add questions you are genuinely asked. These get sent
   to Google as structured data, so an invented answer becomes an invented
   Google result.
