@@ -5,6 +5,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { introduction } from "@/lib/content/home";
 import { getHomepage } from "@/lib/content/provider";
+import { focalPointStyle } from "@/lib/sanity/focal-point";
 
 /**
  * Homepage section 01 — the positioning statement that follows the hero.
@@ -100,7 +101,8 @@ export async function Introduction() {
               fill
               quality={72}
               sizes="(min-width: 1024px) 40vw, 100vw"
-              className="object-cover object-center"
+              style={focalPointStyle(image)}
+              className="object-cover"
             />
           </Reveal>
         </div>

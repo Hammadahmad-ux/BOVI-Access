@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { ImageAsset } from "@/lib/content/types";
+import { focalPointStyle } from "@/lib/sanity/focal-point";
 import { Container } from "@/components/ui/Container";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { Breadcrumbs, type Crumb } from "@/components/ui/Breadcrumbs";
@@ -67,7 +68,11 @@ export function PageHero({
             priority
             sizes="100vw"
             quality={72}
-            className="object-cover object-center"
+            /* Follows the Sanity hotspot when the media is a CMS image
+               (project and service heroes); centres for local heroes,
+               whose crops were composed by eye. */
+            style={focalPointStyle(media)}
+            className="object-cover"
           />
           {/* Legibility scrim. Matches the Homepage hero treatment; see
               DESIGN.md - the one permitted gradient. */}

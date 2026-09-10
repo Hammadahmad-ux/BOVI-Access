@@ -9,6 +9,7 @@ import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { STAGGER } from "@/lib/animations/motion";
+import { focalPointStyle } from "@/lib/sanity/focal-point";
 import { cn } from "@/lib/utils/cn";
 
 /**
@@ -160,8 +161,9 @@ export async function ProjectGrid() {
                           ? shape.sizes
                           : "(min-width: 1024px) 31vw, (min-width: 640px) 45vw, 100vw"
                       }
+                      style={focalPointStyle(project.image)}
                       className={cn(
-                        "object-cover object-center transition-transform duration-700 ease-out",
+                        "object-cover transition-transform duration-700 ease-out",
                         "group-hover:scale-[1.03] group-focus-visible:scale-[1.03]",
                       )}
                     />

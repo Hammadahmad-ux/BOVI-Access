@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import Image from "next/image";
 import { X } from "lucide-react";
 import type { ImageAsset } from "@/lib/content/types";
+import { focalPointStyle } from "@/lib/sanity/focal-point";
 import { cn } from "@/lib/utils/cn";
 
 type ZoomableImageProps = {
@@ -92,9 +93,7 @@ export function ZoomableImage({
   // The Sanity hotspot, so a CMS image crops around its subject rather
   // than its centre. Undefined for local assets, whose crops were chosen
   // by eye.
-  const focalPoint = image.focalPoint
-    ? `${image.focalPoint.x * 100}% ${image.focalPoint.y * 100}%`
-    : undefined;
+  const thumbFocalPoint = focalPointStyle(image);
 
   return (
     <>
@@ -114,8 +113,8 @@ export function ZoomableImage({
             fill
             sizes={sizes}
             quality={72}
-            style={focalPoint ? { objectPosition: focalPoint } : undefined}
-            className="object-cover object-center transition-transform duration-500 group-hover/img:scale-[1.03] group-focus-visible/img:scale-[1.03]"
+            style={thumbFocalPoint}
+            className="object-cover transition-transform duration-500 group-hover/img:scale-[1.03] group-focus-visible/img:scale-[1.03]"
           />
         </span>
 

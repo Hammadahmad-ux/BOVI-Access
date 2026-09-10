@@ -239,7 +239,7 @@ export default async function ProjectPage({
       {service ? (
         <RelatedServices
           currentSlug=""
-          slugs={[service.slug, ...service.relatedServices].slice(0, 3)}
+          slugs={[service.slug, ...service.relatedServices].slice(0, 4)}
           all={allServices}
         />
       ) : null}

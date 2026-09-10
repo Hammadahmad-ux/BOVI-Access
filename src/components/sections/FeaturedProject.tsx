@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { featuredProject } from "@/lib/content/home";
 import { getHomepage, getProjects } from "@/lib/content/provider";
+import { focalPointStyle } from "@/lib/sanity/focal-point";
 import { ArrowLink } from "@/components/ui/ArrowLink";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
@@ -175,6 +176,7 @@ export async function FeaturedProject() {
               fill
               sizes="(min-width: 1024px) 55vw, 100vw"
               quality={72}
+              style={focalPointStyle(image)}
               className="object-cover"
             />
           </Reveal>

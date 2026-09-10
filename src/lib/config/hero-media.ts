@@ -52,6 +52,13 @@ export type HeroMedia = {
   fallbackImage: string;
   /** Alt text for the still. Required; describes the real photograph. */
   imageAlt: string;
+  /**
+   * The Sanity hotspot on the poster / fallback image, 0-1 per axis, so
+   * the near-full-viewport still crops around its subject rather than its
+   * centre. Undefined for the local default photograph, whose crop was
+   * chosen by eye.
+   */
+  imageFocalPoint?: { x: number; y: number };
 };
 
 export type HeroMediaOverrides = {
@@ -62,7 +69,16 @@ export type HeroMediaOverrides = {
    * deliberately NOT split in two: the CMS contract stays one video URL,
    * and the responsive pair is a local production detail.
    */
-  cms?: Partial<Pick<HeroMedia, "videoUrl" | "posterImage" | "fallbackImage" | "imageAlt">>;
+  cms?: Partial<
+    Pick<
+      HeroMedia,
+      | "videoUrl"
+      | "posterImage"
+      | "fallbackImage"
+      | "imageAlt"
+      | "imageFocalPoint"
+    >
+  >;
 };
 
 /**
@@ -122,5 +138,11 @@ export function resolveHeroMedia(overrides: HeroMediaOverrides = {}): HeroMedia 
     posterImage: poster,
     fallbackImage: cms?.fallbackImage?.trim() || poster,
     imageAlt: cms?.imageAlt?.trim() || DEFAULT_HERO_ALT,
+    // Only carried when the CMS actually supplied the still — the local
+    // default photograph is already composed for a centre crop.
+    imageFocalPoint:
+      (cms?.fallbackImage?.trim() || cms?.posterImage?.trim())
+        ? cms?.imageFocalPoint
+        : undefined,
   };
 }

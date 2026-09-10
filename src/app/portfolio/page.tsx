@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { business } from "@/lib/config/site";
 import { getProjects } from "@/lib/content/provider";
+import { focalPointStyle } from "@/lib/sanity/focal-point";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { PageHero } from "@/components/sections/PageHero";
 import { ProjectPreview } from "@/components/projects/ProjectPreview";
@@ -105,7 +106,8 @@ export default async function PortfolioPage() {
                 fill
                 sizes="(min-width: 1024px) 55vw, 100vw"
                 quality={74}
-                className="object-cover object-center"
+                style={focalPointStyle(featured.image)}
+                className="object-cover"
               />
             </Reveal>
 

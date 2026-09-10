@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { business } from "@/lib/config/site";
 import { getServices } from "@/lib/content/provider";
+import { focalPointStyle } from "@/lib/sanity/focal-point";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { PageHero } from "@/components/sections/PageHero";
 import { FinalCta } from "@/components/sections/FinalCta";
@@ -81,7 +82,8 @@ export default async function ServicesPage() {
                           fill
                           sizes="(min-width: 1024px) 46vw, 100vw"
                           quality={72}
-                          className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.03] group-focus-visible:scale-[1.03]"
+                          style={focalPointStyle(service.heroMedia)}
+                          className="object-cover transition-transform duration-500 group-hover:scale-[1.03] group-focus-visible:scale-[1.03]"
                         />
                       ) : null}
                     </span>

@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import type { HeroMedia as HeroMediaConfig } from "@/lib/config/hero-media";
+import { focalPointStyle } from "@/lib/sanity/focal-point";
 import {
   useMediaQuery,
   useResolvedMediaQuery,
@@ -111,7 +112,10 @@ export function HeroMedia({ media, overlay = "standard" }: HeroMediaProps) {
         priority
         sizes="100vw"
         quality={72}
-        className="object-cover object-center"
+        /* Follows the Sanity hotspot when the still comes from the CMS;
+           centres for the local default, which is composed for it. */
+        style={focalPointStyle({ focalPoint: media.imageFocalPoint })}
+        className="object-cover"
       />
 
       {videoSrc ? (

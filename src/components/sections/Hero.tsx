@@ -42,6 +42,10 @@ export async function Hero() {
       fallbackImage: home.heroFallback?.src,
       // The alt must describe whichever photograph is actually shown.
       imageAlt: home.heroFallback?.alt ?? home.heroPoster?.alt,
+      // Same precedence as the alt: the fallback still is what renders,
+      // so its hotspot wins; the poster's is the stand-in.
+      imageFocalPoint:
+        home.heroFallback?.focalPoint ?? home.heroPoster?.focalPoint,
     },
   });
 
