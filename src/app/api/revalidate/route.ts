@@ -1,4 +1,4 @@
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { isValidSignature, SIGNATURE_HEADER_NAME } from "@sanity/webhook";
 
@@ -62,5 +62,14 @@ export async function POST(request: Request) {
   // cached entry carrying the tag, which is what a publish means.
   tags.forEach((tag) => revalidateTag(tag, "max"));
 
-  return NextResponse.json({ ok: true, revalidated: tags });
+  // sitemap.xml and robots.txt are metadata routes: they read the same
+  // tagged data, but their full-route cache is not reliably purged by the
+  // tag alone, so a slug change could linger in the sitemap for up to an
+  // hour. A service or project publish can add, remove or rename a URL,
+  // so the sitemap is revalidated by path as well.
+  const paths =
+    type === "service" || type === "project" ? ["/sitemap.xml"] : [];
+  paths.forEach((path) => revalidatePath(path));
+
+  return NextResponse.json({ ok: true, revalidated: [...tags, ...paths] });
 }

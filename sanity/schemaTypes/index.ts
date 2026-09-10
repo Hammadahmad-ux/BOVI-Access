@@ -25,8 +25,53 @@
 
 import type { Rule } from "sanity";
 
+import { services } from "@/lib/config/site";
+
 const required = (rule: Rule) => rule.required();
 const maxLength = (n: number) => (rule: Rule) => rule.max(n);
+
+/* ------------------------------------------------------------------ */
+/* URL-contract slug protection                                        */
+/*                                                                    */
+/* Service slugs, and the slugs of the projects that shipped with the  */
+/* site, are a URL contract: they are in Google's index and drive the  */
+/* legacy Wix redirect map (CLAUDE.md §7, ROUTES.md). A content edit    */
+/* must not be able to change a public address. The `slug` field on     */
+/* those documents is therefore read-only in Studio — the value can     */
+/* still be corrected by a developer through a migration, which is the  */
+/* only place a URL change should ever originate.                       */
+/*                                                                     */
+/* A service or project the client CREATES keeps a fully editable slug  */
+/* until it is first published; `documentId` is only in these sets once */
+/* the document exists, so a brand-new draft is unaffected.             */
+/* ------------------------------------------------------------------ */
+
+const CORE_SERVICE_IDS = new Set(
+  services.map((service) => `service-${service.slug}`),
+);
+
+/**
+ * The six projects seeded from `src/lib/content/projects.ts`. Listed
+ * explicitly rather than imported so the Studio bundle does not pull in
+ * the whole content module; keep in step with that file.
+ */
+const CONTRACT_PROJECT_IDS = new Set([
+  "project-external-pipe-repair",
+  "project-gutter-downpipe-clearance",
+  "project-brickwork-repointing-works",
+  "project-lightning-protection-works",
+  "project-mastic-sealant-renewal",
+  "project-commercial-glazing-clean",
+]);
+
+const publishedId = (id: string | undefined) =>
+  (id ?? "").replace(/^drafts\./, "");
+
+/** `readOnly` guard for a document type's slug field. */
+const slugIsContractLocked =
+  (ids: ReadonlySet<string>) =>
+  ({ document }: { document?: { _id?: string } }) =>
+    ids.has(publishedId(document?._id));
 
 /* ------------------------------------------------------------------ */
 /* Reusable object types                                               */
@@ -137,7 +182,10 @@ export const service = {
             .slice(0, 96),
       },
       description:
-        "The end of the page address: /services/THIS-BIT. It fills in automatically from the service name, so for a NEW service just leave it alone. WARNING: on a service that is already live, changing this changes its address - Google forgets the old one and every existing link to it breaks. Ask your developer first.",
+        "The end of the page address: /services/THIS-BIT. It fills in automatically from the service name when you create a new service. The eight original services show this as read-only on purpose: their addresses are in Google's index and are the target of redirects from the old site, so a rename has to go through your developer.",
+      // The eight original services are a URL contract — see the note by
+      // CORE_SERVICE_IDS above.
+      readOnly: slugIsContractLocked(CORE_SERVICE_IDS),
       validation: (rule: Rule) =>
         rule.required().custom((value: { current?: string } | undefined) => {
           const current = value?.current;
@@ -316,7 +364,11 @@ export const project = {
             .slice(0, 96),
       },
       description:
-        "The end of the page address: /projects/THIS-BIT. It fills in from the title, so leave it alone. Changing it on a project that is already live breaks any link to it.",
+        "The end of the page address: /projects/THIS-BIT. It fills in from the title when you create the project. The projects that shipped with the site show this as read-only — their addresses are already in Google's index and in the sitemap, so a rename goes through your developer.",
+      // The six original projects are a URL contract — see the note by
+      // CONTRACT_PROJECT_IDS above. Projects created later keep an
+      // editable slug.
+      readOnly: slugIsContractLocked(CONTRACT_PROJECT_IDS),
       validation: (rule: Rule) =>
         rule.required().custom((value: { current?: string } | undefined) => {
           const current = value?.current;
