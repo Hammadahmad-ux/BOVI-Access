@@ -147,6 +147,13 @@ project and its page starts showing them.
    job.
 4. Click **Publish**. The change is live within about a minute.
 
+> The **Web address** field on the six projects that shipped with the
+> site is locked (shown greyed out), the same as on the eight services —
+> their addresses are already in Google's index. Change the **Project
+> title** freely; the page keeps its address regardless of what you
+> rename it to. A project you create yourself keeps a normal, editable
+> address.
+
 **To delete a project:** open it, **⋯ → Delete**, confirm. It disappears
 from the Projects page, its own page stops existing, and it drops out of
 the Google sitemap — all together, within about a minute. Unlike the eight
@@ -232,8 +239,13 @@ shows today. You can edit any of them.
 > **Do not change the Web address of a service that is already live.**
 > Those addresses are in Google's index, and two of them are the target of
 > a redirect from the old Wix site. Changing one loses the ranking and
-> breaks every existing link to it. If a service genuinely needs renaming,
-> tell your developer so the old address can be redirected to the new one.
+> breaks every existing link to it. **The Web address field on the eight
+> original services is locked (shown greyed out) for exactly this
+> reason** — if a service genuinely needs a new address, tell your
+> developer so the old one can be redirected properly. You are always
+> free to change the **Service name** above it, though — the page keeps
+> its address no matter what you rename it to, and renaming it can never
+> create a second copy of the page.
 >
 > For a service you are creating from scratch this does not apply — the
 > address fills in automatically from the name, and you should just leave

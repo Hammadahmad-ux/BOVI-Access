@@ -11,7 +11,7 @@ import { services as serviceIndex, type ServiceSummary } from "@/lib/config/site
  * sanity/schemaTypes/index.ts field for field, so the swap is a change of
  * provider, not a redesign:
  *
- *   name  slug  legacyUrl  eyebrow  heroTitle  intro  heroMedia
+ *   name  slug  legacyUrl  heroTitle  intro  heroMedia
  *   overview  commonWorks[]  delivery  suitableFor[]  faq[]
  *   relatedServices[]  seo
  *
@@ -40,7 +40,6 @@ export type ServiceFaq = {
 export type ServicePageContent = {
   slug: string;
   /** Small label above the H1. */
-  eyebrow: string;
   /** H1. Usually the service name, occasionally expanded. */
   heroTitle: string;
   /** One or two sentences under the H1. */
@@ -97,7 +96,6 @@ const content: readonly ServicePageContent[] = [
   /* ------------------------------------------------------------------ */
   {
     slug: "commercial-window-cleaning",
-    eyebrow: "Service 01",
     heroTitle: "Commercial Window Cleaning",
     intro:
       "Scheduled and reactive glazing cleans to high-rise and hard-to-reach elevations, delivered by rope access with less reliance on scaffold or powered access.",
@@ -163,7 +161,6 @@ const content: readonly ServicePageContent[] = [
   /* ------------------------------------------------------------------ */
   {
     slug: "brickwork-repointing",
-    eyebrow: "Service 04",
     heroTitle: "Brickwork & Repointing",
     intro:
       "Localised masonry repair and repointing to elevations, chimney stacks and parapets, reached by rope access rather than scaffold.",
@@ -228,7 +225,6 @@ const content: readonly ServicePageContent[] = [
   /* ------------------------------------------------------------------ */
   {
     slug: "gutter-cleaning",
-    eyebrow: "Service 03",
     heroTitle: "Gutter Cleaning",
     intro:
       "Clearance and visual inspection of gutters, hoppers and roofline drainage on buildings where the roofline is difficult to reach safely.",
@@ -294,7 +290,6 @@ const content: readonly ServicePageContent[] = [
   /* ------------------------------------------------------------------ */
   {
     slug: "drainage-external-pipe-repairs",
-    eyebrow: "Service 02",
     heroTitle: "Drainage & External Pipe Repairs",
     intro:
       "External pipe repairs to soil stacks, waste and rainwater pipework — repair, replacement and clearing on elevations and lightwells that are difficult to reach.",
@@ -360,7 +355,6 @@ const content: readonly ServicePageContent[] = [
   /* ------------------------------------------------------------------ */
   {
     slug: "mastic-sealant",
-    eyebrow: "Service 05",
     heroTitle: "Mastic & Sealant",
     intro:
       "Renewal of perimeter and movement joints on facades and around openings, to address water ingress at the building envelope.",
@@ -430,7 +424,6 @@ const content: readonly ServicePageContent[] = [
   /* ------------------------------------------------------------------ */
   {
     slug: "pressure-washing-doff-cleaning",
-    eyebrow: "Service 06",
     heroTitle: "Pressure Washing & DOFF Cleaning",
     intro:
       "Controlled low-pressure and steam cleaning for masonry, stone and cladding on elevations that cannot be reached from the ground.",
@@ -488,7 +481,6 @@ const content: readonly ServicePageContent[] = [
   /* ------------------------------------------------------------------ */
   {
     slug: "roof-roofline-repairs",
-    eyebrow: "Service 07",
     heroTitle: "Roof & Roofline Repairs",
     intro:
       "Inspection and localised repair at roof level and along the roofline, on buildings where getting there safely is the hard part.",
@@ -549,7 +541,6 @@ const content: readonly ServicePageContent[] = [
   /* ------------------------------------------------------------------ */
   {
     slug: "lightning-protection",
-    eyebrow: "Service 08",
     heroTitle: "Lightning Protection",
     intro:
       "Rope-access support for lightning protection systems — reaching conductor tape, down conductors and roof-level components on tall elevations.",

@@ -92,7 +92,8 @@ export default async function ServicePage({
   return (
     <>
       <PageHero
-        eyebrow={service.eyebrow}
+        // No eyebrow here on purpose — the client asked for "SERVICE 01"
+        // etc. removed from every service page. See PageHero's comment.
         title={service.heroTitle}
         lead={service.intro}
         media={service.heroMedia}

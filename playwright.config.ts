@@ -61,6 +61,31 @@ export default defineConfig({
     { name: "mobile-430", use: { ...devices["Desktop Chrome"], viewport: { width: 430, height: 932 }, isMobile: false } },
     { name: "mobile-390", use: { ...devices["Desktop Chrome"], viewport: { width: 390, height: 844 } } },
     { name: "mobile-375", use: { ...devices["Desktop Chrome"], viewport: { width: 375, height: 812 } } },
+    /*
+      A SAFARI PROXY. Renan edits and browses on Safari/macOS; Playwright
+      has no real Safari, but WebKit is its engine and the closest
+      automatable stand-in. Running the full 7-viewport x every-spec
+      matrix on a second engine would roughly double an already ~30-minute
+      suite for marginal extra signal, so this is deliberately narrow: one
+      desktop viewport (his actual setup) against the specs most likely to
+      behave differently across engines — the gallery lightbox (native
+      `<dialog>`, touch/swipe handling, focus restoration), the Sanity
+      hotspot/crop image pipeline, and the core content routes. Broad
+      per-route layout sweeping (foundation.spec.ts) stays Chromium-only;
+      it is layout arithmetic, not rendering-engine-sensitive.
+    */
+    {
+      name: "webkit-1440",
+      testMatch: [
+        "gallery-lightbox.spec.ts",
+        "image-hotspot.spec.ts",
+        "services.spec.ts",
+        "projects.spec.ts",
+        "homepage.spec.ts",
+        "cms.spec.ts",
+      ],
+      use: { ...devices["Desktop Safari"], viewport: { width: 1440, height: 900 } },
+    },
   ],
 
   webServer: {

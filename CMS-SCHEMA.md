@@ -115,10 +115,9 @@ is the only instruction Renan sees inside Studio.
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `name` | string | Yes | |
-| `slug` | slug | Yes | Warns that changing it affects rankings |
+| `slug` | slug | Yes | Read-only on the 8 original services (see the identity note below); warns that changing it affects rankings on a new one |
 | `order` | number | | Position in the numbered list |
 | `legacyUrl` | string | | Old Wix address — drives redirects |
-| `eyebrow` | string | | |
 | `heroTitle` | string | Yes | |
 | `intro` | text | | 1–2 sentences under the heading |
 | `heroMedia` | image + alt (hotspot) | | Hotspot controls crop safety |
@@ -134,6 +133,39 @@ is the only instruction Renan sees inside Studio.
 Currently mirrored in code by `services` in `src/lib/config/site.ts`, which
 remains the source of truth for **slugs and ordering** even after the CMS
 goes live — those are URL contracts, not content.
+
+> **`eyebrow` was removed** (September 2026) — the small "Service 01" /
+> "Service 02" label above each service page's heading. The client asked
+> for it gone from every service page; the numeral itself (position and
+> ordering) is unaffected and still lives in code (`ServicePage.index`,
+> `src/lib/config/site.ts`), it just has nowhere it renders as visible
+> text on the eight service detail pages any more. Any `eyebrow` value
+> still sitting in an old document in the dataset is harmless and unread.
+
+> **IDENTITY: a core service document is matched by `_id`, not by `slug`
+> or `name`.** `service-<slug>` (e.g. `service-gutter-cleaning`) is the
+> deterministic id `scripts/migrate-to-sanity.ts` created it at, and is
+> what `getServices()` in `src/lib/content/provider.ts` matches against —
+> never the mutable `slug` FIELD or the `name`. This is a fix, not the
+> original design: the client renamed "Gutter Cleaning"'s slug field (via
+> Studio's Content Agent, not the read-only slug input — see
+> `CMS-AUDIT-2026-09.md` §1) to "gutter-cleaning-repairs" three times, and slug-
+> based matching read each occurrence as a brand-new ninth service while
+> the real `/services/gutter-cleaning` kept serving stale content.
+> Matching by `_id` makes that structurally impossible: the document is
+> recognised as the same core service regardless of what its slug or name
+> field says, and the page keeps serving at its one contract URL. Proven
+> by `npm run verify:cms`'s "Core service identity drift" fixture
+> (`scripts/fixtures/core-service-drift.json`), which republishes that
+> exact scenario against a stub CMS on every run.
+>
+> The same treatment applies to the six projects that shipped with the
+> site (`project-<slug>`, matched in `mapProject()` via
+> `CONTRACT_PROJECT_SLUG_BY_ID`) — their slugs are likewise pinned to the
+> id regardless of what the document's own slug field says. A service or
+> project the client creates from scratch has no local counterpart, so
+> its own `_id`/slug pair is simply itself; nothing about this restricts
+> normal new content.
 
 **Images are CMS-authoritative.** All eight services are seeded with their
 current photography (`npm run cms:seed-media`, one-off; uploads the exact

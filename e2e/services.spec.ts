@@ -292,16 +292,30 @@ test.describe("service order", () => {
     expect(hrefs).toEqual(ORDER.map(({ slug }) => `/services/${slug}`));
   });
 
-  test("each page's numeral matches its position", async ({ page }) => {
-    // The numeral and the service must move together. They did not at
-    // first: the repo was swapped while Sanity still held the old
-    // eyebrows, and because the CMS merges over local the two pages
-    // showed each other's numbers.
-    for (const { index, slug } of ORDER) {
-      await page.goto(`/services/${slug}`);
-      await expect(
-        page.locator("main p").filter({ hasText: /^\s*Service\s/i }).first(),
-      ).toContainText(index);
+  test("each primary service's numeral matches its position", async ({
+    page,
+  }) => {
+    /*
+      The numeral and the service must move together. They did not at
+      first: the repo was swapped while Sanity still held the old visible
+      "Service NN" eyebrows, and because the CMS merged over local the two
+      pages showed each other's numbers.
+
+      That eyebrow is gone now (the client asked for the visible numbering
+      removed from every service DETAIL page), which is what makes the
+      original failure mode impossible: the numeral (ServicePage.index) was
+      never CMS content to begin with, and there is no longer any CMS-held
+      copy of it that could go stale. What is left to guard is that the
+      numeral STILL rendered on the /services overview — for the six
+      primary services — still matches each one's real position.
+    */
+    await page.goto("/services");
+
+    for (const { index, slug } of ORDER.slice(0, 6)) {
+      const numeral = page
+        .locator(`main a[href="/services/${slug}"] .eyebrow`)
+        .first();
+      await expect(numeral).toHaveText(index);
     }
   });
 });

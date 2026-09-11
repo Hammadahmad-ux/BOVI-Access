@@ -210,13 +210,17 @@ export const service = {
       description:
         "Only for services that existed on the old Wix site. Leave blank for anything new.",
     },
-    {
-      name: "eyebrow",
-      title: "Small label above the heading",
-      type: "string",
-      description:
-        'Optional. For example "Service 09". Leave blank and it simply reads "Service".',
-    },
+    /*
+      REMOVED: "eyebrow" (small label above the heading, e.g. "Service
+      01"). The client asked for the visible numbering removed from every
+      service page (CLAUDE.md-style decision, not a design accident) —
+      leaving the field in Studio with nothing left to show it would be a
+      control that looked editable and did nothing. Existing stored
+      values are harmless and untouched in the dataset; the page heading
+      now sits directly under the breadcrumb. Service ORDER is unaffected
+      — that is the separate `order` field below plus the fixed 01-08
+      indices in src/lib/config/site.ts, neither of which changed.
+    */
     {
       name: "heroTitle",
       title: "Page heading",

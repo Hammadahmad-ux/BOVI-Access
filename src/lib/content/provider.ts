@@ -42,11 +42,11 @@ import { business, services as serviceIndex } from "@/lib/config/site";
 /* ------------------------------------------------------------------ */
 
 type SanityService = {
+  _id: string;
   slug?: string;
   name?: string;
   order?: number;
   legacyUrl?: string;
-  eyebrow?: string;
   heroTitle?: string;
   intro?: string;
   heroMedia?: SanityImage;
@@ -56,7 +56,8 @@ type SanityService = {
   delivery?: string[];
   suitableFor?: string[];
   faq?: ServiceFaq[];
-  relatedServices?: string[];
+  /** Dereferenced by ID, not slug — see the note by CORE_SERVICE_ID. */
+  relatedServiceIds?: string[];
   seoTitle?: string;
   seoDescription?: string;
   ogImage?: SanityImage;
@@ -73,11 +74,11 @@ type SanityService = {
  * service documents return the shape below.
  */
 const SERVICE_QUERY = `*[_type == "service" && defined(slug.current)]{
+  _id,
   "slug": slug.current,
   name,
   order,
   legacyUrl,
-  eyebrow,
   heroTitle,
   intro,
   heroMedia,
@@ -87,11 +88,34 @@ const SERVICE_QUERY = `*[_type == "service" && defined(slug.current)]{
   "delivery": deliveryContent[]{"text": pt::text(@)}.text,
   suitableFor,
   faq[]{question, answer},
-  "relatedServices": relatedServices[]->slug.current,
+  "relatedServiceIds": relatedServices[]->_id,
   "seoTitle": seo.seoTitle,
   "seoDescription": seo.seoDescription,
   "ogImage": seo.ogImage
 }`;
+
+/**
+ * THE STABLE IDENTITY FOR A CORE SERVICE.
+ *
+ * `scripts/migrate-to-sanity.ts` seeded each of the eight original
+ * services at the deterministic document id `service-<slug>`. That id —
+ * never the `slug` FIELD, and never the display `name` — is what a core
+ * service document IS. The slug field and the name are both editorial
+ * content Renan can change; the id is not exposed anywhere in Studio and
+ * cannot be edited.
+ *
+ * This is the fix for a recurring incident: the client renamed the
+ * "Gutter Cleaning" service's NAME to "Gutter Cleaning & Repairs", and —
+ * separately, apparently through the Studio's Content Agent rather than
+ * hand-typing into the (read-only) slug field — its slug field also
+ * changed, to "gutter-cleaning-repairs". Matching by slug or name treated
+ * that as a brand new ninth service, while the original `/gutter-cleaning`
+ * kept serving stale local content. Matching by id instead means the
+ * document is still recognised as THE SAME core service no matter what
+ * its slug or name field says, so a rename — of either — can never
+ * produce a duplicate, and the page keeps serving at its contract URL.
+ */
+const CORE_SERVICE_ID = (slug: string) => `service-${slug}`;
 
 /**
  * Merges CMS content over the local baseline field by field.
@@ -109,7 +133,11 @@ const SERVICE_QUERY = `*[_type == "service" && defined(slug.current)]{
  * it. Local imagery is only ever reached on a full CMS outage, which
  * getServices() handles by returning the whole local set.
  */
-function mergeService(local: ServicePage, cms?: SanityService): ServicePage {
+function mergeService(
+  local: ServicePage,
+  cms: SanityService | undefined,
+  slugById: ReadonlyMap<string, string>,
+): ServicePage {
   if (!cms) return local;
 
   const heroMedia = imageAssetFrom(cms.heroMedia) ?? undefined;
@@ -121,9 +149,18 @@ function mergeService(local: ServicePage, cms?: SanityService): ServicePage {
     .map((image) => imageAssetFrom(image))
     .filter((asset): asset is ImageAsset => asset !== null);
 
+  // Resolved through `slugById` (built from document id, not whatever the
+  // referenced doc's slug FIELD currently says) — see CORE_SERVICE_ID.
+  // A reference that no longer resolves is dropped rather than rendered
+  // as a dead link; RelatedServices tops the row back up from the rest.
+  const relatedServices = cms.relatedServiceIds?.length
+    ? cms.relatedServiceIds
+        .map((id) => slugById.get(id))
+        .filter((slug): slug is string => Boolean(slug))
+    : local.relatedServices;
+
   return {
     ...local,
-    eyebrow: cms.eyebrow?.trim() || local.eyebrow,
     heroTitle: cms.heroTitle?.trim() || local.heroTitle,
     intro: cms.intro?.trim() || local.intro,
     heroMedia,
@@ -138,13 +175,7 @@ function mergeService(local: ServicePage, cms?: SanityService): ServicePage {
     // FAQ is the exception: an empty CMS array means "no verified FAQs",
     // which is exactly what should render. Never fall back here.
     faq: cms.faq ?? local.faq,
-    // Any published service may be referenced, not only the original
-    // eight — otherwise a new CMS service could never be linked from an
-    // existing page. Unresolvable slugs are dropped downstream, where the
-    // full service list is known.
-    relatedServices: cms.relatedServices?.length
-      ? cms.relatedServices
-      : local.relatedServices,
+    relatedServices,
     seoTitle: cms.seoTitle?.trim() || local.seoTitle,
     seoDescription: cms.seoDescription?.trim() || local.seoDescription,
     ogImage: imageAssetFrom(cms.ogImage) ?? local.ogImage,
@@ -170,7 +201,10 @@ function mergeService(local: ServicePage, cms?: SanityService): ServicePage {
  * optional and the template omits what is missing. What we refuse to do
  * is publish an empty URL.
  */
-function servicePageFromCms(doc: SanityService): ServicePage | null {
+function servicePageFromCms(
+  doc: SanityService,
+  slugById: ReadonlyMap<string, string>,
+): ServicePage | null {
   const slug = doc.slug?.trim();
   if (!slug) return null;
 
@@ -196,7 +230,6 @@ function servicePageFromCms(doc: SanityService): ServicePage | null {
     // a designed composition, not a list — see CLAUDE.md §9.
     primary: false,
     legacyUrl: doc.legacyUrl?.trim() || null,
-    eyebrow: doc.eyebrow?.trim() || "Service",
     heroTitle,
     intro,
     heroMedia: imageAssetFrom(doc.heroMedia) ?? undefined,
@@ -206,7 +239,9 @@ function servicePageFromCms(doc: SanityService): ServicePage | null {
     delivery: doc.delivery ?? [],
     suitableFor: doc.suitableFor ?? [],
     faq: doc.faq ?? [],
-    relatedServices: doc.relatedServices ?? [],
+    relatedServices: (doc.relatedServiceIds ?? [])
+      .map((id) => slugById.get(id))
+      .filter((s): s is string => Boolean(s)),
     seoTitle: doc.seoTitle?.trim() || undefined,
     // Derived, not invented: the service's own opening sentence is a
     // truthful description. No keyword stuffing.
@@ -248,22 +283,52 @@ export async function getServices(): Promise<ServicePage[]> {
 
   const docs = cms;
 
+  /*
+    ID -> canonical slug, used to resolve `relatedServiceIds` on ANY
+    service (core or CMS-only). A core service's entry always wins with
+    its LOCAL contract slug — even if the document's own slug field has
+    drifted — so a related-service link never points at a stale or
+    renamed address. A CMS-only service has no local override, so its own
+    current slug is authoritative for it, same as it always was.
+  */
+  const slugById = new Map<string, string>();
+  for (const local of localServices) {
+    slugById.set(CORE_SERVICE_ID(local.slug), local.slug);
+  }
+  for (const doc of docs) {
+    if (doc._id && doc.slug && !slugById.has(doc._id)) {
+      slugById.set(doc._id, doc.slug);
+    }
+  }
+
+  // MATCH BY DOCUMENT ID, not by slug or name — see CORE_SERVICE_ID. This
+  // is what makes a title or slug rename incapable of ever producing a
+  // second "Gutter Cleaning"-shaped service: the document is still THE
+  // SAME core service no matter what its editable fields say.
   const merged = localServices.map((local) =>
     mergeService(
       local,
-      docs.find((doc) => doc.slug === local.slug),
+      docs.find((doc) => doc._id === CORE_SERVICE_ID(local.slug)),
+      slugById,
     ),
   );
 
+  const coreIds = new Set(localServices.map((s) => CORE_SERVICE_ID(s.slug)));
+
   const additions = docs
-    .filter((doc) => doc.slug && !LOCAL_SLUGS.has(doc.slug))
+    // Excluded by id (the real guard) AND, defensively, by slug — a new
+    // service whose auto-generated slug happened to collide with a core
+    // one must not double up the route either.
+    .filter(
+      (doc) => doc._id && doc.slug && !coreIds.has(doc._id) && !LOCAL_SLUGS.has(doc.slug),
+    )
     .sort(
       (a, b) =>
         (a.order ?? Number.MAX_SAFE_INTEGER) -
           (b.order ?? Number.MAX_SAFE_INTEGER) ||
         (a.name ?? "").localeCompare(b.name ?? ""),
     )
-    .map(servicePageFromCms)
+    .map((doc) => servicePageFromCms(doc, slugById))
     .filter((page): page is ServicePage => page !== null)
     .map((page, i) => ({
       ...page,
@@ -320,6 +385,18 @@ const PROJECT_QUERY = `*[_type == "project"] | order(featured desc, completionDa
   "ogImage": seo.ogImage
 }`;
 
+/**
+ * The stable identity for one of the six projects that shipped with the
+ * site — same reasoning as CORE_SERVICE_ID. `project-<slug>` is the
+ * deterministic id `scripts/seed-projects.ts` created it at; the map
+ * below is keyed by that id and holds the ORIGINAL contract slug, so a
+ * document whose slug field drifts still resolves to its real URL rather
+ * than either 404ing or minting a second address for the same job.
+ */
+const CONTRACT_PROJECT_SLUG_BY_ID = new Map<string, string>(
+  localProjects.map((project) => [`project-${project.slug}`, project.slug]),
+);
+
 function mapProject(doc: SanityProject): ProjectRecord | null {
   const image = imageAssetFrom(doc.heroImage);
   // A project with no usable image cannot be rendered honestly, so it is
@@ -337,7 +414,11 @@ function mapProject(doc: SanityProject): ProjectRecord | null {
   // destination is not something to render — better to omit it until it
   // is finished than to publish a nameless tile linking nowhere.
   const title = doc.title?.trim();
-  const slug = doc.slug?.trim();
+  // One of the six shipped projects keeps its ORIGINAL slug regardless of
+  // what the document's own slug field currently says (see
+  // CONTRACT_PROJECT_SLUG_BY_ID); anything else uses its own slug, which
+  // is legitimately CMS-controlled for a project Renan created himself.
+  const slug = CONTRACT_PROJECT_SLUG_BY_ID.get(doc._id) ?? doc.slug?.trim();
   if (!title || !slug) return null;
 
   const serviceCategory =

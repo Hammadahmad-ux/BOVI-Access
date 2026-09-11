@@ -7,7 +7,14 @@ import { Breadcrumbs, type Crumb } from "@/components/ui/Breadcrumbs";
 import { cn } from "@/lib/utils/cn";
 
 type PageHeroProps = {
-  eyebrow: string;
+  /**
+   * Small label above the heading. Optional — the service detail page
+   * passes none: the client asked for the "SERVICE 01" / "SERVICE 02"
+   * numbering removed from every service page. The numeral itself still
+   * exists (`ServicePage.index`) and still drives ordering and the
+   * homepage service index; only this visible label is gone.
+   */
+  eyebrow?: string;
   /** Rendered as the page H1. Pass an array for hard line breaks. */
   title: string | readonly string[];
   lead?: string;
@@ -87,9 +94,14 @@ export function PageHero({
       <Container className="relative z-10">
         {crumbs?.length ? <Breadcrumbs trail={crumbs} className="mb-8" /> : null}
 
-        <SectionLabel ground="dark">{eyebrow}</SectionLabel>
+        {eyebrow ? <SectionLabel ground="dark">{eyebrow}</SectionLabel> : null}
 
-        <h1 className="mt-6 max-w-[18ch]">
+        {/* mt-6 only makes sense under the eyebrow it was spacing away
+            from; without one the breadcrumb's own mb-8 (or the section's
+            top padding, on a page with no breadcrumb) is the only gap
+            before the heading — omitting it here is what stops a numbered
+            eyebrow's removal leaving a doubled-up empty gap. */}
+        <h1 className={cn("max-w-[18ch]", eyebrow && "mt-6")}>
           {lines.map((line) => (
             <span key={line} className="block">
               {line}

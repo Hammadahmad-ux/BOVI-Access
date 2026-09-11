@@ -52,7 +52,13 @@ changed.
 Slugs are lowercase, hyphenated, ampersand-free. **These eight are a
 contract** — changing one breaks the redirect map and loses rankings, so
 they live in `src/lib/config/site.ts` where no CMS edit can reach them,
-and Studio hides the Delete action on their documents.
+Studio hides the Delete action on their documents, and the slug FIELD on
+each is `readOnly` in Studio. That readOnly is a UI affordance, not the
+real guarantee: the provider matches each of the eight documents to its
+route by stable document id (`service-<slug>`), never by the slug or name
+field, so even a slug that drifted outside Studio's own protection (it has
+happened — see `CMS-AUDIT-2026-09.md` §1–2) cannot change the route or
+mint a duplicate.
 
 ### New services are added from Sanity, not from code
 

@@ -107,7 +107,8 @@ function build() {
   }
 }
 
-async function run(fixture, label, assertions) {
+async function run(fixture, label, assertions, options = {}) {
+  const { skipBrowserCheck = false } = options;
   console.log(`\n=== ${label} ===`);
   rmSync(".next", { recursive: true, force: true });
 
@@ -131,27 +132,29 @@ async function run(fixture, label, assertions) {
 
   await assertions();
 
-  const browserResult = spawnSync(
-    process.execPath,
-    [
-      "node_modules/@playwright/test/cli.js",
-      "test",
-      "--config=playwright.cms.config.ts",
-    ],
-    {
-      env: {
-        ...process.env,
-        CMS_FIXTURE_BASE_URL: BASE,
-        CMS_FIXTURE_STATE: label === "Service PUBLISHED"
-          ? "published"
-          : "unpublished",
+  if (!skipBrowserCheck) {
+    const browserResult = spawnSync(
+      process.execPath,
+      [
+        "node_modules/@playwright/test/cli.js",
+        "test",
+        "--config=playwright.cms.config.ts",
+      ],
+      {
+        env: {
+          ...process.env,
+          CMS_FIXTURE_BASE_URL: BASE,
+          CMS_FIXTURE_STATE: label === "Service PUBLISHED"
+            ? "published"
+            : "unpublished",
+        },
+        stdio: "inherit",
       },
-      stdio: "inherit",
-    },
-  );
-  if (browserResult.status !== 0) {
-    failures++;
-    throw new Error(`fixture Playwright check failed for ${label}`);
+    );
+    if (browserResult.status !== 0) {
+      failures++;
+      throw new Error(`fixture Playwright check failed for ${label}`);
+    }
   }
 
   site.kill();
@@ -241,6 +244,76 @@ try {
     const core = await get("/services/mastic-sealant");
     check("the original eight are untouched", core.status, 200);
   });
+
+  /*
+   * THE RECURRING INCIDENT, REPRODUCED SAFELY.
+   *
+   * The client's "Gutter Cleaning" service had its slug field changed in
+   * Studio (apparently via the Content Agent, not the read-only form
+   * input) from "gutter-cleaning" to "gutter-cleaning-repairs", twice.
+   * Because the provider used to match a CMS document to its local
+   * counterpart BY SLUG, this read as a brand new ninth service: the
+   * canonical /services/gutter-cleaning kept serving stale local content,
+   * and a phantom /services/gutter-cleaning-repairs appeared alongside it.
+   *
+   * The fix matches by the document's stable `_id` instead (see
+   * CORE_SERVICE_ID in src/lib/content/provider.ts). This fixture carries
+   * that same drifted slug at the real `service-gutter-cleaning` id and
+   * proves the frontend now shrugs it off entirely: still eight services,
+   * still one URL, the CMS content still wins.
+   */
+  await run(
+    "scripts/fixtures/core-service-drift.json",
+    "Core service identity drift",
+    async () => {
+      const canonical = await get("/services/gutter-cleaning");
+      check("the contract URL still serves", canonical.status, 200);
+      check(
+        "it shows the CMS content, not the stale local copy",
+        canonical.body.includes(
+          "Fixture intro text proving the CMS content for the drifted document",
+        ),
+        true,
+      );
+
+      const drifted = await get("/services/gutter-cleaning-repairs-DRIFT-FIXTURE");
+      check(
+        "the drifted slug does not resolve as a second page",
+        drifted.status,
+        404,
+      );
+
+      const list = await get("/services");
+      check(
+        "exactly eight services listed — no phantom ninth",
+        new Set(list.body.match(/href="\/services\/[a-z-]+"/g) ?? []).size,
+        8,
+      );
+      check(
+        "the drifted URL is not linked from the listing",
+        list.body.includes("gutter-cleaning-repairs-DRIFT-FIXTURE"),
+        false,
+      );
+
+      const map = await get("/sitemap.xml");
+      // 7 static + 8 services + 6 projects — identical to a clean
+      // production dataset, proving the drift changed nothing downstream.
+      check(
+        "sitemap URL count is unaffected by the drift",
+        (map.body.match(/<loc>/g) ?? []).length,
+        21,
+      );
+      check(
+        "sitemap has no phantom drifted entry",
+        map.body.includes("gutter-cleaning-repairs-DRIFT-FIXTURE"),
+        false,
+      );
+    },
+    // This fixture is not about the "published"/"unpublished" dropdown
+    // lifecycle header-dropdowns.cms.spec.ts checks — the HTTP assertions
+    // above are the whole proof.
+    { skipBrowserCheck: true },
+  );
 } finally {
   for (const child of children) child.kill();
 }

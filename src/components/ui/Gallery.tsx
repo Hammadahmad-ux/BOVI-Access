@@ -29,9 +29,11 @@ import { cn } from "@/lib/utils/cn";
  * once, here.
  *
  * BUILT ON <dialog>. `showModal()` gives the focus trap, the inert
- * background, Escape, and focus restoration to the thumbnail that opened
- * it — all for free. The additions are the scroll lock, the backdrop
- * click, arrow-key and swipe navigation, and the counter.
+ * background and Escape for free. Focus restoration to the thumbnail that
+ * opened it is NOT free on every engine — see the long comment on
+ * `closeDialog` below — so that one is handled explicitly. The other
+ * additions are the scroll lock, the backdrop click, arrow-key and swipe
+ * navigation, and the counter.
  *
  * The full-size images are not rendered until the dialog opens, so a page
  * of thumbnails downloads thumbnails.
@@ -47,7 +49,18 @@ export type GalleryItem = {
 
 type GalleryContextValue = {
   items: readonly GalleryItem[];
-  openAt: (index: number) => void;
+  /**
+   * `opener` is the element to return focus to on close — passed in by
+   * the caller (the trigger's own click handler), NOT read back later via
+   * `document.activeElement`. Reading it later, inside a `useEffect` that
+   * runs after React's commit and paint, was found to race focus changes
+   * that had nothing to do with the gallery: on WebKit specifically,
+   * `document.activeElement` had already drifted to `<main>` by the time
+   * that effect ran, so the "opener" it captured was never the thumbnail
+   * at all. Taking it as an argument, read synchronously inside the click
+   * handler that fired, removes the race entirely.
+   */
+  openAt: (index: number, opener: HTMLElement | null) => void;
 };
 
 const GalleryContext = createContext<GalleryContextValue | null>(null);
@@ -68,10 +81,13 @@ export function GalleryProvider({
   children: ReactNode;
 }) {
   const [index, setIndex] = useState<number | null>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
 
   const openAt = useCallback(
-    (next: number) => {
-      if (next >= 0 && next < items.length) setIndex(next);
+    (next: number, opener: HTMLElement | null) => {
+      if (next < 0 || next >= items.length) return;
+      openerRef.current = opener;
+      setIndex(next);
     },
     [items.length],
   );
@@ -91,7 +107,13 @@ export function GalleryProvider({
   return (
     <GalleryContext.Provider value={{ items, openAt }}>
       {children}
-      <GalleryDialog items={items} index={index} onClose={close} onNavigate={go} />
+      <GalleryDialog
+        items={items}
+        index={index}
+        openerRef={openerRef}
+        onClose={close}
+        onNavigate={go}
+      />
     </GalleryContext.Provider>
   );
 }
@@ -128,7 +150,7 @@ export function GalleryThumb({
   return (
     <button
       type="button"
-      onClick={() => openAt(index)}
+      onClick={(event) => openAt(index, event.currentTarget)}
       aria-haspopup="dialog"
       aria-label={`View larger image for ${item.label}`}
       className={cn(
@@ -160,11 +182,15 @@ const SWIPE_THRESHOLD_PX = 45;
 function GalleryDialog({
   items,
   index,
+  openerRef,
   onClose,
   onNavigate,
 }: {
   items: readonly GalleryItem[];
   index: number | null;
+  /** The thumbnail that opened the dialog, set by GalleryProvider at the
+   *  moment it was clicked — see the note on GalleryContextValue.openAt. */
+  openerRef: React.RefObject<HTMLElement | null>;
   onClose: () => void;
   onNavigate: (delta: number) => void;
 }) {
@@ -173,26 +199,10 @@ function GalleryDialog({
   const open = index !== null;
   const hasMany = items.length > 1;
 
-  /*
-    REACT STATE IS THE SOURCE OF TRUTH, not the dialog.
-
-    `index === null` closes it. This effect opens the native dialog and
-    takes the scroll lock while `open`, and its cleanup both releases the
-    lock and calls `.close()` — so a close triggered anywhere (the X,
-    Escape, the backdrop) just sets `index` to null and everything unwinds
-    here. The `close` event is not relied on: some engines do not fire it
-    for a programmatic `.close()`, and the lock outliving the dialog was
-    the exact bug this shape avoids.
-
-    Render happens before `showModal` because the <img> has to exist
-    first, or the dialog opens empty for a frame.
-  */
   useEffect(() => {
     if (!open) return;
 
     const dialog = dialogRef.current;
-    // The thumbnail that opened it — focus goes back here on close.
-    const opener = document.activeElement as HTMLElement | null;
     const previousOverflow = document.body.style.overflow;
 
     document.body.style.overflow = "hidden";
@@ -200,10 +210,10 @@ function GalleryDialog({
 
     return () => {
       document.body.style.overflow = previousOverflow;
+      // Safety net, not the primary path (see closeDialog): if `index`
+      // ever became null without the dialog already having closed
+      // itself, close it too, so the lock can never outlive the dialog.
       if (dialog?.open) dialog.close();
-      // Explicit rather than relying on the dialog's own restoration,
-      // which does not fire everywhere for a programmatic close.
-      opener?.focus?.();
     };
   }, [open]);
 
@@ -211,23 +221,51 @@ function GalleryDialog({
     const dialog = dialogRef.current;
     if (!dialog) return;
 
-    // Escape: `cancel` is preventable and reliably fired; take it over so
-    // the dialog closes through React state like every other path.
+    // Fires for every close, whichever of the three controls triggered
+    // it — this is what tells React the lightbox is shut.
+    const handleClose = () => onClose();
+    dialog.addEventListener("close", handleClose);
+    return () => dialog.removeEventListener("close", handleClose);
+  }, [onClose]);
+
+  /*
+    CLOSE, THEN SYNCHRONOUSLY RE-FOCUS THE OPENER — IN THAT ORDER, IN THE
+    SAME CALL.
+
+    `.close()` is specified to restore focus to whatever was focused
+    before `showModal()`, and Chromium does. WebKit does not: verified
+    directly (`dialog.close()` moves focus to the nearest ancestor, not
+    the original trigger) that this is a real engine gap, not a timing
+    fluke — and that the fix has to run in the SAME synchronous call as
+    `.close()`. A `.focus()` issued moments later — from a React effect
+    cleanup, or the `close` event above — reliably does NOT stick on
+    WebKit even though it targets the same element; only one issued
+    immediately after `.close()`, before anything else runs, does. Every
+    control that ends the lightbox — X, backdrop, Escape — routes through
+    this one function rather than calling `.close()` on its own.
+  */
+  const closeDialog = useCallback(() => {
+    dialogRef.current?.close();
+    openerRef.current?.focus();
+    // `openerRef` is a stable ref object (its identity never changes), so
+    // this dependency never actually triggers a re-create.
+  }, [openerRef]);
+
+  // Escape fires `cancel` first (preventable) and then, natively, `close`.
+  // Taking `cancel` over lets Escape close through the same synchronous
+  // close-then-focus path as the X and the backdrop, rather than through
+  // whatever WebKit's own Escape handling does on its own.
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
     const handleCancel = (event: Event) => {
       event.preventDefault();
-      onClose();
+      closeDialog();
     };
-    // `close` still fires in most engines — a harmless no-op once state
-    // is already null, and a safety net where it is the only signal.
-    const handleClose = () => onClose();
-
     dialog.addEventListener("cancel", handleCancel);
-    dialog.addEventListener("close", handleClose);
-    return () => {
-      dialog.removeEventListener("cancel", handleCancel);
-      dialog.removeEventListener("close", handleClose);
-    };
-  }, [onClose]);
+    return () => dialog.removeEventListener("cancel", handleCancel);
+  }, [closeDialog]);
 
   // Arrow keys page through the set; Escape is the native <dialog>'s own.
   useEffect(() => {
@@ -281,7 +319,7 @@ function GalleryDialog({
         that reaches this handler is outside the figure below.
       */
       onClick={(event) => {
-        if (event.target === dialogRef.current) onClose();
+        if (event.target === dialogRef.current) closeDialog();
       }}
       className="m-auto max-h-none max-w-none bg-transparent p-0 backdrop:bg-ink/90 backdrop:backdrop-blur-sm"
     >
@@ -347,7 +385,7 @@ function GalleryDialog({
 
       <button
         type="button"
-        onClick={onClose}
+        onClick={closeDialog}
         aria-label="Close image"
         className="fixed top-4 right-4 inline-flex size-11 items-center justify-center rounded-sm bg-ink/80 text-bone backdrop-blur-sm transition-colors hover:bg-ink sm:top-6 sm:right-6"
       >

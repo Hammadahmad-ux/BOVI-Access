@@ -73,7 +73,6 @@ async function run() {
       slug: { _type: "slug", current: service.slug },
       order: Number(service.index),
       ...(service.legacyUrl ? { legacyUrl: service.legacyUrl } : {}),
-      eyebrow: service.eyebrow,
       heroTitle: service.heroTitle,
       intro: service.intro,
       overview: toBlocks(service.overview, "ov"),
