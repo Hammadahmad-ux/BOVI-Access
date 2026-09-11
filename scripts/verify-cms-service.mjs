@@ -223,6 +223,21 @@ try {
 
     const missing = await get("/services/no-such-service-anywhere");
     check("unknown slug still 404s", missing.status, 404);
+
+    // The homepage references these two projects by _id (see the fixture's
+    // "homepage" object) — proof the sections actually resolve a real
+    // reference before the next run deletes what it points to.
+    const home = await get("/");
+    check(
+      "homepage Featured Project links to the referenced project",
+      home.body.includes('href="/projects/commercial-glazing-clean"'),
+      true,
+    );
+    check(
+      "homepage Recent works includes the fixture project",
+      home.body.includes("QA Temporary Test Project"),
+      true,
+    );
   });
 
   await run("scripts/fixtures/no-new-service.json", "Service UNPUBLISHED", async () => {
@@ -237,12 +252,63 @@ try {
     // unpublished and one formerly published local-baseline project has
     // been deleted from the successful CMS response.
     check("sitemap URL count after removals", (map.body.match(/<loc>/g) ?? []).length, 20);
+    check(
+      "sitemap has no entry for the deleted shipped project",
+      map.body.includes("/projects/commercial-glazing-clean<"),
+      false,
+    );
+    check(
+      "sitemap has no entry for the deleted fixture project",
+      map.body.includes(`/projects/${PROJECT_SLUG}<`),
+      false,
+    );
 
     const deletedProject = await get("/projects/commercial-glazing-clean");
     check("deleted CMS project does not fall back locally", deletedProject.status, 404);
 
+    const deletedFixtureProject = await get(`/projects/${PROJECT_SLUG}`);
+    check(
+      "a deleted client-created project also 404s, not just a shipped one",
+      deletedFixtureProject.status,
+      404,
+    );
+
     const core = await get("/services/mastic-sealant");
     check("the original eight are untouched", core.status, 200);
+
+    const listing = await get("/portfolio");
+    check(
+      "the deleted shipped project is gone from the listing",
+      listing.body.includes("/projects/commercial-glazing-clean"),
+      false,
+    );
+    check(
+      "the deleted client-created project is gone from the listing",
+      listing.body.includes(`/projects/${PROJECT_SLUG}`),
+      false,
+    );
+
+    // Both projects the homepage was still pointing at (see the fixture's
+    // dangling "homepage" references) are gone. Neither section may crash,
+    // resurrect them, or show nothing — they must fall through to whatever
+    // project actually still exists.
+    const home = await get("/");
+    check("homepage still renders once its references dangle", home.status, 200);
+    check(
+      "homepage Featured Project no longer links to the deleted project",
+      home.body.includes('href="/projects/commercial-glazing-clean"'),
+      false,
+    );
+    check(
+      "homepage Recent works no longer includes the deleted fixture project",
+      home.body.includes("QA Temporary Test Project"),
+      false,
+    );
+    check(
+      "homepage Featured Project falls through to a surviving project",
+      home.body.includes('href="/projects/external-pipe-repair"'),
+      true,
+    );
   });
 
   /*

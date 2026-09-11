@@ -108,6 +108,22 @@
       "ogImage": null
     }
   ],
-  "homepage": null,
+  "homepage": {
+    "_comment": "Same dangling references as new-service.json's homepage — Renan deleted both projects without going back to unlink them from Featured Project / Recent Works first. The homepage must still render, showing a surviving project instead of a stale or missing one.",
+    "heroVideoUrl": null,
+    "heroPoster": null,
+    "heroFallback": null,
+    "heroSupportingCopy": null,
+    "introCopy": null,
+    "introImage": null,
+    "serviceAreaCopy": null,
+    "finalCtaCopy": null,
+    "featuredProjectId": "project-commercial-glazing-clean",
+    "selectedProjectIds": [
+      "project-commercial-glazing-clean",
+      "project-qa-temporary-test-project",
+      "project-external-pipe-repair"
+    ]
+  },
   "siteSettings": null
 }

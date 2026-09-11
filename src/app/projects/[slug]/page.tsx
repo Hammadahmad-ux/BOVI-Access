@@ -15,6 +15,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { GalleryProvider, GalleryThumb } from "@/components/ui/Gallery";
 import { STAGGER } from "@/lib/animations/motion";
+import { cn } from "@/lib/utils/cn";
 
 type Params = { slug: string };
 
@@ -57,8 +58,55 @@ export const revalidate = 3600;
   cap is inert below `lg`, where a phone stays near full width.
 */
 const GALLERY_PHOTO_FRAME = "aspect-[4/5]";
-const GALLERY_PHOTO_SIZES =
-  "(min-width: 1024px) 320px, (min-width: 640px) 46vw, 100vw";
+
+/*
+  DESKTOP COLUMN COUNT IS DRIVEN BY HOW MANY PHOTOGRAPHS THE PROJECT HAS,
+  NOT HARDCODED FOR ONE PROJECT.
+
+  The client found a 4-photograph project ("External Pipe Repair", added
+  by Renan in Studio) rendering 3-then-1: the grid below was capped at
+  three columns regardless of count. The fix keys both the column count
+  and the row's own max-width off `gallery.length`, clamped to 4 — one
+  photo is a single compact frame, two or three keep the existing
+  ~320px-per-cell width this grid was tuned to (closer to a Related
+  Services card), and four sit in one uncapped row that still lands in
+  the same ~280-320px range because it divides the page container itself
+  rather than a fixed cap. Five or more reuse the four-column row and
+  simply wrap — CSS grid does that for free, so nothing above four needs
+  its own case.
+
+  Tailwind's v4 scanner needs literal class strings, not
+  `` `lg:grid-cols-${n}` `` — hence the lookup table rather than
+  string interpolation.
+*/
+const GALLERY_LAYOUT_BY_COUNT: Record<
+  number,
+  { grid: string; sizes: string }
+> = {
+  1: {
+    grid: "lg:max-w-[320px] lg:grid-cols-1",
+    sizes: "(min-width: 1024px) 320px, 100vw",
+  },
+  2: {
+    grid: "lg:max-w-[672px] lg:grid-cols-2",
+    sizes: "(min-width: 1024px) 320px, (min-width: 640px) 46vw, 100vw",
+  },
+  3: {
+    grid: "lg:max-w-[1024px] lg:grid-cols-3",
+    sizes: "(min-width: 1024px) 320px, (min-width: 640px) 46vw, 100vw",
+  },
+  4: {
+    // No max-width cap: the row fills the page Container (max 1440,
+    // 2.5rem gutters), which divides four equal columns to roughly the
+    // same ~280-320px cell width as the capped rows above.
+    grid: "lg:grid-cols-4",
+    sizes: "(min-width: 1024px) 23vw, (min-width: 640px) 46vw, 100vw",
+  },
+};
+
+function galleryLayout(count: number) {
+  return GALLERY_LAYOUT_BY_COUNT[Math.min(Math.max(count, 1), 4)];
+}
 
 export async function generateStaticParams(): Promise<Params[]> {
   const published = await getPublishedProjects();
@@ -213,12 +261,13 @@ export default async function ProjectPage({
             </Reveal>
 
             {/*
-              Three columns once the frames are capped, where the old
-              full-width layout ran two. Every one of these sets is three
-              photographs, so two columns now leaves the third alone in
-              its own row with two thirds of the band empty beside it —
-              tolerable when a cell WAS the column, glaring once a cell
-              is ~320px in a wide field.
+              Column count and row width both come from `galleryLayout()`
+              above, keyed off how many photographs this project actually
+              has — never a fixed three. A project with four photographs
+              (Renan added one to "External Pipe Repair" in Studio) used
+              to leave the fourth stranded alone on its own row; it now
+              gets its own four-up, one-row case instead of wrapping the
+              three-column grid.
 
               Click-to-enlarge comes with the smaller frame rather than
               after it: shrinking a photograph of a repair works only if
@@ -227,7 +276,12 @@ export default async function ProjectPage({
               service pages.
             */}
             <GalleryProvider items={galleryItems}>
-              <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:mt-12 lg:max-w-[1024px] lg:grid-cols-3 lg:gap-8">
+              <ul
+                className={cn(
+                  "mt-10 grid gap-6 sm:grid-cols-2 lg:mt-12 lg:gap-8",
+                  galleryLayout(project.gallery.length).grid,
+                )}
+              >
                 {project.gallery.map((photo, i) => (
                   <Reveal
                     as="li"
@@ -237,7 +291,7 @@ export default async function ProjectPage({
                     <GalleryThumb
                       index={i}
                       frameClassName={GALLERY_PHOTO_FRAME}
-                      sizes={GALLERY_PHOTO_SIZES}
+                      sizes={galleryLayout(project.gallery.length).sizes}
                     />
                   </Reveal>
                 ))}

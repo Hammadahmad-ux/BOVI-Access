@@ -1,5 +1,6 @@
 import type { Metadata, Route, Viewport } from "next";
 import { Archivo, Barlow } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 import { business, siteUrl } from "@/lib/config/site";
@@ -116,6 +117,11 @@ export default async function RootLayout({
         <WhatsAppButton />
 
         <JsonLd data={organizationSchema()} />
+
+        {/* Mounted once, here, for every route — never per-page. Reads
+            Vercel's own enabled/project config; nothing to configure
+            in code beyond this one component. */}
+        <Analytics />
       </body>
     </html>
   );

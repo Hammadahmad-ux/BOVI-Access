@@ -89,7 +89,17 @@ for (const route of ROUTES) {
     test("logs no console errors", async ({ page }) => {
       const errors: string[] = [];
       page.on("console", (msg) => {
-        if (msg.type() === "error") errors.push(msg.text());
+        // `<Analytics />` (root layout) requests `/_vercel/insights/…` on
+        // every route. Real Vercel infrastructure serves it; this test
+        // server is not that, so it 404s here and only here — Chromium
+        // logs a resource-load console error for it regardless, even
+        // though `@vercel/analytics` itself handles the failure silently
+        // and it is a genuine 200 once deployed. Identified by the
+        // failing request's own URL, not the message text, so an
+        // unrelated broken resource still fails this guard.
+        if (msg.type() === "error" && !msg.location().url.includes("/_vercel/insights/")) {
+          errors.push(msg.text());
+        }
       });
       page.on("pageerror", (error) => errors.push(error.message));
       await page.goto(route);
@@ -329,5 +339,59 @@ test.describe("internal link crawl", () => {
     // reached at least every route the sweep already knows about.
     expect(hrefs.size).toBeGreaterThanOrEqual(ROUTES.length);
     expect(failures).toEqual([]);
+  });
+});
+
+/**
+ * Vercel Web Analytics.
+ *
+ * `<Analytics />` is mounted exactly once, in the root layout, so every
+ * route gets it for free. The guard is that it never gets duplicated —
+ * a second copy pasted onto an individual page would double-count every
+ * pageview — and that it never throws.
+ *
+ * Runs on one viewport only: the component has no responsive behaviour.
+ */
+test.describe("Vercel Web Analytics", () => {
+  test.skip(
+    ({ viewport }) => viewport?.width !== 1440,
+    "The analytics beacon does not vary by viewport.",
+  );
+
+  test("mounts exactly once, on every route, with no console errors", async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    page.on("console", (message) => {
+      // The beacon script itself 404s outside real Vercel infrastructure
+      // — there is no platform behind this Playwright server to serve
+      // it from — which Chromium logs as a resource-load console error
+      // even though `@vercel/analytics` handles the failure silently.
+      // Identified by the failing resource's own URL, not by the
+      // message text, so an unrelated broken image or font still fails
+      // this guard.
+      if (message.type() === "error" && !message.location().url.includes("/_vercel/insights/")) {
+        errors.push(message.text());
+      }
+    });
+
+    for (const route of [
+      "/",
+      "/services",
+      "/services/gutter-cleaning",
+      "/portfolio",
+      "/projects/external-pipe-repair",
+    ]) {
+      await page.goto(route);
+      // `next/script` injects this tag client-side; the production
+      // build (which this suite runs against — see webServer in
+      // playwright.config.ts) is what actually renders it, unlike
+      // `next dev`'s debug-only mode.
+      const beacons = page.locator('script[src*="/_vercel/insights/script"]');
+      await expect(beacons).toHaveCount(1);
+    }
+
+    expect(errors).toEqual([]);
   });
 });

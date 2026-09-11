@@ -476,6 +476,69 @@ test.describe("projects grid and lightbox", () => {
     expect(first.h / first.w).toBeLessThan(1.3);
   });
 
+  test("a four-photograph project shows all four in one row on desktop", async ({
+    page,
+    viewport,
+  }) => {
+    /*
+      The client's screenshot: Renan added a fourth photograph to
+      "External Pipe Repair" in Studio and the grid — capped at three
+      columns regardless of count — ran 3-then-1. The column count and
+      row width now come from `galleryLayout()` in the project page,
+      keyed off `gallery.length`, so four photographs get their own
+      four-up, one-row case instead of wrapping the three-column grid.
+
+      Runs at every configured viewport so the desktop case (one row) and
+      the mobile/tablet case (still responsive, never a forced four-up)
+      are both guarded by the same test.
+    */
+    await page.goto("/projects/external-pipe-repair");
+
+    const grid = page.locator("main section ul").filter({
+      has: page.locator('button[aria-label^="View larger"]'),
+    });
+    const frames = grid.locator('li button[aria-label^="View larger"]');
+    expect(await frames.count()).toBe(4);
+
+    const width = viewport?.width ?? 0;
+    const expectedColumns = width >= 1024 ? 4 : width >= 640 ? 2 : 1;
+
+    const columns = await grid.first().evaluate((ul) => {
+      const template = getComputedStyle(ul).gridTemplateColumns;
+      return template.split(" ").filter(Boolean).length;
+    });
+    expect(columns).toBe(expectedColumns);
+
+    const boxes = await frames.evaluateAll((nodes) =>
+      nodes.map((node) => {
+        const rect = node.getBoundingClientRect();
+        return { w: Math.round(rect.width), h: Math.round(rect.height) };
+      }),
+    );
+
+    const first = boxes[0];
+    for (const box of boxes) {
+      expect(Math.abs(box.w - first.w)).toBeLessThanOrEqual(1);
+      expect(Math.abs(box.h - first.h)).toBeLessThanOrEqual(1);
+    }
+
+    if (width >= 1024) {
+      // All four sit on one row: same top edge, no wrap to a second row.
+      const tops = await frames.evaluateAll((nodes) =>
+        nodes.map((node) => Math.round(node.getBoundingClientRect().top)),
+      );
+      expect(new Set(tops).size).toBe(1);
+
+      // Still compact — close to the ~320px cell every other count uses,
+      // not stretched to fill the full page container.
+      expect(first.w).toBeLessThanOrEqual(360);
+    }
+
+    // Same 4:5 frame as every other photograph count.
+    expect(first.h / first.w).toBeGreaterThan(1.2);
+    expect(first.h / first.w).toBeLessThan(1.3);
+  });
+
   test("a project page's photographs open larger too", async ({ page }) => {
     // Smaller frames are only acceptable because the detail is still
     // reachable. Same component as the grid, exercised where the client

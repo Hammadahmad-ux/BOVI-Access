@@ -154,12 +154,14 @@ project and its page starts showing them.
 > rename it to. A project you create yourself keeps a normal, editable
 > address.
 
-**To delete a project:** open it, **⋯ → Delete**, confirm. It disappears
-from the Projects page, its own page stops existing, and it drops out of
-the Google sitemap — all together, within about a minute. Unlike the eight
-services, projects are yours to remove. (Sanity keeps revision history, so
-a delete can be recovered — contact your developer before creating a
-replacement.)
+**Delete a project:** Projects → open project → ⋯ → Delete → confirm. It
+disappears from the Projects page, its own page stops existing, and it
+drops out of the Google sitemap — all together, within about a minute.
+Unlike the eight services, projects are yours to remove. If Sanity refuses
+and says it is "referenced by" the homepage, it is picked as Featured
+Project or in Projects shown on the homepage — un-pick it there first,
+then delete. (Sanity keeps revision history, so a delete can be recovered
+— contact your developer before creating a replacement.)
 
 **To add a project:**
 

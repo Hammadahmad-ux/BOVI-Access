@@ -169,6 +169,22 @@
       "ogImage": null
     }
   ],
-  "homepage": null,
+  "homepage": {
+    "_comment": "Featured + selected reference two projects this fixture pair deletes in the UNPUBLISHED run (commercial-glazing-clean and the qa-temporary-test-project) — proves the homepage sections fall through to a surviving project rather than crash or resurrect a stale local one once those references dangle.",
+    "heroVideoUrl": null,
+    "heroPoster": null,
+    "heroFallback": null,
+    "heroSupportingCopy": null,
+    "introCopy": null,
+    "introImage": null,
+    "serviceAreaCopy": null,
+    "finalCtaCopy": null,
+    "featuredProjectId": "project-commercial-glazing-clean",
+    "selectedProjectIds": [
+      "project-commercial-glazing-clean",
+      "project-qa-temporary-test-project",
+      "project-external-pipe-repair"
+    ]
+  },
   "siteSettings": null
 }
