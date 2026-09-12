@@ -380,6 +380,92 @@ try {
     // above are the whole proof.
     { skipBrowserCheck: true },
   );
+
+  /*
+   * ANOTHER RECURRING INCIDENT, REPRODUCED SAFELY.
+   *
+   * Renan published five gallery photographs on the Drainage service —
+   * Studio showed all five — and the live page rendered three. Separately,
+   * Mastic & Sealant's four rendered three too. ServiceBody.tsx required
+   * an exact gallery[1]+gallery[2] pair for "the rest of the gallery" and
+   * silently dropped gallery[3] onward — and, the same bug from the other
+   * side, a service with exactly TWO gallery photographs lost the second
+   * one (no gallery[2] to pair it with).
+   *
+   * Fixed by rendering everything after the lead photograph in a grid
+   * sized to however many there are, instead of a fixed two-slot shape.
+   * This fixture proves it holds at both ends: five photographs all
+   * render (not three), and removing one actually drops the count to
+   * four rather than leaving a stale five or resurrecting a local one.
+   */
+  await run(
+    "scripts/fixtures/service-gallery-five.json",
+    "Service gallery renders every published photograph",
+    async () => {
+      const page = await get("/services/gutter-cleaning");
+      check("the contract URL still serves", page.status, 200);
+
+      const photographs = (
+        page.body.match(
+          /aria-label="View larger image for Gutter Cleaning, photograph \d"/g,
+        ) ?? []
+      ).length;
+      check("all four non-lead photographs render, not two", photographs, 4);
+
+      check(
+        "the fourth non-lead photograph (the fifth overall) is present",
+        page.body.includes(
+          'aria-label="View larger image for Gutter Cleaning, photograph 4"',
+        ),
+        true,
+      );
+      check(
+        "the lead \"access and delivery\" photograph still renders too",
+        page.body.includes(
+          'aria-label="View larger image for Gutter Cleaning, access and delivery"',
+        ),
+        true,
+      );
+    },
+    { skipBrowserCheck: true },
+  );
+
+  await run(
+    "scripts/fixtures/service-gallery-four.json",
+    "Removing a gallery photograph reduces the rendered count",
+    async () => {
+      const page = await get("/services/gutter-cleaning");
+      check("the contract URL still serves", page.status, 200);
+
+      const photographs = (
+        page.body.match(
+          /aria-label="View larger image for Gutter Cleaning, photograph \d"/g,
+        ) ?? []
+      ).length;
+      check(
+        "only three non-lead photographs render now — the count tracks the CMS",
+        photographs,
+        3,
+      );
+      check(
+        "the removed fifth photograph's slot is gone, not just relabelled",
+        page.body.includes(
+          'aria-label="View larger image for Gutter Cleaning, photograph 4"',
+        ),
+        false,
+      );
+      check(
+        "no local fallback image fills the gap",
+        // "A gloved hand holding a plant..." is the real local Gutter
+        // Cleaning gallery's own alt text (src/lib/content/services.ts) —
+        // its appearance here would mean the missing fourth slot got
+        // padded from local content instead of just rendering three.
+        page.body.includes("A gloved hand holding a plant"),
+        false,
+      );
+    },
+    { skipBrowserCheck: true },
+  );
 } finally {
   for (const child of children) child.kill();
 }

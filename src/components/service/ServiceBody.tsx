@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { STAGGER } from "@/lib/animations/motion";
+import { cn } from "@/lib/utils/cn";
 import type { ServicePage } from "@/lib/content/services";
 
 /**
@@ -24,16 +25,23 @@ import type { ServicePage } from "@/lib/content/services";
  * template adapts to whatever it is given rather than requiring a set
  * number of photographs:
  *
- *   gallery[0]        the large "Access and delivery" image
- *   gallery[1] + [2]  the asymmetric pair under the overview
- *   (none)            the page renders exactly as it did before
+ *   gallery[0]   the large "Access and delivery" image
+ *   gallery[1:]  EVERYTHING else, in a responsive grid under the overview
+ *   (none)       the page renders exactly as it did before
  *
- * The pair needs BOTH entries. A single image dropped into a two-column
- * composition reads as a missing one, so it is not rendered at all.
+ * FIXED INCIDENT: this used to require EXACTLY gallery[1] and gallery[2]
+ * for "the pair" and silently dropped everything else — a service with
+ * two photographs lost the second (no gallery[2] to pair it with), and a
+ * service with five lost the last two entirely, with no error anywhere.
+ * Renan hit both: Drainage had 5 published, only 3 rendered; Mastic &
+ * Sealant had 4, only 3 rendered. Now the count of "everything after the
+ * lead photograph" decides the column count (see `restGalleryLayout`
+ * below) instead of a fixed two-slot shape, so 1 renders 1, 2 renders 2,
+ * and 5 renders all 5.
  *
- * Until this pass the "Access and delivery" figure re-used `heroMedia`,
- * so every service page showed the same photograph twice. gallery[0]
- * replaces it where one exists.
+ * Until an earlier pass the "Access and delivery" figure re-used
+ * `heroMedia`, so every service page showed the same photograph twice.
+ * gallery[0] replaces it where one exists.
  */
 /*
   ONE FRAME FOR EVERY SERVICE PHOTOGRAPH.
@@ -63,8 +71,11 @@ const SERVICE_PHOTO_FRAME = "aspect-[4/5]";
 const SERVICE_PHOTO_SIZES = "(min-width: 640px) 320px, 100vw";
 
 /**
- * The pair already sits in a two-column grid, so its cells are narrower
- * than the cap until the viewport is wide enough for the cap to bite.
+ * Every photograph after the lead one sits in a grid whose own tracks can
+ * be narrower — or wider — than the cap, depending how many share the
+ * row (see `restGalleryColumns` below). This is what actually holds every
+ * cell at the same compact size regardless of the column count: each
+ * track can flex, but the photograph inside it never grows past 320px.
  *
  * Centred in the cell once it does. Left-aligned, a photograph pinned to
  * the edge of a wider cell puts all the slack on one side, which is what
@@ -72,6 +83,37 @@ const SERVICE_PHOTO_SIZES = "(min-width: 640px) 320px, 100vw";
  * hole beside it.
  */
 const PAIR_PHOTO_WIDTH = "mx-auto sm:max-w-[320px]";
+
+/**
+ * Column count for everything after the lead "Access and delivery"
+ * photograph, keyed by how many of those there actually are — never
+ * hardcoded to two. Each thumbnail already caps itself at 320px via
+ * `PAIR_PHOTO_WIDTH` regardless of how wide its grid track is (see that
+ * constant's own comment), so unlike the project detail gallery this
+ * needs no grid-level max-width: adding a column just gives the extra
+ * photograph its own equal track, and it centres at the same compact
+ * size the rest already render at.
+ *
+ * `lg` for three columns; `xl` — not `lg` — for four. A three-column row
+ * still fits a laptop's 1024px comfortably above 320px once the container
+ * gutters and gaps are subtracted, but four does not: measured at 208px
+ * a column there, little more than half the delivery photograph's fixed
+ * 320px, which reads as cramped rather than "compact". Four columns wait
+ * for the extra room at 1280+, where a column measures 276px, and hold
+ * at a balanced two-by-two in between rather than force the fourth row
+ * narrower still. Anything above four reuses the four-column row and
+ * wraps, exactly like the project detail gallery.
+ */
+const REST_GALLERY_COLUMNS: Record<number, string> = {
+  1: "grid-cols-1",
+  2: "sm:grid-cols-2",
+  3: "sm:grid-cols-2 lg:grid-cols-3",
+  4: "sm:grid-cols-2 xl:grid-cols-4",
+};
+
+function restGalleryColumns(count: number): string {
+  return REST_GALLERY_COLUMNS[Math.min(count, 4)];
+}
 
 /**
  * The delivery photograph sits in a single-column grid until `lg`, and
@@ -89,13 +131,16 @@ export function ServiceBody({ service }: { service: ServicePage }) {
   const gallery = service.gallery ?? [];
   // May be undefined for a service created in Studio with no imagery yet.
   const deliveryMedia = gallery[0] ?? service.heroMedia;
-  const pair = gallery[1] && gallery[2] ? [gallery[1], gallery[2]] : null;
+  // EVERYTHING after the lead photograph — one, two, five, whatever Renan
+  // has published. `rest` is only ever non-empty when `gallery[0]` itself
+  // exists, so `deliveryMedia` is guaranteed truthy alongside it and the
+  // `+1` index offset below is always correct.
+  const rest = gallery.slice(1);
 
   /*
     The lightbox pages through the photographs THIS page actually shows,
-    in reading order: the "access and delivery" image first, then the
-    pair. A gallery of two never shows its second image (the pair needs
-    both), so it is not in the lightbox either.
+    in reading order: the "access and delivery" image first, then every
+    remaining gallery photograph.
   */
   const galleryItems = [
     ...(deliveryMedia
@@ -107,13 +152,11 @@ export function ServiceBody({ service }: { service: ServicePage }) {
           },
         ]
       : []),
-    ...(pair
-      ? pair.map((photo, i) => ({
-          image: photo,
-          label: `${service.name}, photograph ${i + 1}`,
-          caption: <span className="text-bone">{service.name}</span>,
-        }))
-      : []),
+    ...rest.map((photo, i) => ({
+      image: photo,
+      label: `${service.name}, photograph ${i + 1}`,
+      caption: <span className="text-bone">{service.name}</span>,
+    })),
   ];
 
   return (
@@ -148,9 +191,9 @@ export function ServiceBody({ service }: { service: ServicePage }) {
           </div>
 
           {/*
-            A LEVEL PAIR.
+            EVERY REMAINING PHOTOGRAPH, LEVEL.
 
-            This was an asymmetric composition — a wider frame and a
+            Originally an asymmetric composition — a wider frame and a
             narrower one, the second dropped 64px down the page so the
             two read as a composition rather than a row of cards. The
             widths went first, when the client asked for every service
@@ -160,19 +203,29 @@ export function ServiceBody({ service }: { service: ServicePage }) {
             has asked for them level, which is the same call he made on
             the homepage row and on /portfolio.
 
-            Both boxes stay PORTRAIT at every width. A landscape crop was
+            The column count now comes from `rest.length` — see
+            `restGalleryColumns` — rather than assuming there are always
+            exactly two: a service with one remaining photograph gets one
+            column, five gets a four-column row that wraps to a second.
+
+            Every box stays PORTRAIT at every width. A landscape crop was
             tried and cut the heads off technicians — the source library
             is almost entirely 3:4 phone photography, so a wide box has
             to throw away most of the frame (DESIGN.md §6).
           */}
-          {pair ? (
-            <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:mt-24 lg:gap-8">
-              {pair.map((photo, i) => (
+          {rest.length > 0 ? (
+            <div
+              className={cn(
+                "mt-16 grid gap-6 lg:mt-24 lg:gap-8",
+                restGalleryColumns(rest.length),
+              )}
+            >
+              {rest.map((photo, i) => (
                 <Reveal
                   key={photo.src}
-                  delay={i * STAGGER}
+                  delay={Math.min(i * STAGGER, 0.24)}
                   /* A fade, not a rise. Reveal's default 22px travel with
-                     a per-frame delay would leave the pair briefly
+                     a per-frame delay would leave the row briefly
                      stepped anyway — the same transient offset the
                      projects grids were levelled to stop showing. */
                   y={0}

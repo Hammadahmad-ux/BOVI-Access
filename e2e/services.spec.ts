@@ -81,7 +81,39 @@ test.describe("service imagery", () => {
 
       const sizes = await frames(page);
       expect(sizes.length).toBeGreaterThan(0);
-      expect(new Set(sizes).size, `frames: ${sizes.join(", ")}`).toBe(1);
+
+      /*
+        EXACT equality held until a service could have three or four
+        photographs sharing one row (see `restGalleryColumns` in
+        ServiceBody.tsx). The lead "access and delivery" photo sits in
+        its own half-width column and reliably hits the full 320px cap;
+        three or four photographs dividing the page's own width each
+        land a bit under it — as low as 276px for four, measured at
+        1280 — because their shared track is narrower than the cap to
+        begin with. That is the same kind of deliberate compromise the
+        project detail gallery already makes for its own four-image row:
+        still "compact", just not pixel-identical to a differently-shaped
+        section elsewhere on the page.
+
+        A RATIO rather than a fixed pixel gap, because the achievable
+        size at a given column count scales with the viewport — a fixed
+        pixel budget that comfortably covers 1440 is too tight at 1024,
+        and one loose enough for 1024 would hide a real regression at
+        1440. 80% of the largest frame is comfortably above every
+        legitimate case above (276/320 = 86%) while still catching a
+        real one (a photograph rendering full-width, or collapsed to a
+        sliver, moves this well below 80%).
+      */
+      const widths = sizes.map((s) => Number(s.split("x")[0]));
+      const heights = sizes.map((s) => Number(s.split("x")[1]));
+      expect(
+        Math.min(...widths) / Math.max(...widths),
+        `frames: ${sizes.join(", ")}`,
+      ).toBeGreaterThanOrEqual(0.8);
+      expect(
+        Math.min(...heights) / Math.max(...heights),
+        `frames: ${sizes.join(", ")}`,
+      ).toBeGreaterThanOrEqual(0.8);
 
       expect(
         await page.evaluate(
@@ -271,6 +303,102 @@ test.describe("service photo placement", () => {
     expect(offsets.length).toBeGreaterThan(0);
     for (const offset of offsets) {
       expect(Math.abs(offset)).toBeLessThanOrEqual(1);
+    }
+  });
+});
+
+/**
+ * Gallery photograph count vs. the CMS.
+ *
+ * THE INCIDENT: Renan published five gallery photographs on Drainage &
+ * External Pipe Repairs — Studio showed all five — and the live page
+ * rendered three. Mastic & Sealant's four also rendered three. The
+ * template required an exact gallery[1]+gallery[2] pair for "the rest of
+ * the gallery" and silently dropped gallery[3] onward, with no error
+ * anywhere. Fixed by sizing that grid to however many photographs there
+ * actually are (see `restGalleryColumns` in ServiceBody.tsx).
+ *
+ * These run against the REAL production dataset (this suite's webServer
+ * points at it, same as every other service/project test), so they are a
+ * live regression guard for the two services this actually happened to —
+ * not just a fixture proving the code path exists.
+ */
+test.describe("service gallery count", () => {
+  test.skip(
+    ({ viewport }) => viewport?.width !== 1440,
+    "Photograph count does not vary by viewport.",
+  );
+
+  test("drainage renders all five published photographs, not three", async ({
+    page,
+  }) => {
+    await page.goto("/services/drainage-external-pipe-repairs");
+    const thumbs = page.locator('main button[aria-label^="View larger"]');
+    await expect(thumbs).toHaveCount(5);
+
+    // The lightbox's own array must match — opening the highest-numbered
+    // "rest" thumbnail should show "5 / 5", not stop short at whatever
+    // the old three-slot template capped it to. Targeted by its own
+    // label rather than DOM `.last()`: the lead "access and delivery"
+    // photograph renders in a LATER section than the "rest" grid, so it
+    // is last in the DOM despite being FIRST in reading/lightbox order.
+    await page
+      .locator('main button[aria-label$=", photograph 4"]')
+      .click();
+    await expect(page.locator("dialog [aria-live]")).toHaveText("5 / 5");
+  });
+
+  test("mastic and sealant renders all four published photographs, not three", async ({
+    page,
+  }) => {
+    await page.goto("/services/mastic-sealant");
+    const thumbs = page.locator('main button[aria-label^="View larger"]');
+    await expect(thumbs).toHaveCount(4);
+
+    await page
+      .locator('main button[aria-label$=", photograph 3"]')
+      .click();
+    await expect(page.locator("dialog [aria-live]")).toHaveText("4 / 4");
+  });
+
+  test("every service's photograph numbering is complete, with no gap and no duplicate", async ({
+    page,
+  }) => {
+    /*
+      Generalised so this class of bug cannot regress service-by-service
+      again. The old template's gap looked exactly like this: "photograph
+      1, photograph 2" rendered while "photograph 3" and "photograph 4"
+      silently didn't exist. Reading the labels straight off the rendered
+      page — not hardcoding a count per service — this holds for however
+      many photographs Renan adds or removes from here on.
+    */
+    for (const slug of SERVICES) {
+      await page.goto(`/services/${slug}`);
+
+      const numerals = await page
+        .locator('main button[aria-label^="View larger"]')
+        .evaluateAll((buttons) =>
+          buttons
+            .map((b) => b.getAttribute("aria-label") ?? "")
+            .map((label) => label.match(/, photograph (\d+)$/)?.[1])
+            .filter((n): n is string => Boolean(n))
+            .map(Number),
+        );
+
+      const expected = Array.from(
+        { length: numerals.length },
+        (_, i) => i + 1,
+      );
+      expect(numerals.sort((a, b) => a - b), slug).toEqual(expected);
+
+      // At most one lead photograph, and it is optional (a brand-new
+      // service can have neither a gallery nor a hero image yet).
+      const deliveryCount = await page
+        .locator(
+          'main button[aria-label$=", access and delivery"]',
+        )
+        .count();
+      expect(deliveryCount, slug).toBeLessThanOrEqual(1);
     }
   });
 });

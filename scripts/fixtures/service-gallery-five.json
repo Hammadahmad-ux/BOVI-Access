@@ -1,0 +1,191 @@
+{
+  "_comment": "TEST FIXTURE ONLY. Reproduces the actual incident: Renan published FIVE gallery photographs on the Drainage service document (service-drainage-external-pipe-repairs in the real dataset), and the frontend rendered only three — ServiceBody.tsx required an exact gallery[1]+gallery[2] pair and silently dropped everything from gallery[3] onward. This fixture gives a core service a five-item gallery and proves all five now render, in the lightbox as well as on the page. Paired with service-gallery-four.json, which removes the fifth, to prove a removal actually reduces the rendered count rather than the frontend having cached or hardcoded five.",
+  "services": [
+    {
+      "_id": "service-gutter-cleaning",
+      "slug": "gutter-cleaning",
+      "name": "Gutter Cleaning",
+      "order": 3,
+      "heroTitle": "Gutter Cleaning",
+      "intro": "Fixture intro text for the service-gallery-five regression fixture.",
+      "overview": [
+        "This paragraph exists only inside the service-gallery-five fixture."
+      ],
+      "commonWorks": [],
+      "delivery": [],
+      "suitableFor": [],
+      "faq": [],
+      "relatedServiceIds": [],
+      "heroMedia": {
+        "_type": "image",
+        "asset": { "_type": "reference", "_ref": "image-1111111111111111111111111111111111111111-1200x1600-jpg" },
+        "alt": "Fixture hero photograph"
+      },
+      "gallery": [
+        {
+          "_key": "g0",
+          "_type": "galleryImage",
+          "alt": "Fixture gallery photograph one, the access and delivery image",
+          "asset": { "_type": "reference", "_ref": "image-2222222222222222222222222222222222222222-1200x1600-jpg" }
+        },
+        {
+          "_key": "g1",
+          "_type": "galleryImage",
+          "alt": "Fixture gallery photograph two",
+          "asset": { "_type": "reference", "_ref": "image-3333333333333333333333333333333333333333-1100x1469-jpg" }
+        },
+        {
+          "_key": "g2",
+          "_type": "galleryImage",
+          "alt": "Fixture gallery photograph three",
+          "asset": { "_type": "reference", "_ref": "image-4444444444444444444444444444444444444444-1100x1468-jpg" }
+        },
+        {
+          "_key": "g3",
+          "_type": "galleryImage",
+          "alt": "Fixture gallery photograph four",
+          "asset": { "_type": "reference", "_ref": "image-5555555555555555555555555555555555555555-3024x4032-jpg" },
+          "crop": { "_type": "sanity.imageCrop", "top": 0.2, "bottom": 0, "left": 0, "right": 0 },
+          "hotspot": { "_type": "sanity.imageHotspot", "x": 0.5, "y": 0.6, "height": 0.8, "width": 1 }
+        },
+        {
+          "_key": "g4",
+          "_type": "galleryImage",
+          "alt": "Fixture gallery photograph five, the one the old code dropped",
+          "asset": { "_type": "reference", "_ref": "image-6666666666666666666666666666666666666666-3024x4032-jpg" }
+        }
+      ],
+      "seoDescription": "Fixture SEO description for the service-gallery-five regression test."
+    }
+  ],
+  "projects": [
+    {
+      "_id": "project-external-pipe-repair",
+      "title": "External Pipe Repair",
+      "slug": "external-pipe-repair",
+      "serviceSlug": "drainage-external-pipe-repairs",
+      "serviceName": "Drainage & External Pipe Repairs",
+      "location": null,
+      "summary": "Cast iron soil and rainwater stacks running the full height of a narrow lightwell, reached on rope for inspection and repair.",
+      "heroImage": {
+        "_type": "image",
+        "asset": { "_type": "reference", "_ref": "image-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1-1200x1600-jpg" },
+        "alt": "A rope access technician working on cast iron soil pipework high in a narrow lightwell"
+      },
+      "gallery": [],
+      "scope": null,
+      "featured": true,
+      "completionDate": null,
+      "seoTitle": null,
+      "seoDescription": null,
+      "ogImage": null
+    },
+    {
+      "_id": "project-gutter-downpipe-clearance",
+      "title": "Gutter & Downpipe Clearance",
+      "slug": "gutter-downpipe-clearance",
+      "serviceSlug": "gutter-cleaning",
+      "serviceName": "Gutter Cleaning",
+      "location": null,
+      "summary": "Gutters, hopper heads and downpipes cleared on a residential block.",
+      "heroImage": {
+        "_type": "image",
+        "asset": { "_type": "reference", "_ref": "image-b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2-1170x1174-jpg" },
+        "alt": "A rope access technician working at the roofline of a brick residential block"
+      },
+      "gallery": [],
+      "scope": null,
+      "featured": false,
+      "completionDate": null,
+      "seoTitle": null,
+      "seoDescription": null,
+      "ogImage": null
+    },
+    {
+      "_id": "project-brickwork-repointing-works",
+      "title": "Brickwork Repointing",
+      "slug": "brickwork-repointing-works",
+      "serviceSlug": "brickwork-repointing",
+      "serviceName": "Brickwork & Repointing",
+      "location": null,
+      "summary": "Weathered chimney stacks and parapet brickwork with eroded and missing mortar joints, rigged and worked from rope.",
+      "heroImage": {
+        "_type": "image",
+        "asset": { "_type": "reference", "_ref": "image-c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3-1300x1733-jpg" },
+        "alt": "A tall brick chimney stack rigged with ropes against a clear sky"
+      },
+      "gallery": [],
+      "scope": null,
+      "featured": false,
+      "completionDate": null,
+      "seoTitle": null,
+      "seoDescription": null,
+      "ogImage": null
+    },
+    {
+      "_id": "project-lightning-protection-works",
+      "title": "Lightning Protection Works",
+      "slug": "lightning-protection-works",
+      "serviceSlug": "lightning-protection",
+      "serviceName": "Lightning Protection",
+      "location": null,
+      "summary": "Conductor tape running the full height of a brick elevation, with saddle fixings set into the mortar joints.",
+      "heroImage": {
+        "_type": "image",
+        "asset": { "_type": "reference", "_ref": "image-d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4-1300x1733-jpg" },
+        "alt": "A rope access technician descending a red brick elevation above a street"
+      },
+      "gallery": [],
+      "scope": null,
+      "featured": false,
+      "completionDate": null,
+      "seoTitle": null,
+      "seoDescription": null,
+      "ogImage": null
+    },
+    {
+      "_id": "project-mastic-sealant-renewal",
+      "title": "Mastic & Sealant Renewal",
+      "slug": "mastic-sealant-renewal",
+      "serviceSlug": "mastic-sealant",
+      "serviceName": "Mastic & Sealant",
+      "location": null,
+      "summary": "Vertical movement joints resealed on a brick and panel elevation, with sealant applied from rope and backer rod fitted first.",
+      "heroImage": {
+        "_type": "image",
+        "asset": { "_type": "reference", "_ref": "image-e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5-1300x1733-jpg" },
+        "alt": "A rope access technician applying sealant from a cordless gun into a vertical joint in brickwork"
+      },
+      "gallery": [],
+      "scope": null,
+      "featured": false,
+      "completionDate": null,
+      "seoTitle": null,
+      "seoDescription": null,
+      "ogImage": null
+    },
+    {
+      "_id": "project-commercial-glazing-clean",
+      "title": "Commercial Glazing Clean",
+      "slug": "commercial-glazing-clean",
+      "serviceSlug": "commercial-window-cleaning",
+      "serviceName": "Commercial Window Cleaning",
+      "location": null,
+      "summary": "Glazing, frames and cills cleaned across the full height of an apartment block elevation, worked from anchor points at roof level.",
+      "heroImage": {
+        "_type": "image",
+        "asset": { "_type": "reference", "_ref": "image-f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6-1300x1733-jpg" },
+        "alt": "A rope access technician cleaning glazing on a brick apartment block, a green bucket clipped to the harness"
+      },
+      "gallery": [],
+      "scope": null,
+      "featured": false,
+      "completionDate": null,
+      "seoTitle": null,
+      "seoDescription": null,
+      "ogImage": null
+    }
+  ],
+  "homepage": null,
+  "siteSettings": null
+}
