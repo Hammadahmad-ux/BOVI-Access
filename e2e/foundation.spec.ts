@@ -223,31 +223,34 @@ test.describe("mobile navigation", () => {
     await expect(dialog).toBeHidden();
   });
 
-  test("opens with a slow reveal rather than snapping in", async ({
-    page,
-  }) => {
-    // The client asked for the tap-to-open transition to feel deliberate.
-    // `toBeVisible()` alone would not catch a regression to an instant
-    // snap-in — Playwright counts a fully transparent element as visible,
-    // since opacity 0 is not display:none or visibility:hidden — so this
-    // reads the computed opacity directly, mid-transition and then
-    // settled, against `DURATION.slow` (0.9s) in MobileMenu.tsx.
+  test("opens with a slide rather than snapping in", async ({ page }) => {
+    // The client asked for the tap-to-open transition to feel deliberate
+    // — first tried as a fade-plus-drop, which read as the wrong motion
+    // for a full-screen panel and was replaced with a horizontal slide
+    // in from the right. `toBeVisible()` alone would not catch a
+    // regression to an instant snap-in, so this reads the computed
+    // transform's translateX component directly, mid-transition and
+    // then settled, against `DURATION.slow` (0.9s) in MobileMenu.tsx.
     await page.goto("/");
     await page.getByRole("button", { name: /open navigation/i }).click();
 
     const dialog = page.getByRole("dialog", { name: /site navigation/i });
-    const opacity = () =>
-      dialog.evaluate((el) => Number(getComputedStyle(el).opacity));
+    const translateX = () =>
+      dialog.evaluate((el) => {
+        const matrix = new DOMMatrix(getComputedStyle(el).transform);
+        return matrix.m41;
+      });
 
     await page.waitForTimeout(150);
-    const early = await opacity();
-    expect(early, "still mid-transition ~150ms in").toBeGreaterThan(0);
-    expect(early, "still mid-transition ~150ms in").toBeLessThan(1);
+    const early = await translateX();
+    // Still on its way in from the right — nowhere near settled at 0,
+    // and not still all the way off-screen either.
+    expect(early, "still mid-transition ~150ms in").toBeGreaterThan(5);
 
-    await expect.poll(opacity, { timeout: 2000 }).toBe(1);
+    await expect.poll(translateX, { timeout: 2000 }).toBe(0);
   });
 
-  test("skips the reveal entirely under reduced motion", async ({ page }) => {
+  test("skips the slide entirely under reduced motion", async ({ page }) => {
     // Same approach as the reduced-motion guard in navigation.spec.ts:
     // `emulateMedia`, not `test.use({ reducedMotion })`.
     await page.emulateMedia({ reducedMotion: "reduce" });
@@ -259,8 +262,8 @@ test.describe("mobile navigation", () => {
     // the next frame, not eased in over 0.9s.
     await page.waitForTimeout(80);
     expect(
-      await dialog.evaluate((el) => getComputedStyle(el).opacity),
-    ).toBe("1");
+      await dialog.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m41),
+    ).toBe(0);
   });
 
   test("navigates and closes on selection", async ({ page }) => {
@@ -303,14 +306,10 @@ test.describe("mobile navigation", () => {
       dialog.getByRole("link", { name: "About", exact: true }),
     ).toBeVisible();
 
-    // The panel's own opening reveal slides up from `y: -16`, so its
-    // bounding box is transiently off the `y: 0` this test checks for
-    // until that settles — wait for it before measuring the STEADY
-    // STATE position this guard actually cares about, same idea as
-    // waiting for any other entrance transition to finish.
-    await expect
-      .poll(() => dialog.evaluate((el) => getComputedStyle(el).opacity))
-      .toBe("1");
+    // The panel's own opening reveal is a horizontal slide (translateX),
+    // which does not change its own width/height or its `top`/`y` — only
+    // its left/right screen position — so unlike a vertical entrance,
+    // this check needs no wait for the transition to settle first.
 
     // Visible is not enough — assert it actually fills the viewport rather
     // than being clipped to the header bar.

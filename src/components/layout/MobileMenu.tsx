@@ -26,13 +26,17 @@ type MobileMenuProps = {
  * treatment. Handles Escape, background scroll lock, and returns focus to
  * the trigger on close (the parent owns the trigger ref).
  *
- * OPENS WITH A SLOW REVEAL rather than snapping in — the client asked for
- * the tap-to-open transition to feel deliberate rather than instant.
- * `DURATION.slow` (0.9s) is the same constant every large media/mask
- * reveal on the site already uses, so this reads as one motion system
- * rather than a bespoke menu animation. `prefers-reduced-motion` collapses
- * it to 0s — the same "keep the transform, zero the duration" approach
- * `ServiceIndexRows` already uses — rather than branching the JSX.
+ * OPENS WITH A SLIDE, not a snap — the client asked for the tap-to-open
+ * transition to feel deliberate. A fade-plus-drop was tried first and
+ * read as the wrong motion for a full-screen panel; a horizontal slide
+ * in from the right — where the trigger sits, like a standard app
+ * drawer — is what actually reads as an intentional reveal rather than
+ * something fading into place. `DURATION.slow` (0.9s) is the same
+ * constant every large media/mask reveal on the site already uses, so
+ * this reads as one motion system rather than a bespoke menu animation.
+ * `prefers-reduced-motion` collapses it to 0s — the same "keep the
+ * transform, zero the duration" approach `ServiceIndexRows` already
+ * uses — rather than branching the JSX.
  */
 export function MobileMenu({ open, onClose, serviceItems }: MobileMenuProps) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -114,9 +118,9 @@ export function MobileMenu({ open, onClose, serviceItems }: MobileMenuProps) {
           aria-modal="true"
           aria-label="Site navigation"
           className="fixed inset-0 z-50 flex flex-col bg-ink text-bone xl:hidden"
-          initial={{ opacity: 0, y: -16 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -16 }}
+          initial={{ x: "100%" }}
+          animate={{ x: 0 }}
+          exit={{ x: "100%" }}
           transition={panelTransition}
         >
           <div className="flex items-center justify-between border-b border-hairline-dark px-(--spacing-gutter) py-4">
