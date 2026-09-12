@@ -95,14 +95,12 @@ export default async function ServicesPage() {
                           : "lg:col-span-5 lg:col-start-8 lg:row-start-1"
                       }
                     >
-                      <span
-                        aria-hidden="true"
-                        className="eyebrow block text-green"
-                      >
-                        {service.index}
-                      </span>
-
-                      <span className="mt-4 block font-display text-h3 font-bold tracking-[-0.022em] transition-colors group-hover:text-green">
+                      {/* No "01" etc. numeral here on purpose — the
+                          client asked for it removed from this overview
+                          row, same as the service detail pages. Internal
+                          ordering (service.index, used for the numeral
+                          in the sticky homepage index) is untouched. */}
+                      <span className="block font-display text-h3 font-bold tracking-[-0.022em] transition-colors group-hover:text-green">
                         {service.name}
                       </span>
 

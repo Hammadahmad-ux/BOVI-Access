@@ -420,30 +420,35 @@ test.describe("service order", () => {
     expect(hrefs).toEqual(ORDER.map(({ slug }) => `/services/${slug}`));
   });
 
-  test("each primary service's numeral matches its position", async ({
+  test("no primary service row carries a visible 01/02 numeral", async ({
     page,
   }) => {
     /*
-      The numeral and the service must move together. They did not at
-      first: the repo was swapped while Sanity still held the old visible
-      "Service NN" eyebrows, and because the CMS merged over local the two
-      pages showed each other's numbers.
+      A numeral used to render here (ServicePage.index, via a `.eyebrow`
+      span above each title) and an earlier test asserted it matched the
+      service's real position — guarding against the numeral and the
+      service drifting apart the way they did once, when the repo was
+      swapped while Sanity still held the old visible "Service NN"
+      eyebrows.
 
-      That eyebrow is gone now (the client asked for the visible numbering
-      removed from every service DETAIL page), which is what makes the
-      original failure mode impossible: the numeral (ServicePage.index) was
-      never CMS content to begin with, and there is no longer any CMS-held
-      copy of it that could go stale. What is left to guard is that the
-      numeral STILL rendered on the /services overview — for the six
-      primary services — still matches each one's real position.
+      The client has now asked for the numeral removed from this overview
+      row too, the same request already applied to every service DETAIL
+      page. `service.index` itself is untouched — it still drives the
+      sticky homepage index and this row's own reading order — only the
+      visible digit above each title is gone, so what is left to guard is
+      that it stays gone.
     */
     await page.goto("/services");
 
-    for (const { index, slug } of ORDER.slice(0, 6)) {
-      const numeral = page
-        .locator(`main a[href="/services/${slug}"] .eyebrow`)
-        .first();
-      await expect(numeral).toHaveText(index);
+    for (const { slug } of ORDER.slice(0, 6)) {
+      // ".eyebrow" alone is not distinctive enough to assert absence of —
+      // the row's own "View service" link reuses that same typography
+      // utility class. The numeral was specifically a standalone two-digit
+      // span; matching on its exact text is what actually distinguishes it
+      // from that unrelated element.
+      const row = page.locator(`main a[href="/services/${slug}"]`).first();
+      const bareNumeral = row.locator("text=/^\\d{2}$/");
+      await expect(bareNumeral).toHaveCount(0);
     }
   });
 });
