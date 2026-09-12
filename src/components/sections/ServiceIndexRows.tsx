@@ -130,20 +130,10 @@ export function ServiceIndexRows({ rows, className }: ServiceIndexRowsProps) {
                 </div>
 
                 <div className="flex items-start gap-4 md:gap-5 lg:gap-8">
-                  <span
-                    aria-hidden="true"
-                    className={cn(
-                      "eyebrow shrink-0 pt-1 tabular-nums transition-colors duration-200 md:pt-2 lg:pt-4",
-                      // On touch there is no active row to indicate, so every
-                      // numeral carries the accent; the mist/green split is a
-                      // desktop-only signal.
-                      "text-green-bright",
-                      isActive ? "lg:text-green-bright" : "lg:text-mist",
-                    )}
-                  >
-                    {row.index}
-                  </span>
-
+                  {/* No numeral here — the client asked for the
+                      numbering removed sitewide. row.index (still on
+                      ServiceIndexRow) is untouched; it is not read
+                      anywhere visible any more. */}
                   <div className="min-w-0 flex-1">
                     <h3
                       className={cn(

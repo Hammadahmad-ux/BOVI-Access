@@ -170,12 +170,6 @@ export default function ServiceAreasPage() {
                   delay={Math.min(i * STAGGER, 0.2)}
                   className="flex gap-6 border-t border-hairline-dark py-7 last:border-b"
                 >
-                  <span
-                    aria-hidden="true"
-                    className="eyebrow shrink-0 text-green-bright"
-                  >
-                    {step.index}
-                  </span>
                   <span>
                     <h3 className="text-h5">{step.title}</h3>
                     <p className="mt-2 max-w-[46ch] text-body text-mist">
@@ -207,10 +201,7 @@ export default function ServiceAreasPage() {
                 delay={Math.min(i * STAGGER, 0.2)}
                 className="border-b border-hairline-light py-7 pr-6 lg:not-first:border-l lg:not-first:pl-7"
               >
-                <span aria-hidden="true" className="eyebrow block text-green">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <h3 className="mt-4 text-h5">{audience}</h3>
+                <h3 className="text-h5">{audience}</h3>
               </Reveal>
             ))}
           </ul>

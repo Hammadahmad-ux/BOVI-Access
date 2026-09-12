@@ -39,11 +39,9 @@ export function AudienceSection() {
               delay={index * STAGGER}
               className={columnClassName(index)}
             >
-              {/* Positional marker only — the accessible name is the title. */}
-              <span aria-hidden="true" className="eyebrow text-green-bright">
-                {item.key}
-              </span>
-
+              {/* No lettered marker here — the client asked for the
+                  numbering removed sitewide. item.key is still the React
+                  key; it is not rendered any more. */}
               <div className="mt-auto pt-10">
                 {/* Two lines are reserved so a title that wraps ("Commercial
                     Property Owners") keeps the same baseline as the ones

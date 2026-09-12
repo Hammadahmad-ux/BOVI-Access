@@ -351,9 +351,6 @@ export function ServiceBody({ service }: { service: ServicePage }) {
                   delay={Math.min(i * STAGGER, 0.24)}
                   className="flex items-baseline gap-5 border-t border-hairline-light py-5 last:border-b"
                 >
-                  <span aria-hidden="true" className="eyebrow text-green">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
                   <span className="text-body-lg">{item}</span>
                 </Reveal>
               ))}

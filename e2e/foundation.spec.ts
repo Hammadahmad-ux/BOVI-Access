@@ -38,15 +38,19 @@ for (const route of ROUTES) {
     test("carries no 01/02 section numbering", async ({ page }) => {
       /*
         The client asked for the running section numerals to come off —
-        he liked the device but wanted the headings and photographs to
-        carry the sections on their own. Swept per route rather than
-        asserted once, because the numeral was a prop on a shared
-        component and could return on a single section without anyone
-        noticing.
+        first the "Service 02"-style eyebrow prefix, and later — a second,
+        broader request — every remaining bare "01" / "02" positional
+        marker sitewide (the Why BOVI schedule, the homepage service
+        index, the mobile nav, the audience/assessment/suitable-for
+        lists, and more). Swept per route rather than asserted once,
+        because each numeral was a prop on a shared component and could
+        return on a single section without anyone noticing.
 
-        "Service 02" in a service hero is deliberately NOT caught: that
-        is the order of the service list, which the client set himself.
-        The pattern below only matches a label that OPENS with a numeral.
+        Two shapes, both caught: "01 — Something" (an opening prefix
+        inside a longer label) and a bare "01" as an element's ENTIRE
+        text content (the standalone eyebrow spans this second request
+        removed). A real sentence never has a two-digit-only text node,
+        so the bare-numeral half of this carries no false-positive risk.
       */
       await page.goto(route);
 
@@ -55,7 +59,7 @@ for (const route of ROUTES) {
         .evaluateAll((nodes) =>
           nodes
             .map((n) => (n.textContent ?? "").trim())
-            .filter((text) => /^\d{2}\s*[—–-]/.test(text)),
+            .filter((text) => /^\d{2}(\s*[—–-]|$)/.test(text)),
         );
 
       expect(numbered, `numbered labels on ${route}`).toEqual([]);
@@ -219,6 +223,46 @@ test.describe("mobile navigation", () => {
     await expect(dialog).toBeHidden();
   });
 
+  test("opens with a slow reveal rather than snapping in", async ({
+    page,
+  }) => {
+    // The client asked for the tap-to-open transition to feel deliberate.
+    // `toBeVisible()` alone would not catch a regression to an instant
+    // snap-in — Playwright counts a fully transparent element as visible,
+    // since opacity 0 is not display:none or visibility:hidden — so this
+    // reads the computed opacity directly, mid-transition and then
+    // settled, against `DURATION.slow` (0.9s) in MobileMenu.tsx.
+    await page.goto("/");
+    await page.getByRole("button", { name: /open navigation/i }).click();
+
+    const dialog = page.getByRole("dialog", { name: /site navigation/i });
+    const opacity = () =>
+      dialog.evaluate((el) => Number(getComputedStyle(el).opacity));
+
+    await page.waitForTimeout(150);
+    const early = await opacity();
+    expect(early, "still mid-transition ~150ms in").toBeGreaterThan(0);
+    expect(early, "still mid-transition ~150ms in").toBeLessThan(1);
+
+    await expect.poll(opacity, { timeout: 2000 }).toBe(1);
+  });
+
+  test("skips the reveal entirely under reduced motion", async ({ page }) => {
+    // Same approach as the reduced-motion guard in navigation.spec.ts:
+    // `emulateMedia`, not `test.use({ reducedMotion })`.
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    await page.getByRole("button", { name: /open navigation/i }).click();
+
+    const dialog = page.getByRole("dialog", { name: /site navigation/i });
+    // No polling: with reduced motion this must already be settled by
+    // the next frame, not eased in over 0.9s.
+    await page.waitForTimeout(80);
+    expect(
+      await dialog.evaluate((el) => getComputedStyle(el).opacity),
+    ).toBe("1");
+  });
+
   test("navigates and closes on selection", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: /open navigation/i }).click();
@@ -258,6 +302,15 @@ test.describe("mobile navigation", () => {
     await expect(
       dialog.getByRole("link", { name: "About", exact: true }),
     ).toBeVisible();
+
+    // The panel's own opening reveal slides up from `y: -16`, so its
+    // bounding box is transiently off the `y: 0` this test checks for
+    // until that settles — wait for it before measuring the STEADY
+    // STATE position this guard actually cares about, same idea as
+    // waiting for any other entrance transition to finish.
+    await expect
+      .poll(() => dialog.evaluate((el) => getComputedStyle(el).opacity))
+      .toBe("1");
 
     // Visible is not enough — assert it actually fills the viewport rather
     // than being clipped to the header bar.

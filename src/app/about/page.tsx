@@ -208,9 +208,6 @@ export default function AboutPage() {
                 delay={Math.min(i * STAGGER, 0.24)}
                 className="flex flex-col gap-4 border-b border-hairline-dark py-8 lg:border-b-0 lg:py-0 lg:pr-8 lg:not-first:border-l lg:not-first:pl-8"
               >
-                <span aria-hidden="true" className="eyebrow text-green-bright">
-                  {stage.index}
-                </span>
                 <h3 className="text-h4">{stage.title}</h3>
                 <p className="max-w-[40ch] text-body text-mist">{stage.body}</p>
               </Reveal>
@@ -312,10 +309,7 @@ export default function AboutPage() {
                 delay={Math.min(i * STAGGER, 0.2)}
                 className="border-b border-hairline-light py-7 pr-6 lg:not-first:border-l lg:not-first:pl-7"
               >
-                <span aria-hidden="true" className="eyebrow block text-green">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <h3 className="mt-4 text-h5">{audience}</h3>
+                <h3 className="text-h5">{audience}</h3>
               </Reveal>
             ))}
           </ul>

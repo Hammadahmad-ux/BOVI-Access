@@ -10,9 +10,14 @@ import { cn } from "@/lib/utils/cn";
  * schedule rather than a card grid.
  *
  * WHY A SCHEDULE: this section makes method claims to a procurement
- * audience. A datasheet — aligned numerals, hairline rules, a fixed
- * measure on every description — reads as evidence, where six rounded
- * cards read as marketing. Nothing here is boxed or filled.
+ * audience. A datasheet — hairline rules, a fixed measure on every
+ * description — reads as evidence, where six rounded cards read as
+ * marketing. Nothing here is boxed or filled.
+ *
+ * NO NUMERALS: the client asked for the numbering removed sitewide.
+ * `row.index` is untouched — it is still the `key` and still what kept
+ * each row's identity stable — only the visible "01" etc. eyebrow above
+ * each title is gone.
  *
  * WHY THE ROWS ARE NOT LINKS: there is no honest destination for "Planned
  * Works". So the interaction is limited to a 1px rule appearing on the
@@ -62,32 +67,23 @@ export function WhyBovi() {
               className={cn(
                 // Per-side border colours only: the `border-*` shorthand
                 // would fight the transparent left edge.
-                "grid grid-cols-[2.25rem_1fr] border-b border-b-hairline-light",
+                "border-b border-b-hairline-light",
                 "border-l border-l-transparent py-8 transition-colors",
                 "duration-200 hover:border-l-green lg:py-10",
                 i % 2 === 1
                   ? // Right column: the transparent edge becomes the
                     // vertical rule between the two columns.
                     "lg:border-l-hairline-light lg:pl-10"
-                  : // Left column stays flush, so the numerals form a hard
-                    // left margin aligned with the section heading.
+                  : // Left column stays flush against the section heading.
                     "lg:pr-10",
               )}
             >
-              <span
-                aria-hidden="true"
-                className="eyebrow mt-1.5 text-green"
-              >
-                {row.index}
-              </span>
-              <div>
-                <h3 className="text-h5 leading-[1.2] tracking-[-0.01em]">
-                  {row.title}
-                </h3>
-                <p className="mt-3 max-w-[38ch] text-body text-moss">
-                  {row.body}
-                </p>
-              </div>
+              <h3 className="text-h5 leading-[1.2] tracking-[-0.01em]">
+                {row.title}
+              </h3>
+              <p className="mt-3 max-w-[38ch] text-body text-moss">
+                {row.body}
+              </p>
             </Reveal>
           ))}
         </ul>
