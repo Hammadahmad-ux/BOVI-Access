@@ -25,7 +25,7 @@ export function organizationSchema() {
       value: business.companyNumber,
     },
     url: siteUrl,
-    logo: absoluteUrl("/brand/bovi-access-lockup-on-light.png"),
+    logo: absoluteUrl("/brand/bovi-access-logo-on-light.png"),
     description: `${business.descriptor}. ${business.slogan}.`,
     telephone: business.phoneHref.replace("tel:", ""),
     email: business.emailDisplay,

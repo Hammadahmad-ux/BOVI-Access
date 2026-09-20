@@ -9,7 +9,7 @@ type LogoProps = {
   /**
    * Sizing is CSS-driven and MUST set a height, e.g. "h-9 w-auto".
    *
-   * The BOVI lockup is stacked (BOVI over ACCESS) with a ~2:1 ratio, so
+   * The BOVI lockup is stacked (BOVI over ACCESS) with a ~2.6:1 ratio, so
    * setting a width leaves the height free to overflow a fixed-height
    * header — which is exactly how it clipped on mobile before. Constrain
    * the height and let the width follow.
@@ -29,12 +29,12 @@ type LogoProps = {
 };
 
 /**
- * Intrinsic dimensions of the generated artwork, halved. These exist only
- * to give the browser a correct aspect ratio up front (no layout shift);
- * the rendered size comes from `className`.
+ * Intrinsic dimensions of the generated artwork (`npm run assets:brand`).
+ * These exist only to give the browser a correct aspect ratio up front (no
+ * layout shift); the rendered size comes from `className`.
  */
-const INTRINSIC_WIDTH = 360;
-const INTRINSIC_HEIGHT = 178;
+const INTRINSIC_WIDTH = 720;
+const INTRINSIC_HEIGHT = 275;
 
 export function Logo({
   ground = "dark",
@@ -44,8 +44,8 @@ export function Logo({
 }: LogoProps) {
   const src =
     ground === "dark"
-      ? "/brand/bovi-access-lockup-on-dark.png"
-      : "/brand/bovi-access-lockup-on-light.png";
+      ? "/brand/bovi-access-logo-on-dark.png"
+      : "/brand/bovi-access-logo-on-light.png";
 
   const image = (
     <Image

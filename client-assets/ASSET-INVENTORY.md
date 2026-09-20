@@ -73,46 +73,55 @@ Notes:
 
 ---
 
-## 3. Logo variants — verified by inspection
+## 3. Logo — 2026 rebrand
 
-All 16 logo files are 2000×2000 PNG. Alpha channel was checked per file;
-**the JPG conversions destroyed transparency, so production logos are
-generated from the raw PNGs.**
+**The client finalised new BOVI Access branding (September 2026) and it
+replaced the original logo package entirely.** The two source files live in
+`client-assets/new logo/`:
 
 | File | Alpha | Content | Use |
 | --- | --- | --- | --- |
-| `Access - 1.PNG` | No | Green BOVI + white ACCESS on **baked black** | Reference only |
-| **`Access - 1(1).PNG`** | **Yes** | Green BOVI + **white** ACCESS + white abseiler | **Full lockup — dark grounds** |
-| `Access - 1(2)`, `1(3)` | Yes | Variants of the above | Spares |
-| `Access - 2.PNG` | No | Green ring + white figure on **baked black** | **Favicon / app icon** |
-| **`Access - 2(1).PNG`** | **Yes** | Green ring + white figure | **Icon — dark grounds** |
-| `Access - 2(2)`, `2(3)` | Yes | Variants | Spares |
-| **`Access - 3.PNG`** | **Yes** | Green BOVI + **dark grey** ACCESS | **Full lockup — light grounds** |
-| `Access - 3(1)` | No | Opaque variant | Reference only |
-| `Access - 3(2)`, `3(3)` | Yes | Variants | Spares |
-| `Access - 4.PNG` | No | White abseiler on **baked grey** | Avoid — grey box |
-| `Access - 4(1).PNG` | Yes | White abseiler, transparent | Mark — dark grounds |
-| `Access - 5.PNG` | Yes | **Black** abseiler, transparent | Mark — light grounds |
-| `Access - 5(1).PNG` | No | Opaque variant | Reference only |
+| `Bovi access new logo.png` | No — **opaque black ground**, 1600×1600 | New lockup: green BOVI (wide, rounded "O") + white spaced ACCESS + white abseiler | Website logo |
+| `O sign logo favicon .jpeg` | No — **opaque black ground**, 1600×1600 JPEG | Green rounded "O" ring + white abseiler | Favicon / app icon |
 
-The mark is a **rope-access abseiler descending inside the "O" of BOVI**.
+The abseiler now hangs inside the "O" of BOVI, and the "O" also stands alone
+as the icon.
+
+The old 16-file package in `client-assets/raw/Logo/` (2000×2000, transparent
+variants) is **superseded** and no longer read by anything. It stays in
+`raw/` untouched, like every other original.
 
 ### Generated production files
 
-`npm run assets:brand` → from `client-assets/raw/Logo/`:
+`npm run assets:brand` → from `client-assets/new logo/`:
 
 | Output | Source | Size |
 | --- | --- | --- |
-| `public/brand/bovi-access-lockup-on-dark.png` | `Access - 1(1).PNG` | 720×356 |
-| `public/brand/bovi-access-lockup-on-light.png` | `Access - 3.PNG` | 720×357 |
-| `public/brand/bovi-mark-on-dark.png` | `Access - 2(1).PNG` | 256×244 |
-| `src/app/icon.png` | `Access - 2.PNG` | 512×512 |
-| `src/app/apple-icon.png` | `Access - 2.PNG` | 180×180 |
+| `public/brand/bovi-access-logo-on-dark.png` | `Bovi access new logo.png` | 720×275 |
+| `public/brand/bovi-access-logo-on-light.png` | `Bovi access new logo.png` | 720×275 |
+| `public/brand/bovi-mark-on-dark.png` | `O sign logo favicon .jpeg` | 256×216 |
+| `src/app/icon.png` | `O sign logo favicon .jpeg` | 512×512 |
+| `src/app/apple-icon.png` | `O sign logo favicon .jpeg` | 180×180 |
 
-The favicon uses the **opaque** dark-ground mark deliberately: it reads
-correctly against any browser tab colour, light or dark.
+**Neither source is transparent**, and the site's header and footer sit on
+ink (`#101211`), not pure black, so an opaque black lockup would show as a
+darker box. The generator therefore unmixes each lockup pixel into its two
+brand colours (green `#2A7D25` and the off-white) to recover a clean
+transparent PNG with no dark fringe on any ground; the on-light variant is
+the same alpha with the white recoloured to ink. See the header comment in
+`scripts/generate-brand-assets.mjs`.
 
-**The logo was not redrawn or reinterpreted.**
+The favicon deliberately **keeps the client's black square** — it is tightly
+cropped to the "O" with an even margin so it stays legible at 16px, on the
+same pure black as the icon's own counter.
+
+**The logo was not redrawn or reinterpreted** — the client's own pixels are
+the input.
+
+Files are named `…-logo-…`, not `…-lockup-…` as before, so that the new
+artwork is a new URL: Next's image optimizer caches by URL, and reusing the
+old name would have kept serving the previous logo to returning visitors
+until that cache expired.
 
 ---
 
@@ -517,7 +526,7 @@ imagery from another service.
 ## 8. Regenerating
 
 ```bash
-npm run assets:brand    # logos + favicons from raw/Logo
+npm run assets:brand    # logos + favicons from client-assets/new logo/
 npm run assets:images   # web derivatives from jpg/
 ```
 
