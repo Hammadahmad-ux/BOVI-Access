@@ -25,6 +25,22 @@ export function Footer() {
               {business.descriptor} across {business.coverage}.
             </p>
             <p className="eyebrow mt-6 text-green-bright">{business.slogan}</p>
+
+            {/*
+              Socials — one line, so a second platform later just becomes
+              a second icon on it rather than a layout change.
+            */}
+            <div className="mt-6 flex items-center gap-3">
+              <a
+                href={business.instagramHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${business.name} on Instagram`}
+                className="inline-flex size-11 items-center justify-center rounded-sm text-mist transition-colors hover:text-green-bright"
+              >
+                <InstagramGlyph className="size-5" />
+              </a>
+            </div>
           </div>
 
           <nav aria-label="Footer">
@@ -122,5 +138,31 @@ export function Footer() {
         </div>
       </Container>
     </footer>
+  );
+}
+
+/**
+ * Inline rather than from an icon package: lucide-react, which the rest of
+ * the site uses, dropped brand marks a while back, and pulling in a second
+ * icon library for one glyph is not a trade worth making — same reasoning
+ * as WhatsAppButton's own glyph.
+ */
+function InstagramGlyph({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <rect x="2" y="2" width="20" height="20" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="0.9" fill="currentColor" stroke="none" />
+    </svg>
   );
 }

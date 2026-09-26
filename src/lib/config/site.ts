@@ -77,6 +77,15 @@ export const business = {
   whatsappHref: "https://wa.me/447990377780",
   emailDisplay: "info@boviaccess.co.uk",
   emailHref: "mailto:info@boviaccess.co.uk",
+  /**
+   * Confirmed by the client 2026-09-26. Sent as Instagram's own
+   * "share via QR code" link (`?stkn=...&utm_source=qr`); the token is a
+   * share-tracking artifact of that flow, not part of the profile's
+   * identity, so the plain canonical profile URL is used here instead —
+   * the same account, without a link that reads as a stray tracking tag
+   * in the page source.
+   */
+  instagramHref: "https://www.instagram.com/boviaccess/",
   /** Coverage as approved by the client. Do not narrow to named boroughs. */
   coverage: "London & the South East",
 } as const;
