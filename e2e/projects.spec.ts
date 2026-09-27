@@ -41,7 +41,23 @@ test.describe("projects gallery", () => {
     //
     // Each card carries TWO links to its project — the photograph and the
     // title — so the count is taken from the title links, one per card.
+    //
+    // Expected count is derived, not hardcoded: exactly one project is
+    // always "Featured" and excluded from this title-linked grid (see
+    // `rest` in src/app/portfolio/page.tsx), so the grid is always one
+    // fewer than the total Renan currently has published — whatever that
+    // total is. A fixed "at least 3" broke the moment the live project
+    // count itself dropped to 3 (1 featured + 2 in the grid).
     await page.goto("/portfolio");
+
+    const totalProjects = await page
+      .locator('main a[href^="/projects/"]')
+      .evaluateAll(
+        (links) =>
+          new Set(links.map((link) => link.getAttribute("href") ?? ""))
+            .size,
+      );
+    expect(totalProjects).toBeGreaterThan(0);
 
     const hrefs = await page
       .locator('main a[data-project-title]')
@@ -49,7 +65,7 @@ test.describe("projects gallery", () => {
         links.map((link) => link.getAttribute("href") ?? ""),
       );
 
-    expect(hrefs.length).toBeGreaterThanOrEqual(3);
+    expect(hrefs.length).toBe(totalProjects - 1);
     expect(hrefs.length).toBe(new Set(hrefs).size);
   });
 
@@ -213,6 +229,18 @@ test.describe("projects grid and lightbox", () => {
     // photograph is now a link to the project, not a lightbox trigger.
     await page.goto("/portfolio");
 
+    // This grid is the "Featured" project's total minus one — see the
+    // matching note in "every project appears exactly once" — so the
+    // expected count is derived from the page's own total rather than a
+    // number that breaks whenever Renan's published project count does.
+    const totalProjects = await page
+      .locator('main a[href^="/projects/"]')
+      .evaluateAll(
+        (links) =>
+          new Set(links.map((link) => link.getAttribute("href") ?? ""))
+            .size,
+      );
+
     const sizes = await page
       .locator("main ul li a[data-card-image] span.block")
       .evaluateAll((frames) =>
@@ -222,8 +250,10 @@ test.describe("projects grid and lightbox", () => {
         }),
       );
 
-    expect(sizes.length).toBeGreaterThanOrEqual(3);
-    expect(new Set(sizes).size, `frame sizes: ${sizes.join(", ")}`).toBe(1);
+    expect(sizes.length).toBe(totalProjects - 1);
+    if (sizes.length > 0) {
+      expect(new Set(sizes).size, `frame sizes: ${sizes.join(", ")}`).toBe(1);
+    }
   });
 
   test("cards in a row share a top edge and align their titles", async ({
@@ -445,7 +475,7 @@ test.describe("projects grid and lightbox", () => {
       Services cards", so on a laptop or desktop it is now ~320 wide, and
       every frame in the set must still be the same size.
     */
-    await page.goto("/projects/lightning-protection-works");
+    await page.goto("/projects/commercial-glazing-clean");
 
     const frames = page.locator(
       'main section ul li button[aria-label^="View larger"]',
@@ -543,7 +573,7 @@ test.describe("projects grid and lightbox", () => {
     // Smaller frames are only acceptable because the detail is still
     // reachable. Same component as the grid, exercised where the client
     // found the problem.
-    await page.goto("/projects/lightning-protection-works");
+    await page.goto("/projects/commercial-glazing-clean");
 
     const trigger = page
       .locator('main section ul li button[aria-label^="View larger"]')

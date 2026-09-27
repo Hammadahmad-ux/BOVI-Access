@@ -2,10 +2,12 @@ import { createImageUrlBuilder } from "@sanity/image-url";
 import { sanityConfig } from "@/lib/config/env";
 import type { ImageAsset } from "@/lib/content/types";
 
-/** The shape Sanity returns for an image field, plus our custom alt. */
+/** The shape Sanity returns for an image field, plus our custom alt/caption. */
 export type SanityImage = {
   _type?: string;
   alt?: string;
+  /** Per-photo note (`galleryImage.caption` in the schema) — gallery items only. */
+  caption?: string;
   asset?: { _ref?: string; _id?: string };
   hotspot?: { x: number; y: number };
   crop?: unknown;
@@ -83,5 +85,8 @@ export function imageAssetFrom(
     focalPoint: image.hotspot
       ? { x: image.hotspot.x, y: image.hotspot.y }
       : undefined,
+    // Optional and per-photo — most images have none, which is a normal
+    // state, not a gap to fill with an invented one.
+    caption: image.caption?.trim() || undefined,
   };
 }

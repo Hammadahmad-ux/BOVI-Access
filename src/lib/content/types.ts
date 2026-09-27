@@ -21,4 +21,12 @@ export type ImageAsset = {
    * is right for the local images because their crops were chosen by eye.
    */
   focalPoint?: { x: number; y: number };
+  /**
+   * A per-photo note Renan can write in Studio (`galleryImage.caption`) —
+   * e.g. the location or the specific job, for a project whose gallery
+   * mixes photographs from more than one site. Optional: most images have
+   * none, and no component invents one when it is absent. Local content
+   * never sets this.
+   */
+  caption?: string;
 };

@@ -14,7 +14,6 @@ import { test, expect, type Page } from "@playwright/test";
  */
 
 const MULTI_IMAGE = "/projects/external-pipe-repair"; // 4 gallery photos
-const SINGLE_IMAGE = "/projects/mastic-sealant-renewal"; // 1 gallery photo
 
 const triggers = (page: Page) =>
   page.locator('main section ul li button[aria-label^="View larger"]');
@@ -137,7 +136,35 @@ test.describe("gallery lightbox", () => {
   });
 
   test("a single-photograph gallery has no navigation", async ({ page }) => {
-    await page.goto(SINGLE_IMAGE);
+    /*
+      No hardcoded slug: which project (if any) currently has exactly one
+      gallery photograph changes as Renan edits content — a fixed slug
+      here broke outright the moment that specific project was deleted.
+      This discovers one live rather than assuming, and skips cleanly
+      (not a failure) if none currently qualifies — the behaviour itself
+      is still exercised whenever one does.
+    */
+    await page.goto("/portfolio");
+    const hrefs = await page
+      .locator('main a[href^="/projects/"]')
+      .evaluateAll((links) => [
+        ...new Set(links.map((link) => link.getAttribute("href") ?? "")),
+      ]);
+
+    let singleImagePage: string | null = null;
+    for (const href of hrefs) {
+      await page.goto(href);
+      if ((await triggers(page).count()) === 1) {
+        singleImagePage = href;
+        break;
+      }
+    }
+
+    test.skip(
+      singleImagePage === null,
+      "No current project has exactly one gallery photograph.",
+    );
+    await page.goto(singleImagePage!);
 
     await expect(triggers(page)).toHaveCount(1);
     await triggers(page).first().click();

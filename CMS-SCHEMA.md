@@ -287,6 +287,14 @@ appears.
 Image with **required** `alt` and optional `caption`. Alt is required at
 the schema level so accessibility cannot be skipped by the editor.
 
+`caption` is rendered under the photo in the lightbox **on project pages
+only** — the client's own request, so a project whose gallery mixes
+photographs from more than one site can carry a location/job note per
+photo instead of the project title repeating under every one of them. A
+photo with no caption written shows none. The same field exists on a
+service's gallery images too (shared schema type) but is not currently
+rendered there.
+
 ---
 
 ## 8. Relationships

@@ -141,10 +141,14 @@ project and its page starts showing them.
 2. Change any text (title, short description) or replace a photograph —
    click the image, choose **Upload**, pick the new file, write the alt
    text, drag the crop circle over the important part.
-3. **More photographs from this job** — click **Add item** to add one,
-   drag the handle on the left of a row to reorder, use the **⋯** menu to
-   remove one. Every photo needs alt text. They must all be from the same
-   job.
+3. **More photographs** — click **Add item** to add one, drag the handle
+   on the left of a row to reorder, use the **⋯** menu to remove one.
+   Every photo needs alt text. They no longer have to be from the same
+   job — if you mix in a photo from a different site, use that photo's
+   **Caption** field to say where or what it is (e.g. "Camden — gutter
+   clearance"); it shows under that photo when a visitor opens it full
+   size. Leave Caption blank on any photo and it just shows no caption —
+   there is no need to caption every one.
 4. Click **Publish**. The change is live within about a minute.
 
 > The **Web address** field on the six projects that shipped with the
@@ -179,9 +183,13 @@ then delete. (Sanity keeps revision history, so a delete can be recovered
 6. **Main photograph** — the one used on the card and at the top of the
    project's page. **Alt text is required**: one sentence describing what
    is in the photo. Use the crop tool on the important part.
-7. **More photographs from this job** — two to four is usually right. Pick
-   shots that show something different: the access, the problem, the work,
-   the result. **They must all be from the same job.**
+7. **More photographs** — two to four is usually right. Pick shots that
+   show something different: the access, the problem, the work, the
+   result. They no longer have to be from the same job — mix in a photo
+   from a different site if you want, and use that photo's **Caption**
+   field to say where or what it is (e.g. "Camden — gutter clearance"),
+   which shows under it when a visitor opens it full size. Leave Caption
+   blank on any photo you don't need to explain.
 
    These appear under **Photographs** on the project's own page, at the
    same tidy size as the ones on a service page. **Clicking any one opens

@@ -33,10 +33,7 @@ const INDEXABLE_ROUTES = [
   "/services/roof-roofline-repairs",
   "/services/lightning-protection",
   "/projects/external-pipe-repair",
-  "/projects/gutter-downpipe-clearance",
   "/projects/brickwork-repointing-works",
-  "/projects/lightning-protection-works",
-  "/projects/mastic-sealant-renewal",
   "/projects/commercial-glazing-clean",
 ];
 

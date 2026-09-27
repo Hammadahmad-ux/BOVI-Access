@@ -154,12 +154,28 @@ export default async function ProjectPage({
   const hasDetails = Boolean(project.location || project.completionDate);
   const hasScope = Boolean(project.scope?.length);
 
-  // The lightbox pages through every photograph on this project, in the
-  // order they appear in the grid.
+  /*
+    The lightbox pages through every photograph on this project, in the
+    order they appear in the grid. `label` (used for the accessible name
+    on the trigger and the dialog, never shown as text) always identifies
+    the project, so it stays constant regardless of caption.
+
+    The VISIBLE caption is per-photo (`galleryImage.caption` in Studio) —
+    Renan's own note, e.g. a location or the specific job, for a project
+    whose gallery mixes photographs from more than one site. It used to
+    be hardcoded to the project title on every photograph, which is what
+    he actually asked to stop: the same label repeating under four
+    different pictures reads as a bug, not a caption. An image with no
+    caption written yet shows none, rather than falling back to the
+    project title — an unwritten caption is a normal state here, not a
+    gap to paper over.
+  */
   const galleryItems = project.gallery.map((photo, i) => ({
     image: photo,
     label: `${project.title}, photograph ${i + 1}`,
-    caption: <span className="text-bone">{project.title}</span>,
+    caption: photo.caption ? (
+      <span className="text-bone">{photo.caption}</span>
+    ) : undefined,
   }));
 
   return (

@@ -23,11 +23,16 @@ const ROUTES = [
   "/services/roof-roofline-repairs",
   "/services/lightning-protection",
   "/portfolio",
-  // Project detail pages exist now. Two of them: the one with the most
-  // photographs, and the one with the fewest — a single-image gallery is
-  // where an "and N more" layout would break first.
+  // Project detail pages exist now. external-pipe-repair currently has
+  // the most photographs of any live project; a second one is swept
+  // alongside it so the responsive sweep below isn't only exercising one
+  // project's gallery. (The single-image "and N more" edge case this
+  // used to also cover — mastic-sealant-renewal, one photo — has no live
+  // stand-in since Renan deleted it; gallery-lightbox.spec.ts's own
+  // "single-photograph gallery" test discovers one dynamically instead
+  // of assuming a specific slug still qualifies.)
   "/projects/external-pipe-repair",
-  "/projects/mastic-sealant-renewal",
+  "/projects/brickwork-repointing-works",
   "/service-areas",
   "/contact",
   "/privacy",

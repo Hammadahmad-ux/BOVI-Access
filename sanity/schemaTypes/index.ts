@@ -125,7 +125,13 @@ export const galleryImage = {
         "Describe what is in the photograph, for screen readers and Google. Required.",
       validation: required,
     },
-    { name: "caption", title: "Caption", type: "string" },
+    {
+      name: "caption",
+      title: "Caption",
+      type: "string",
+      description:
+        "Optional. On a project's photos, shown under the picture when it's opened full-size — e.g. the location or the job, useful when a project's photos come from more than one site. Leave blank to show no caption. Not currently shown on service photos.",
+    },
   ],
 };
 
