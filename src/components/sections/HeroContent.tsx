@@ -170,10 +170,10 @@ export function HeroContent({ supportingCopy }: HeroContentProps) {
         */
         className="eyebrow text-green-bright [text-indent:-0.04em] lg:[text-indent:0px]"
       >
-        {business.name}
+        <h1 id="hero-heading">Rope Access London</h1>
       </Entrance>
 
-      <h1 id="hero-heading" className="mt-5 max-w-[14ch] uppercase">
+      <div className="mt-5 max-w-[14ch] uppercase">
         {/* Each word owns a line — never allowed to wrap per-letter. */}
         <MaskLine delay={HERO_TIMELINE.line1} reduced={reduced}>
           Access
@@ -184,7 +184,7 @@ export function HeroContent({ supportingCopy }: HeroContentProps) {
         <MaskLine delay={HERO_TIMELINE.line3} reduced={reduced}>
           Limits
         </MaskLine>
-      </h1>
+      </div>
 
       <Entrance
         as="p"
@@ -192,7 +192,7 @@ export function HeroContent({ supportingCopy }: HeroContentProps) {
         reduced={reduced}
         className="mt-7 font-display text-h4 font-medium text-bone"
       >
-        {business.descriptor}
+        Rope Access & External Maintenance
       </Entrance>
 
       <Entrance
