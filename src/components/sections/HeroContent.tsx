@@ -192,7 +192,7 @@ export function HeroContent({ supportingCopy }: HeroContentProps) {
         reduced={reduced}
         className="mt-7 font-display text-h4 font-medium text-bone"
       >
-        Rope Access & External Maintenance
+        Rope Access & External Maintenance 
       </Entrance>
 
       <Entrance
