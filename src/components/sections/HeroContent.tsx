@@ -170,7 +170,7 @@ export function HeroContent({ supportingCopy }: HeroContentProps) {
         */
         className=""
       >
-        <h1 id="hero-heading">Rope Access London &amp; External Maintenance</h1>
+        <h1 id="hero-heading" className="text-[clamp(2.1rem,4.5vw,5rem)]">Rope Access London &amp; External Maintenance</h1>
       </Entrance>
 
       <div className="mt-5 max-w-[14ch] uppercase">
