@@ -168,9 +168,9 @@ export function HeroContent({ supportingCopy }: HeroContentProps) {
           bearing already matches, so the indent is dropped and desktop is
           unchanged.
         */
-        className="eyebrow text-green-bright [text-indent:-0.04em] lg:[text-indent:0px]"
+        className=""
       >
-        <h1 id="hero-heading">Rope Access London</h1>
+        <h1 id="hero-heading">Rope Access London &amp; External Maintenance</h1>
       </Entrance>
 
       <div className="mt-5 max-w-[14ch] uppercase">
