@@ -170,33 +170,19 @@ export function HeroContent({ supportingCopy }: HeroContentProps) {
         */
         className=""
       >
-        <h1 id="hero-heading" className="text-[clamp(2.1rem,4.5vw,5rem)]">
+        <h1 id="hero-heading" className="text-[clamp(1.85rem,8.5vw,5rem)]">
   Rope Access London<br className="lg:hidden" />
   &amp; External Maintenance
 </h1>
       </Entrance>
 
-      <div className="mt-5 max-w-[14ch] uppercase">
-        {/* Each word owns a line — never allowed to wrap per-letter. */}
-        <MaskLine delay={HERO_TIMELINE.line1} reduced={reduced}>
-          Access
-        </MaskLine>
-        <MaskLine delay={HERO_TIMELINE.line2} reduced={reduced}>
-          Without
-        </MaskLine>
-        <MaskLine delay={HERO_TIMELINE.line3} reduced={reduced}>
-          Limits
-        </MaskLine>
-      </div>
+      <div className="mt-5 uppercase text-[1.25rem] font-bold tracking-wide whitespace-nowrap">
+  <MaskLine delay={HERO_TIMELINE.line1} reduced={reduced}>
+    Access Without Limits
+  </MaskLine>
+</div>
 
-      <Entrance
-        as="p"
-        delay={HERO_TIMELINE.supporting}
-        reduced={reduced}
-        className="mt-7 font-display text-h4 font-medium text-bone"
-      >
-        Rope Access & External Maintenance 
-      </Entrance>
+      
 
       <Entrance
         as="p"
