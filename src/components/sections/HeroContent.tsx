@@ -170,9 +170,12 @@ export function HeroContent({ supportingCopy }: HeroContentProps) {
         */
         className=""
       >
-        <h1 id="hero-heading" className="text-[clamp(1.65rem,7.5vw,5rem)] lg:text-h1">
-  Rope Access London<br className="lg:hidden" />
+        <h1 id="hero-heading" className="text-[clamp(1.65rem,7.5vw,5rem)] lg:text-[4.3rem]">
+  Rope Access London
+<br className="lg:hidden" />
+<span className="inline-block mt-2 lg:mt-0">
   &amp; External Maintenance
+</span>
 </h1>
       </Entrance>
 
