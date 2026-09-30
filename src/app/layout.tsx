@@ -31,7 +31,7 @@ const barlow = Barlow({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: `${business.name} | ${business.descriptor}`,
+    default: "Rope Access London | External Maintenance | BOVI Access",
     // Every child route supplies a bare title; the brand suffix is added here.
     template: `%s | ${business.name}`,
   },
