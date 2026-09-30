@@ -170,13 +170,13 @@ export function HeroContent({ supportingCopy }: HeroContentProps) {
         */
         className=""
       >
-        <h1 id="hero-heading" className="text-[clamp(1.85rem,8.5vw,5rem)]">
+        <h1 id="hero-heading" className="text-[clamp(1.65rem,7.5vw,5rem)] lg:text-h1">
   Rope Access London<br className="lg:hidden" />
   &amp; External Maintenance
 </h1>
       </Entrance>
 
-      <div className="mt-5 uppercase text-[1.25rem] font-bold tracking-wide whitespace-nowrap">
+      <div className="mt-8 uppercase text-[1.25rem] font-bold tracking-wide whitespace-nowrap">
   <MaskLine delay={HERO_TIMELINE.line1} reduced={reduced}>
     Access Without Limits
   </MaskLine>
@@ -190,7 +190,7 @@ export function HeroContent({ supportingCopy }: HeroContentProps) {
         reduced={reduced}
         /* Same measurement, same reason: mist is 3.2:1 over the mobile
            footage and 5.8:1 over the desktop composition. */
-        className="mt-4 max-w-[46ch] text-body-lg text-bone lg:text-mist"
+        className="mt-8 max-w-[46ch] text-body-lg text-bone lg:text-mist"
       >
         {supportingCopy}
       </Entrance>
