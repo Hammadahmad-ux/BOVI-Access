@@ -38,7 +38,7 @@ const INTRINSIC_HEIGHT = 275;
 
 export function Logo({
   ground = "dark",
-  className = "h-9 w-auto",
+  className = "h-14 w-auto",
   asImageOnly = false,
   priority = false,
 }: LogoProps) {
