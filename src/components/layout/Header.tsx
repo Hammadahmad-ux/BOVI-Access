@@ -186,7 +186,7 @@ export function Header({ serviceItems }: HeaderProps) {
         )}
       >
         <Container className="flex h-20 items-center justify-between gap-6 lg:h-[5.5rem]">
-          <Logo ground="dark" priority className="h-14 w-auto scale-[1.5] lg:scale-[2] origin-left" />
+          <Logo ground="dark" priority className="h-10 w-auto lg:h-12" />
           <nav
             ref={desktopNavRef}
             aria-label="Primary"
