@@ -65,7 +65,7 @@ export function Logo({
   // QA #17: the logo must always link to "/".
   return (
     <Link
-      href="/"
+      href="/#hero"
       aria-label={`${business.name} — home`}
       className="inline-flex shrink-0 items-center"
     >
