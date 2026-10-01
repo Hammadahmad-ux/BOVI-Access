@@ -1,5 +1,7 @@
+import { type MouseEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { business } from "@/lib/config/site";
 import { cn } from "@/lib/utils/cn";
 
@@ -42,6 +44,18 @@ export function Logo({
   asImageOnly = false,
   priority = false,
 }: LogoProps) {
+const pathname = usePathname();
+const handleLogoClick = (event: MouseEvent<HTMLAnchorElement>) => {
+  if (pathname !== "/") return;
+
+  event.preventDefault();
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+};
+  
   const src =
     ground === "dark"
       ? "/brand/bovi-access-logo-on-dark.png"
@@ -65,7 +79,8 @@ export function Logo({
   // QA #17: the logo must always link to "/".
   return (
     <Link
-      href="/#hero-heading"
+      href="/"
+onClick={handleLogoClick}
       aria-label={`${business.name} — home`}
       className="inline-flex shrink-0 items-center"
     >
