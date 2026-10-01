@@ -1,7 +1,9 @@
-import { type MouseEvent } from "react";
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { MouseEvent } from "react";
 import { business } from "@/lib/config/site";
 import { cn } from "@/lib/utils/cn";
 
